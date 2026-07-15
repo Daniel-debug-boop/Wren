@@ -1,0 +1,14 @@
+{
+  "82d328b7bb2c8607": {
+    "error_type": "import_missing",
+    "signature": "82d328b7bb2c8607",
+    "key_identifiers": [
+      "generic"
+    ],
+    "best_strategy": "Add the package to requirements.txt and install",
+    "strategy_index": 2,
+    "times_used": 2,
+    "last_success": 1783071051.7170274,
+    "first_seen": 1783071040.3104398
+  }
+}

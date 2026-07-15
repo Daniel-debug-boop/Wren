@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  wren:
+    build:
+      context: .
+      dockerfile: Dockerfile.solo
+    ports:
+      - "3000:3000"
+    environment:
+      - LLM_MODEL=${LLM_MODEL:-gpt-4}
+      - LLM_API_KEY=${LLM_API_KEY}
+    volumes:
+      - ./workspace:/workspace
+    restart: unless-stopped

@@ -1,0 +1,18 @@
+{
+  "APP_TITLE": { "en": "Wren" },
+  "HOME$START": { "en": "Premium AI Engineering" },
+  "HOME$NEW_CONVERSATION": { "en": "New Conversation" },
+  "CHAT$INPUT_PLACEHOLDER": { "en": "Type a message..." },
+  "SETTINGS$LLM": { "en": "LLM Settings" },
+  "SETTINGS$SAVE_CHANGES": { "en": "Save Changes" },
+  "SETTINGS$SAVING": { "en": "Saving..." },
+  "SETTINGS$SAVED": { "en": "Settings saved successfully" },
+  "ERROR$GENERIC": { "en": "Something went wrong" },
+  "MODE$VIDEO$TITLE": { "en": "Video Editor" },
+  "MODE$VIDEO$DESCRIPTION": { "en": "Remotion-powered mode — compose and render video in the sandbox." },
+  "MODE$VIDEO$NOT_ACTIVE": { "en": "Switch to Video mode in the sidebar to access the video editor." },
+  "MODE$VIDEO$DEPENDENCY_WARNING": { "en": "Sandbox needs Node 18+, FFmpeg, and @remotion/* installed. Add them to the sandbox image before running renders." },
+  "MODE$VIDEO$COMPOSITION_CANVAS": { "en": "Composition canvas" },
+  "MODE$VIDEO$COMPOSITION_HINT": { "en": "Agent renders Remotion projects here — output appears in the artifacts drawer." },
+  "MODE$VIDEO$HOW_IT_WORKS": { "en": "How this mode works" }
+}

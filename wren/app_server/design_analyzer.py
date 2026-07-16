@@ -234,7 +234,6 @@ class DesignAnalyzer:
 
         font_pattern = r'font-family:\s*([^;]+);'
         size_pattern = r'font-size:\s*(\d+)px'
-        weight_pattern = r'font-weight:\s*(\d+)'
 
         families = re.findall(font_pattern, css, re.IGNORECASE)
         sizes = [int(s) for s in re.findall(size_pattern, css, re.IGNORECASE)]

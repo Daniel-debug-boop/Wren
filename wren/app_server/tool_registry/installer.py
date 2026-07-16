@@ -272,4 +272,11 @@ Auto-installed MCP server providing **{name}** capabilities.
                 'args': ['-y', '@modelcontextprotocol/server-memory'],
                 'source': 'https://github.com/modelcontextprotocol/servers',
             },
+            {
+                'name': 'terminal',
+                'description': 'Full shell terminal access with stdin/stdout streaming',
+                'command': 'npx',
+                'args': ['-y', '@modelcontextprotocol/server-terminal'],
+                'source': 'https://github.com/modelcontextprotocol/servers',
+            },
         ]

@@ -17,57 +17,13 @@ interface TerminalProps {
   readOnly?: boolean;
 }
 
-function handleDemoCommand(cmd: string): string {
-  const c = cmd.toLowerCase().trim();
-  if (c === "help") {
-    return [
-      "Available commands:",
-      "  help       — Show this message",
-      "  status     — Show sandbox status",
-      "  clear      — Clear terminal",
-      "  ls         — List files in workspace",
-      "  pwd        — Show current directory",
-      "  echo <msg> — Print a message",
-    ].join("\n");
-  }
-  if (c === "status") {
-    return "Sandbox: running OK | Memory: 256MB/512MB | CPU: 12%";
-  }
-  if (c === "clear") {
-    return "";
-  }
-  if (c === "ls") {
-    return [
-      "src/",
-      "tests/",
-      "README.md",
-      "package.json",
-      "tsconfig.json",
-    ].join("\n");
-  }
-  if (c === "pwd") {
-    return "/workspace";
-  }
-  if (c.startsWith("echo ")) {
-    return c.slice(5);
-  }
-  return `Command not found: ${cmd}. Type 'help' for available commands.`;
-}
-
 export function Terminal({
   lines: externalLines,
   onCommand,
   height = 280,
   readOnly = false,
 }: TerminalProps) {
-  const [localLines, setLocalLines] = useState<TerminalLine[]>([
-    {
-      id: "welcome",
-      type: "system",
-      text: "Wren Terminal v1.0 — Type 'help' for available commands",
-      timestamp: Date.now(),
-    },
-  ]);
+  const [localLines, setLocalLines] = useState<TerminalLine[]>([]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -95,21 +51,7 @@ export function Terminal({
       setHistoryIndex(-1);
       setInput("");
       onCommand?.(cmd);
-
-      // Simulate response for demo mode
-      if (!onCommand) {
-        setTimeout(() => {
-          setLocalLines((prev) => [
-            ...prev,
-            {
-              id: `out-${Date.now()}`,
-              type: "output",
-              text: handleDemoCommand(cmd),
-              timestamp: Date.now(),
-            },
-          ]);
-        }, 300);
-      }
+      // No demo mode — if no onCommand is provided, the terminal is read-only
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       if (history.length > 0) {

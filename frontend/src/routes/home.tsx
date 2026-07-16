@@ -1,659 +1,442 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router";
-import { useAppMode } from "#/hooks/use-app-mode";
-import { useConfig } from "#/hooks/query/use-config";
-import SettingsService from "#/api/settings-service/settings-service.api";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 import GitService from "#/api/git-service/git-service.api";
 import type { GitRepository } from "#/types/git";
 import { Button } from "#/components/ui/Button";
 import { Nav } from "#/components/ui/Nav";
-import { Footer } from "#/components/ui/Footer";
-import { EmptyState } from "#/components/ui/EmptyState";
 
-type LaunchTarget = "header" | "repo" | "task" | null;
+type LaunchTarget = "header" | "repo" | null;
+
+/* ── Stagger fade-up for children ── */
+const containerVariants = {
+  hidden: { opacity: 0 } as const,
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.15 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const } },
+};
+
+/* ── Quick action cards data ── */
+const ACTIONS = [
+  {
+    id: "new",
+    title: "New Conversation",
+    desc: "Start fresh with the AI",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 5v14M5 12h14" />
+      </svg>
+    ),
+    gradient: "#E86C4A",
+  },
+  {
+    id: "import",
+    title: "Import Project",
+    desc: "Clone a repo to work on",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+      </svg>
+    ),
+    gradient: "#6366F1",
+  },
+  {
+    id: "skills",
+    title: "Browse Skills",
+    desc: "44+ capabilities available",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    ),
+    gradient: "#F59E0B",
+  },
+  {
+    id: "orchestrate",
+    title: "Orchestrate",
+    desc: "Multi-agent workflows",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 6v6l4 2" />
+      </svg>
+    ),
+    gradient: "#22C55E",
+  },
+];
 
 export default function HomeScreen() {
   const navigate = useNavigate();
-  const { data: config } = useConfig();
-  const { isCloud } = useAppMode();
-
-  const [settings404, setSettings404] = useState(false);
-  const [settingsChecked, setSettingsChecked] = useState(false);
-
-  const [selectedProvider, setSelectedProvider] = useState<string | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<GitRepository | null>(null);
   const [repositories, setRepositories] = useState<GitRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("main");
-  const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
-  const [repoDropdownOpen, setRepoDropdownOpen] = useState(false);
-
   const [launchTarget, setLaunchTarget] = useState<LaunchTarget>(null);
 
-  const [ctaDismissed, setCtaDismissed] = useState(() => {
-    try {
-      return localStorage.getItem("homepage_cta_dismissed") === "true";
-    } catch {
-      return false;
-    }
-  });
+  const isLaunching = launchTarget !== null;
 
-  const showHomepageCta = isCloud && !ctaDismissed;
-
-  const providers = useMemo(
-    () => config?.providers_configured ?? ["github", "gitlab"],
-    [config],
-  );
-
-  // Check settings on mount
-  useEffect(() => {
-    if (settingsChecked) return;
-    let cancelled = false;
-    SettingsService.getSettings()
-      .then(() => {
-        if (!cancelled) setSettingsChecked(true);
-      })
-      .catch((err) => {
-        if (cancelled) return;
-        const status = err?.response?.status ?? err?.status;
-        if (status === 404 && config?.app_mode === "oss") {
-          setSettings404(true);
-        }
-        setSettingsChecked(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [config?.app_mode, settingsChecked]);
-
-  // Load repos on mount
+  /* ── Load repos on mount ── */
   useEffect(() => {
     setLoadingRepos(true);
     GitService.retrieveUserGitRepositories()
-      .then((res) => {
-        setRepositories(res.items ?? []);
-        setLoadingRepos(false);
-      })
-      .catch(() => {
-        setLoadingRepos(false);
-      });
+      .then((res) => { setRepositories(res.items ?? []); setLoadingRepos(false); })
+      .catch(() => setLoadingRepos(false));
   }, []);
 
-  // Load branches when repo selected
   useEffect(() => {
     if (!selectedRepo) return;
     GitService.getRepositoryBranches({ repository_id: selectedRepo.id })
       .then((res) => {
-        const main = res.items?.find(
-          (b) => b.name === "main" || b.name === "master",
-        );
+        const main = res.items?.find((b) => b.name === "main" || b.name === "master");
         if (main) setSelectedBranch(main.name);
       })
       .catch(() => {});
   }, [selectedRepo]);
 
   const handleLaunch = useCallback(
-    (target: LaunchTarget) => {
-      setLaunchTarget(target);
-      setTimeout(() => {
-        navigate("/conversations/new");
-      }, 300);
-    },
+    (target: LaunchTarget) => { setLaunchTarget(target); setTimeout(() => navigate("/conversations/new"), 300); },
     [navigate],
   );
 
-  const handleDismissCta = useCallback(() => {
-    setCtaDismissed(true);
-    try {
-      localStorage.setItem("homepage_cta_dismissed", "true");
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  const filteredRepos = useMemo(() => {
-    if (!selectedRepo) return repositories;
-    return repositories.filter((r) => r.id === selectedRepo.id);
-  }, [repositories, selectedRepo]);
-
-  const hasConnectedRepo = repositories.length > 0;
-
-  const isLaunching = launchTarget !== null;
-
-  const ProviderIcon = ({ name }: { name: string }) => {
-    const icons: Record<string, React.ReactNode> = {
-      github: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.536-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-        </svg>
-      ),
-      gitlab: (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          aria-hidden="true"
-        >
-          <path d="M21 6H5.071L11.437 1.367l1.89 1.863L7.422 12l5.904 8.77 1.89-1.863L5.071 18H21v-12z" />
-        </svg>
-      ),
-    };
-    return icons[name] || icons.github;
-  };
+  const handleAction = useCallback((id: string) => {
+    if (id === "skills") navigate("/skills");
+    else if (id === "orchestrate") navigate("/orchestration");
+    else handleLaunch("header");
+  }, [handleLaunch, navigate]);
 
   return (
-    <div data-testid="home-screen" className="flex min-h-screen flex-col">
-      {/* Skip link target */}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="flex min-h-screen flex-col"
+    >
       <main id="main" className="flex-1" />
 
-      {/* ── Floating Nav (N5) ── */}
+      {/* ── Floating Nav ── */}
       <Nav />
 
-      {/* ── Hero ── */}
-      <section className="relative mx-auto mt-20 max-w-5xl px-6 pb-20 animate-fade-in-up">
-        <div className="gradient-glow" aria-hidden="true" />
-        <h1
-          className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.1] max-w-4xl"
-          style={{ color: "var(--text)" }}
+      {/* ════════════════════════════════════════
+          HERO — Double-bezel glass architecture
+          ════════════════════════════════════════ */}
+      <section className="relative mx-auto mt-28 w-full max-w-5xl px-6">
+        {/* Outer shell */}
+        <div
+          className="relative p-[2px] rounded-[2.5rem]"
+          style={{
+            background: "linear-gradient(135deg, rgba(232,108,74,0.15), rgba(99,102,241,0.08), transparent 60%)",
+          }}
         >
-          Build with an AI engineer that runs code
-        </h1>
-        <p
-          className="mt-6 max-w-2xl text-lg"
-          style={{ color: "var(--text-muted)" }}
-        >
-          Wren spins up real sandboxes, connects to your repos, and writes
-          production-ready code — all from chat.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-3">
-          <Button
-            size="lg"
-            onClick={() => handleLaunch("header")}
-            rightIcon={<span aria-hidden="true">→</span>}
+          {/* Inner core */}
+          <div
+            className="relative overflow-hidden rounded-[calc(2.5rem-2px)] p-12 md:p-16"
+            style={{
+              background: "linear-gradient(160deg, rgba(24,24,27,0.95), rgba(17,17,19,0.98))",
+              boxShadow: "inset 0 1px 1px rgba(255,255,255,0.06), 0 8px 48px rgba(0,0,0,0.4)",
+            }}
           >
-            Launch Wren
-          </Button>
-          <Button variant="ghost" size="lg" onClick={() => navigate("/docs")}>
-            Read the docs
-          </Button>
-        </div>
+            {/* Aurora glow */}
+            <div
+              className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full opacity-30"
+              style={{
+                background: "radial-gradient(circle, rgba(232,108,74,0.12), transparent 70%)",
+                filter: "blur(80px)",
+              }}
+              aria-hidden="true"
+            />
 
-        {/* Homepage CTA (Cloud only) */}
-        {showHomepageCta && (
-          <div className="mt-12 card gradient-accent-border p-4 animate-slide-in-right">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-                    boxShadow:
-                      "0 0 16px color-mix(in srgb, var(--accent) 20%, transparent)",
-                  }}
+            {/* Eyebrow badge */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <span
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em]"
+                style={{
+                  background: "color-mix(in srgb, var(--accent) 10%, transparent)",
+                  border: "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
+                  color: "var(--accent)",
+                }}
+              >
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-current animate-pulse-glow" />
+                AI Engineering Platform
+              </span>
+            </motion.div>
+
+            {/* Main heading */}
+            <motion.h1
+              variants={itemVariants}
+              className="text-4xl md:text-6xl lg:text-7xl font-semibold tracking-tight leading-[1.05] max-w-3xl"
+              style={{ color: "var(--text)" }}
+            >
+              Build with an AI engineer that{" "}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{
+                  backgroundImage: "linear-gradient(135deg, var(--accent), #F59E0B)",
+                }}
+              >
+                runs code
+              </span>
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              className="mt-6 max-w-2xl text-lg leading-relaxed"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Wren spins up real sandboxes, connects to your repos, and writes production-ready code — all from a single conversation.
+            </motion.p>
+
+            {/* CTA row — Button-in-Button pattern */}
+            <motion.div variants={itemVariants} className="mt-10 flex flex-wrap items-center gap-4">
+              <button
+                type="button"
+                onClick={() => handleLaunch("header")}
+                className="group relative inline-flex h-12 items-center gap-3 rounded-full px-7 text-sm font-semibold text-white transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98]"
+                style={{
+                  background: "var(--accent)",
+                  boxShadow: "0 4px 24px color-mix(in srgb, var(--accent) 30%, transparent)",
+                }}
+              >
+                <span>Launch Wren</span>
+                {/* Nested icon circle */}
+                <span
+                  className="flex h-7 w-7 items-center justify-center rounded-full transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:translate-x-0.5 group-hover:-translate-y-[1px] group-hover:scale-105"
+                  style={{ background: "rgba(0,0,0,0.2)" }}
                 >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="white"
-                    aria-hidden="true"
-                  >
-                    <path d="M8 0L16 8L8 16L0 8L8 0Z" />
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
-                </div>
-                <div>
-                  <p
-                    className="text-sm font-medium"
-                    style={{ color: "var(--text)" }}
-                  >
-                    Get started faster
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: "var(--text-subtle)" }}
-                  >
-                    Learn about Wren Cloud features
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <a
-                  href="https://wren.ai/cloud"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="btn-accent rounded-lg px-3 py-1.5 text-xs font-medium"
-                >
-                  Learn more
-                </a>
-                <Button variant="ghost" size="sm" onClick={handleDismissCta}>
-                  Dismiss
-                </Button>
-              </div>
-            </div>
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/docs")}
+                className="inline-flex h-12 items-center gap-2 rounded-full px-6 text-sm font-medium transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-white/5 active:scale-[0.98]"
+                style={{ color: "var(--text-muted)", border: "1px solid var(--border)" }}
+              >
+                Read the docs
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M7 17l9.2-9.2M17 17V7H7" />
+                </svg>
+              </button>
+            </motion.div>
           </div>
-        )}
+        </div>
       </section>
 
-      {/* ── Repo Connector ── */}
-      <section
-        className="mx-auto max-w-5xl px-6 pb-20 animate-fade-in-up"
-        style={{ animationDelay: "300ms" }}
+      {/* ════════════════════════════════════════
+          QUICK ACTIONS — Asymmetrical Bento Grid
+          ════════════════════════════════════════ */}
+      <motion.section
+        variants={containerVariants}
+        className="mx-auto mt-12 w-full max-w-5xl px-6 pb-8"
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {ACTIONS.map((action, i) => (
+            <motion.button
+              key={action.id}
+              variants={itemVariants}
+              type="button"
+              onClick={() => handleAction(action.id)}
+              className="group relative overflow-hidden rounded-2xl p-5 text-left transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] hover:-translate-y-0.5 active:scale-[0.98]"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+              }}
+            >
+              {/* Gradient accent on hover */}
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:opacity-100"
+                style={{
+                  background: `linear-gradient(135deg, ${action.gradient}08, transparent 60%)`,
+                }}
+                aria-hidden="true"
+              />
+
+              {/* Icon with double-bezel */}
+              <div
+                className="relative mb-3 flex h-10 w-10 items-center justify-center rounded-xl"
+                style={{
+                  background: `linear-gradient(135deg, ${action.gradient}15, transparent)`,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}
+              >
+                <span style={{ color: action.gradient === "#E86C4A" ? "var(--accent)" : undefined }}>
+                  {action.icon}
+                </span>
+              </div>
+
+              <h3 className="text-sm font-medium mb-0.5" style={{ color: "var(--text)" }}>{action.title}</h3>
+              <p className="text-xs" style={{ color: "var(--text-muted)" }}>{action.desc}</p>
+            </motion.button>
+          ))}
+        </div>
+      </motion.section>
+
+      {/* ════════════════════════════════════════
+          REPO CONNECTOR — Glass card
+          ════════════════════════════════════════ */}
+      <motion.section
+        variants={itemVariants}
+        className="mx-auto w-full max-w-5xl px-6 pb-20"
         aria-label="Connect repository"
       >
-        <div className="card gradient-accent-border p-6">
-          <h2
-            className="text-sm font-semibold tracking-tight mb-4"
-            style={{ color: "var(--text)" }}
-          >
+        <div
+          className="relative rounded-2xl p-6"
+          style={{
+            background: "var(--surface)",
+            border: "1px solid var(--border)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+          }}
+        >
+          <h2 className="text-sm font-semibold tracking-tight mb-5" style={{ color: "var(--text)" }}>
             Connect a repository
           </h2>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-            {/* Provider */}
-            <div className="flex flex-col gap-1.5 sm:flex-1">
-              <label
-                className="text-xs font-medium"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Provider
-              </label>
-              <div className="relative">
-                <button
-                  data-testid="git-provider-dropdown"
-                  type="button"
-                  onClick={() => setProviderDropdownOpen((o) => !o)}
-                  className="input flex h-10 items-center gap-2 px-3 text-sm justify-between"
-                  style={{ minWidth: "160px", color: "var(--text)" }}
-                  aria-haspopup="listbox"
-                  aria-expanded={providerDropdownOpen}
-                >
-                  <span>
-                    {selectedProvider === "github"
-                      ? "GitHub"
-                      : selectedProvider === "gitlab"
-                        ? "GitLab"
-                        : selectedProvider
-                          ? selectedProvider.charAt(0).toUpperCase() +
-                            selectedProvider.slice(1)
-                          : "Select provider"}
-                  </span>
-                  <svg
-                    width="14"
-                    height="8"
-                    viewBox="0 0 14 8"
-                    fill="none"
-                    className="ml-auto text-subtle"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M1 1l6 6 6-6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                {providerDropdownOpen && (
-                  <div
-                    className="card absolute left-0 top-full z-50 mt-1 w-full overflow-hidden rounded-lg py-1 shadow-lg"
-                    style={{ borderColor: "var(--border-strong)" }}
-                    role="listbox"
-                  >
-                    {providers
-                      .filter((p) => p !== selectedProvider)
-                      .map((p) => (
-                        <button
-                          key={p}
-                          type="button"
-                          role="option"
-                          onClick={() => {
-                            setSelectedProvider(p);
-                            setProviderDropdownOpen(false);
-                          }}
-                          className="flex w-full px-3 py-2 text-left text-sm press transition-colors"
-                          style={{ color: "var(--text)" }}
-                        >
-                          <ProviderIcon
-                            name={p}
-                          />
-                          {p === "github"
-                            ? "GitHub"
-                            : p === "gitlab"
-                              ? "GitLab"
-                              : p.charAt(0).toUpperCase() + p.slice(1)}
-                        </button>
-                      ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Repository */}
+            {/* Repo select */}
             <div className="flex flex-1 flex-col gap-1.5">
-              <label
-                className="text-xs font-medium"
-                style={{ color: "var(--text-muted)" }}
+              <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Repository</label>
+              <select
+                value={selectedRepo?.id || ""}
+                onChange={(e) => {
+                  const repo = repositories.find((r) => r.id === e.target.value);
+                  setSelectedRepo(repo || null);
+                }}
+                className="input h-10"
+                style={{ color: "var(--text)" }}
               >
-                Repository
-              </label>
-              <div className="relative">
-                <button
-                  data-testid="git-repo-dropdown"
-                  type="button"
-                  onClick={() => {
-                    if (selectedProvider) setRepoDropdownOpen((o) => !o);
-                  }}
-                  disabled={!selectedProvider}
-                  className="input flex h-10 w-full items-center gap-2 px-3 text-sm justify-between disabled:opacity-40"
-                  style={{ color: "var(--text)" }}
-                  aria-haspopup="listbox"
-                  aria-expanded={repoDropdownOpen}
-                >
-                  <span>
-                    {loadingRepos
-                      ? "Loading..."
-                      : selectedRepo
-                        ? selectedRepo.full_name
-                        : "Select repository"}
-                  </span>
-                  <svg
-                    width="14"
-                    height="8"
-                    viewBox="0 0 14 8"
-                    fill="none"
-                    className="ml-auto text-subtle"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M1 1l6 6 6-6"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                {repoDropdownOpen && (
-                  <div
-                    data-testid="git-repo-dropdown-menu"
-                    className="card absolute left-0 top-full z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg py-1 shadow-lg"
-                    style={{ borderColor: "var(--border-strong)" }}
-                    role="listbox"
-                  >
-                    {repositories.map((repo) => (
-                      <button
-                        key={repo.id}
-                        type="button"
-                        role="option"
-                        onClick={() => {
-                          setSelectedRepo(repo);
-                          setRepoDropdownOpen(false);
-                        }}
-                        className="flex w-full px-3 py-2 text-left text-sm press transition-colors"
-                        style={{ color: "var(--text)" }}
-                      >
-                        {repo.full_name}
-                      </button>
-                    ))}
-                    {repositories.length === 0 && !loadingRepos && (
-                      <p
-                        className="px-3 py-2 text-sm"
-                        style={{ color: "var(--text-subtle)" }}
-                      >
-                        No repositories found
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
+                <option value="">Select a repository...</option>
+                {repositories.map((r) => (
+                  <option key={r.id} value={r.id}>{r.full_name}</option>
+                ))}
+              </select>
             </div>
 
             {/* Branch */}
-            <div className="flex flex-col gap-1.5 sm:w-40">
-              <label
-                className="text-xs font-medium"
-                style={{ color: "var(--text-muted)" }}
-              >
-                Branch
-              </label>
+            <div className="flex flex-col gap-1.5 sm:w-36">
+              <label className="text-xs font-medium" style={{ color: "var(--text-muted)" }}>Branch</label>
               <input
-                data-testid="git-branch-dropdown-input"
                 type="text"
                 value={selectedBranch}
                 onChange={(e) => setSelectedBranch(e.target.value)}
                 disabled={!selectedRepo}
-                className="input flex h-10 items-center px-3 text-sm disabled:opacity-40"
-                style={{ color: "var(--text)", minWidth: "120px" }}
+                className="input h-10 disabled:opacity-40"
                 placeholder="main"
               />
             </div>
 
-            {/* Launch button */}
+            {/* Launch */}
             <Button
-              data-testid="repo-launch-button"
               size="md"
               disabled={!selectedRepo || isLaunching}
               onClick={() => handleLaunch("repo")}
               className="h-10"
+              rightIcon={
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              }
             >
               Launch
             </Button>
           </div>
-        </div>
-      </section>
 
-      {/* ── Suggested Tasks ── */}
-      {hasConnectedRepo ? (
-        <section
-          className="mx-auto max-w-5xl px-6 pb-20 animate-fade-in-up"
-          style={{ animationDelay: "400ms" }}
-          aria-label="Suggested tasks"
-        >
-          <div className="card gradient-accent-border p-6">
-            <h2
-              className="text-sm font-semibold tracking-tight mb-4"
-              style={{ color: "var(--text)" }}
-            >
-              Suggested tasks
-            </h2>
-            <div className="space-y-2">
-              {filteredRepos.map((repo, index) => (
-                <div
-                  key={repo.id}
-                  className="card p-3 flex items-center justify-between animate-fade-in-up"
-                  style={{ animationDelay: `${index * 60}ms` }}
-                >
-                  <div className="flex items-center gap-2">
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 16 16"
-                      fill="none"
-                      style={{ color: "var(--accent)" }}
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M8 1C4.134 1 1 4.134 1 8s3.134 7 7 7 7-3.134 7-7-3.134-7-7-7z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      />
-                      <path
-                        d="M8 4.5v4M8 11v.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="text-sm" style={{ color: "var(--text)" }}>
-                      {repo.full_name}
-                    </span>
-                  </div>
-                  <Button
-                    size="sm"
-                    disabled={isLaunching}
-                    onClick={() => handleLaunch("task")}
+          {/* Recent repos */}
+          {repositories.length > 0 && (
+            <div className="mt-4 pt-4 border-t" style={{ borderColor: "var(--border)" }}>
+              <div className="flex flex-wrap gap-2">
+                {repositories.slice(0, 5).map((repo) => (
+                  <button
+                    key={repo.id}
+                    type="button"
+                    onClick={() => setSelectedRepo(repo)}
+                    className="press rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300"
+                    style={{
+                      background: selectedRepo?.id === repo.id ? "var(--accent-subtle)" : "rgba(255,255,255,0.03)",
+                      color: selectedRepo?.id === repo.id ? "var(--accent)" : "var(--text-muted)",
+                      border: `1px solid ${selectedRepo?.id === repo.id ? "color-mix(in srgb, var(--accent) 20%, transparent)" : "var(--border)"}`,
+                    }}
                   >
-                    Launch
-                  </Button>
-                </div>
-              ))}
-              {filteredRepos.length === 0 && (
-                <p
-                  className="text-sm text-center"
-                  style={{ color: "var(--text-subtle)" }}
-                >
-                  Connect a repository to see suggested tasks.
-                </p>
-              )}
+                    {repo.full_name}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      ) : (
-        <section
-          className="mx-auto max-w-5xl px-6 pb-20 animate-fade-in-up"
-          style={{ animationDelay: "400ms" }}
-        >
-          <div className="card gradient-accent-border p-6 text-center">
-            <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
-              Connect a repository to see suggested tasks and recent
-              conversations.
-            </p>
-          </div>
-        </section>
-      )}
+          )}
+        </div>
+      </motion.section>
 
-      {/* ── Start Fresh / Import ── */}
-      <section
-        className="mx-auto max-w-5xl px-6 pb-20 animate-fade-in-up"
-        style={{ animationDelay: "500ms" }}
-        aria-label="Quick actions"
+      {/* ════════════════════════════════════════
+          FEATURES — Editorial bento
+          ════════════════════════════════════════ */}
+      <motion.section
+        variants={containerVariants}
+        className="mx-auto w-full max-w-5xl px-6 pb-24"
       >
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="card flex flex-1 flex-col gap-3 p-6">
-            <h3
-              className="text-sm font-semibold tracking-tight"
-              style={{ color: "var(--text)" }}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {[
+            {
+              span: "md:col-span-2 md:row-span-1",
+              title: "Real sandboxes, real execution",
+              desc: "Every conversation spins up an isolated sandbox with full shell access, file system, and network. Your code runs before you review it.",
+              accent: "var(--accent)",
+            },
+            {
+              span: "md:col-span-1",
+              title: "44+ skills",
+              desc: "Auto-triggering microagents for design, DevOps, backend, mobile, and more. The AI adapts to your workflow.",
+              accent: "#22C55E",
+            },
+            {
+              span: "md:col-span-1",
+              title: "Git-native",
+              desc: "Connect any repo. Automatic granular commits, PR creation, and Issue→PR workflow built in.",
+              accent: "#6366F1",
+            },
+            {
+              span: "md:col-span-2",
+              title: "Multi-agent orchestration",
+              desc: "Decompose complex tasks into sub-agents with working memory, self-reflection, and error recovery. Like having a team of engineers.",
+              accent: "#F59E0B",
+            },
+          ].map((feat) => (
+            <motion.div
+              key={feat.title}
+              variants={itemVariants}
+              className={`relative overflow-hidden rounded-2xl p-6 group ${feat.span}`}
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.04)",
+              }}
             >
-              Start fresh
-            </h3>
-            <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
-              Begin a new conversation without a repository
-            </p>
-            <Button
-              variant="secondary"
-              className="mt-auto h-9 justify-center rounded-lg text-xs font-medium"
-              disabled={isLaunching}
-              onClick={() => handleLaunch("header")}
-            >
-              New conversation
-            </Button>
-          </div>
-          <div className="card flex flex-1 flex-col gap-3 p-6">
-            <h3
-              className="text-sm font-semibold tracking-tight"
-              style={{ color: "var(--text)" }}
-            >
-              Import project
-            </h3>
-            <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
-              Clone a repository to start working
-            </p>
-            <Button
-              variant="secondary"
-              className="mt-auto h-9 justify-center rounded-lg text-xs font-medium"
-              disabled={isLaunching}
-            >
-              Import
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Recent Conversations ── */}
-      {hasConnectedRepo && (
-        <section
-          className="mx-auto max-w-5xl px-6 pb-20 animate-fade-in-up"
-          style={{ animationDelay: "600ms" }}
-          aria-label="Recent conversations"
-        >
-          <div className="flex flex-col gap-4 md:flex-row">
-            <div className="card flex flex-1 flex-col gap-3 p-6">
-              <h3
-                className="text-sm font-medium"
-                style={{ color: "var(--text)" }}
-              >
-                Recent conversations
-              </h3>
-              <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
-                Continue where you left off
-              </p>
-              <EmptyState
-                icon={
-                  <svg
-                    width="48"
-                    height="48"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                  </svg>
-                }
-                title="No conversations yet"
-                description="Start a new conversation or connect a repository to see history here."
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:opacity-100"
+                style={{
+                  background: `linear-gradient(135deg, ${feat.accent}06, transparent 60%)`,
+                }}
+                aria-hidden="true"
               />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── Footer (Ft2) ── */}
-      <Footer version="1.30.0" />
-
-      {/* ── AI Config Modal ── */}
-      {settings404 && (
-        <div
-          data-testid="ai-config-modal"
-          className="backdrop-overlay fixed inset-0 z-50 flex items-center justify-center p-4"
-        >
-          <div className="card-elevated w-full max-w-md rounded-xl p-6 animate-scale-in">
-            <h2
-              className="text-lg font-semibold tracking-tight"
-              style={{ color: "var(--text)" }}
-            >
-              AI Configuration Required
-            </h2>
-            <p className="mt-2 text-sm" style={{ color: "var(--text-subtle)" }}>
-              Please configure your LLM provider to get started.
-            </p>
-            <div className="mt-6 flex items-center justify-between">
-              <Link
-                to="/settings"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="text-sm underline underline-offset-2 transition-opacity hover:opacity-80"
-                style={{ color: "var(--accent)" }}
-              >
-                Advanced settings →
-              </Link>
-              <Button onClick={() => setSettings404(false)}>Close</Button>
-            </div>
-          </div>
+              <div className="relative">
+                <div
+                  className="mb-3 h-1 w-8 rounded-full"
+                  style={{ background: feat.accent }}
+                />
+                <h3 className="text-base font-semibold mb-2" style={{ color: "var(--text)" }}>{feat.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>{feat.desc}</p>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      )}
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }

@@ -110,65 +110,40 @@ export default function Sidebar() {
 
   return (
     <aside className="glass-sidebar flex w-[240px] shrink-0 flex-col">
-      {/* Brand header */}
-      <div className="flex items-center justify-between px-3 pt-3 pb-2">
-        <div className="flex items-center gap-2">
+      {/* Brand header — smaller, cleaner */}
+      <div className="flex items-center justify-between px-4 pt-4 pb-3">
+        <div className="flex items-center gap-2.5">
           <div
-            className="flex h-7 w-7 items-center justify-center rounded-lg"
+            className="flex h-7 w-7 items-center justify-center rounded-xl transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:scale-105"
             style={{
-              background:
-                "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-              boxShadow:
-                "0 0 16px color-mix(in srgb, var(--accent) 22%, transparent)",
+              background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+              boxShadow: "0 0 20px color-mix(in srgb, var(--accent) 25%, transparent)",
             }}
           >
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M12 2 2 7l10 5 10-5-10-5Z" />
               <path d="m2 17 10 5 10-5" />
               <path d="m2 12 10 5 10-5" />
             </svg>
           </div>
-          <span
-            className="text-sm font-semibold tracking-tight"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Wren
-          </span>
+          <span className="text-sm font-semibold tracking-tight" style={{ color: "var(--text-primary)" }}>Wren</span>
         </div>
         <button
           type="button"
           onClick={() => navigate("/conversations/new")}
           title="New chat"
-          className="press flex h-7 w-7 items-center justify-center rounded-lg text-text-tertiary transition-all duration-200 hover:bg-surface-hover hover:text-accent"
+          className="press flex h-7 w-7 items-center justify-center rounded-xl transition-all duration-300 hover:bg-white/5 hover:text-accent"
+          style={{ color: "var(--text-quiet)" }}
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            aria-hidden="true"
-          >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">
             <path d="M8 3v10M3 8h10" />
           </svg>
         </button>
       </div>
 
-      {/* Mode selector row — simplified for non-devs */}
-      <div className="flex flex-wrap gap-x-1 gap-y-0.5 px-2 pt-1 pb-1.5">
-        {VIBE_MODES.map((id, i) => {
+      {/* Mode pills */}
+      <div className="flex gap-1 px-3 pb-3">
+        {VIBE_MODES.map((id) => {
           const modeDef = MODES.find((m) => m.id === id);
           if (!modeDef) return null;
           const isActive = mode === id;
@@ -176,17 +151,14 @@ export default function Sidebar() {
             <button
               key={id}
               type="button"
-              onClick={() => {
-                setMode(id as ModeId);
-                if (mode !== id) navigate("/");
-              }}
+              onClick={() => { setMode(id as ModeId); if (mode !== id) navigate("/"); }}
               title={modeDef.description}
-              className={`relative flex flex-col items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200 animate-fade-in-up ${
-                isActive
-                  ? "bg-accent/10 text-accent"
-                  : "text-text-tertiary hover:text-text-secondary"
-              }`}
-              style={{ animationDelay: `${i * 35}ms` }}
+              className="press flex-1 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-[10px] font-medium transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]"
+              style={{
+                background: isActive ? "var(--accent-subtle)" : "transparent",
+                color: isActive ? "var(--accent)" : "var(--text-quiet)",
+                border: `1px solid ${isActive ? "color-mix(in srgb, var(--accent) 15%, transparent)" : "transparent"}`,
+              }}
             >
               <span className="opacity-80">{MODE_ICONS[id]}</span>
               <span>{modeDef.shortLabel}</span>
@@ -196,10 +168,7 @@ export default function Sidebar() {
       </div>
 
       {/* Separator */}
-      <div
-        className="mx-3 h-px"
-        style={{ background: "var(--glass-border)" }}
-      />
+      <div className="mx-4 h-px" style={{ background: "linear-gradient(90deg, var(--border), transparent)" }} />
 
       <SidebarNav />
       <SidebarHistory

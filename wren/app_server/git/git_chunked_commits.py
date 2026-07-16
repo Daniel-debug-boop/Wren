@@ -161,11 +161,13 @@ def _categorize_file(path: str) -> str:
     ):
         return "config"
 
-    # Tests
+    # Tests — check specific patterns first to avoid false positives
     name_noext = os.path.splitext(basename)[0]
-    if "test" in basename or ext in (".test.ts", ".test.js", "_test.go", "_test.py"):
-        return "tests"
     if name_noext.startswith("test_") or name_noext.endswith("_test"):
+        return "tests"
+    if ext in (".test.ts", ".test.js", "_test.go", "_test.py"):
+        return "tests"
+    if "test." in name_noext:
         return "tests"
 
     # Styles
@@ -214,33 +216,37 @@ def _generate_chunk_title(category: str, files: list[ChunkedFile]) -> str:
         "other": "chore: update miscellaneous files",
     }
 
-    # Try to generate a more specific title from the file
-    specific_titles: list[str] = []
-    types_seen: set[str] = set()
+    # Track semantic actions and basenames separately
+    actions: set[str] = set()
+    basenames: list[str] = []
+    seen_basenames: set[str] = set()
+
     for f in files:
         if f.change_type == "added":
-            if "feat" not in specific_titles:
-                specific_titles.append("feat")
+            actions.add("feat")
         elif f.change_type == "deleted":
-            if "remove" not in specific_titles:
-                specific_titles.append("remove")
+            actions.add("remove")
 
         # Extract function/component name from path
         basename = os.path.splitext(os.path.basename(f.path))[0]
-        if basename not in types_seen:
-            types_seen.add(basename)
-            specific_titles.append(basename)
+        if basename not in seen_basenames:
+            seen_basenames.add(basename)
+            basenames.append(basename)
 
-    if specific_titles:
-        prefix = specific_titles[0]
-        if len(files) == 1:
-            name = os.path.splitext(os.path.basename(files[0].path))[0]
-            change_word = "add" if files[0].change_type == "added" else "update"
-            return f"{prefix}({category}): {change_word} {name}"
-        else:
-            return f"{prefix}: update {len(files)} files"
+    # Build prefix from actions first, then fall back to basename
+    if actions:
+        prefix = next(iter(actions))
+    elif basenames:
+        prefix = basenames[0]
+    else:
+        return base_titles.get(category, "chore: update files")
 
-    return base_titles.get(category, "chore: update files")
+    if len(files) == 1:
+        name = os.path.splitext(os.path.basename(files[0].path))[0]
+        change_word = "add" if files[0].change_type == "added" else "update"
+        return f"{prefix}({category}): {change_word} {name}"
+    else:
+        return f"{prefix}: update {len(files)} files"
 
 
 def _generate_chunk_description(category: str, files: list[ChunkedFile]) -> str:

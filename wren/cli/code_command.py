@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 # Reuse shared helpers from main.py
 from wren.cli.main import _bold, _red, _green, _yellow  # noqa: F401
 
+# Use stdout for isatty (console output), consistent with main.py behavior
 _COLOR = sys.stdout.isatty()
 
 
@@ -248,7 +249,8 @@ class CodeSession:
         self, poll_interval: float = 0.3
     ) -> AsyncGenerator[AgentEvent, None]:
         """Poll for new events."""
-        seen_ids = set()
+        seen_ids: set[str] = set()
+        _PRUNE_THRESHOLD = 1000
 
         while True:
             try:
@@ -271,6 +273,12 @@ class CodeSession:
                             seen_ids.add(event_id)
                             self._last_event_id = event_id
                             yield AgentEvent(item)
+
+                # Prune seen_ids to prevent unbounded memory growth
+                if len(seen_ids) > _PRUNE_THRESHOLD:
+                    # Keep only the most recent 500 IDs
+                    sorted_ids = sorted(seen_ids, reverse=True)
+                    seen_ids = set(sorted_ids[:500])
 
             except Exception as e:
                 logger.debug("Poll error: %s", e)

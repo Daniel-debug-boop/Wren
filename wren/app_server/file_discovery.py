@@ -193,10 +193,12 @@ def _score_file_for_task(file_path: str, task_keywords: list[str]) -> tuple[floa
         reasons.append("primary source file")
 
     # Direct keyword matches in path
+    matched_kws: set[str] = set()
     for kw in task_keywords:
         if kw in file_lower:
             score += 0.15
-            if kw not in reasons:
+            if kw not in matched_kws:
+                matched_kws.add(kw)
                 reasons.append(f"matches '{kw}'")
 
     # Check for common patterns

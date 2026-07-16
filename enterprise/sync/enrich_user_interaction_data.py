@@ -1,34 +1,34 @@
 import asyncio
 
 from integrations.github.data_collector import GitHubDataCollector
-from storage.wren_pr import OpenhandsPR
-from storage.wren_pr_store import OpenhandsPRStore
+from storage.wren_pr import WrenPR
+from storage.wren_pr_store import WrenPRStore
 
 from wren.app_server.utils.logger import wren_logger as logger
 
 PROCESS_AMOUNT = 50
 MAX_RETRIES = 3
 
-store = OpenhandsPRStore.get_instance()
+store = WrenPRStore.get_instance()
 data_collector = GitHubDataCollector()
 
 
-async def get_unprocessed_prs() -> list[OpenhandsPR]:
+async def get_unprocessed_prs() -> list[WrenPR]:
     """
-    Get unprocessed PR entries from the OpenhandsPR table.
+    Get unprocessed PR entries from the WrenPR table.
 
     Args:
         limit: Maximum number of PRs to retrieve (default: 50)
 
     Returns:
-        List of OpenhandsPR objects that need processing
+        List of WrenPR objects that need processing
     """
     unprocessed_prs = await store.get_unprocessed_prs(PROCESS_AMOUNT, MAX_RETRIES)
     logger.info(f'Retrieved {len(unprocessed_prs)} unprocessed PRs for enrichment')
     return unprocessed_prs
 
 
-async def process_pr(pr: OpenhandsPR):
+async def process_pr(pr: WrenPR):
     """
     Process a single PR to enrich its data.
     """

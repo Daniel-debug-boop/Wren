@@ -6,9 +6,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 from storage.base import Base
 
 
-class OpenhandsPR(Base):
+class WrenPR(Base):
     """
-    Represents a pull request created by OpenHands.
+    Represents a pull request created by Wren.
     """
 
     __tablename__ = 'wren_prs'

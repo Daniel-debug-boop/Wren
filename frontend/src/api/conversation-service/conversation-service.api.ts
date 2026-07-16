@@ -3,6 +3,7 @@ import type { GitRepository } from "#/types/git";
 import type {
   AppConversationStartRequest,
   AppConversationStartTask,
+  AppConversationStartTaskStatus,
   AppConversation,
   AppConversationPage,
 } from "#/types/app-conversation";
@@ -97,6 +98,38 @@ export class ConversationApi {
       `/v1/app-conversations/${conversationId}/resume`,
     );
     return data;
+  }
+
+  static async getStartTask(
+    startTaskId: string,
+  ): Promise<AppConversationStartTask> {
+    const { data } = await api.get<AppConversationStartTask>(
+      `/v1/app-conversations/start-tasks/${startTaskId}`,
+    );
+    return data;
+  }
+
+  static async pollUntilReady(
+    startTaskId: string,
+    onStatus?: (status: AppConversationStartTaskStatus) => void,
+    opts?: { intervalMs?: number; timeoutMs?: number },
+  ): Promise<AppConversationStartTask> {
+    const intervalMs = opts?.intervalMs ?? 1500;
+    const timeoutMs = opts?.timeoutMs ?? 5 * 60 * 1000;
+    const deadline = Date.now() + timeoutMs;
+    while (true) {
+      const task = await this.getStartTask(startTaskId);
+      onStatus?.(task.status);
+      if (task.status === "READY" || task.status === "ERROR") {
+        return task;
+      }
+      if (Date.now() >= deadline) {
+        throw new Error(
+          `Timed out after ${timeoutMs}ms waiting for conversation to start (last status: ${task.status})`,
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
   }
 
   static async getRepositories(): Promise<{ items: GitRepository[] }> {

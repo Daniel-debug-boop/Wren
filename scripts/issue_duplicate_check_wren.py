@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OpenHands duplicate issue detection.
+"""Wren duplicate issue detection.
 
 Monitors GitHub issues via webhooks and periodic scans
 to flag potential duplicates using fuzzy matching.
@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     parent = build_common_argparser()
     parser = argparse.ArgumentParser(
         parents=[parent],
-        description='OpenHands duplicate issue check.',
+        description='Wren duplicate issue check.',
     )
     parser.add_argument(
         '--event-json',

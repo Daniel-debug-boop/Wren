@@ -1,10 +1,10 @@
 ---
-# Automated QA validation of PR changes using OpenHands.
+# Automated QA validation of PR changes using Wren.
 #
 # This workflow runs only when the `qa-this` label is added to a same-repo PR.
 # Unlike code review, the QA agent executes the changed code and posts a
 # functional verification report.
-name: QA Changes by OpenHands
+name: QA Changes by Wren
 
 on:
     pull_request:

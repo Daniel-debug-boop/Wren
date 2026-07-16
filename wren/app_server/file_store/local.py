@@ -21,7 +21,17 @@ class LocalFileStore(FileStore):
     def get_full_path(self, path: str) -> str:
         if path.startswith('/'):
             path = path[1:]
-        return os.path.join(self.root, path)
+
+        root_abs = os.path.abspath(self.root)
+        # Reject path traversal: the resolved path must stay inside root.
+        # abspath normalizes '..' without requiring the target to exist, so any
+        # escape sequence (e.g. '../../etc/passwd') bubbles to a path outside root.
+        candidate = os.path.abspath(os.path.join(root_abs, path))
+        if candidate != root_abs and not candidate.startswith(root_abs + os.sep):
+            raise ValueError(
+                f'Path "{path}" escapes the file store root "{self.root}"'
+            )
+        return candidate
 
     def write(self, path: str, contents: str | bytes) -> None:
         full_path = self.get_full_path(path)

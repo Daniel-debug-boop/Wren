@@ -1,9 +1,10 @@
 import { useNavigate, useLocation } from "react-router";
+import { motion } from "framer-motion";
 
 export default function SidebarNav() {
   const navigate = useNavigate();
   const location = useLocation();
-  const pathname = location.pathname;
+  const { pathname } = location;
 
   const navItems = [
     {
@@ -72,8 +73,8 @@ export default function SidebarNav() {
 
   return (
     <div className="flex shrink-0 flex-col gap-0.5 px-3 pb-2 pt-1">
-      <nav className="flex flex-col gap-0.5">
-        {navItems.map((item) => {
+      <nav className="flex flex-col gap-1">
+        {navItems.map((item, i) => {
           const isActive =
             item.path === "/"
               ? pathname === "/" || pathname.startsWith("/conversations")
@@ -84,18 +85,31 @@ export default function SidebarNav() {
               key={item.id}
               type="button"
               onClick={() => navigate(item.path)}
-              className="flex h-8 items-center gap-2.5 rounded-md px-2.5 text-sm font-medium press transition-all duration-200"
+              className="relative flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm font-medium press transition-all duration-200 animate-fade-in-up"
               style={{
-                background: isActive
-                  ? "color-mix(in srgb, var(--glass-accent) 10%, transparent)"
-                  : "transparent",
                 color: isActive
                   ? "var(--glass-accent)"
                   : "var(--glass-text-secondary)",
+                animationDelay: `${i * 55}ms`,
               }}
             >
-              {item.icon}
-              <span>{item.label}</span>
+              {isActive && (
+                <motion.span
+                  layoutId="sidebar-nav-active"
+                  className="absolute inset-0 rounded-lg"
+                  style={{
+                    background:
+                      "color-mix(in srgb, var(--glass-accent) 12%, transparent)",
+                    boxShadow:
+                      "inset 0 0 0 1px color-mix(in srgb, var(--glass-accent) 22%, transparent)",
+                  }}
+                  transition={{ type: "spring", stiffness: 500, damping: 38 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2.5">
+                {item.icon}
+                <span>{item.label}</span>
+              </span>
             </button>
           );
         })}

@@ -155,7 +155,11 @@ export default function NewConversationScreen() {
         // Poll until ready
         const readyTask = await ConversationApi.pollUntilReady(
           task.id,
-          (status) => console.log("Start status:", status),
+          (status) => {
+            if (status !== "READY") {
+              console.log("Start status:", status);
+            }
+          },
         );
 
         if (readyTask.app_conversation_id) {

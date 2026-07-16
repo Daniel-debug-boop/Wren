@@ -1,11 +1,11 @@
 #!/bin/bash
-# This hook was installed by OpenHands
-# It calls the pre-commit script in the .openhands directory
+# This hook was installed by Wren
+# It calls the pre-commit script in the .wren directory
 
-if [ -x ".openhands/pre-commit.sh" ]; then
-    source ".openhands/pre-commit.sh"
+if [ -x ".wren/pre-commit.sh" ]; then
+    source ".wren/pre-commit.sh"
     exit $?
 else
-    echo "Warning: .openhands/pre-commit.sh not found or not executable"
+    echo "Warning: .wren/pre-commit.sh not found or not executable"
     exit 0
 fi

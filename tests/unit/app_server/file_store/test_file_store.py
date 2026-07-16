@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import shutil
 import tempfile
 import threading
@@ -317,6 +318,28 @@ class TestLocalFileStore(TestCase, _StorageTest):
             f'Length: {len(final_content)}. This indicates file corruption from '
             f'concurrent writes (e.g., shorter write did not fully replace longer write).',
         )
+
+
+    def test_get_full_path_rejects_traversal(self):
+        """Path traversal outside the store root must be rejected."""
+        for malicious in ('../etc/passwd', '../../etc/passwd', 'foo/../../etc/passwd',
+                          '../../../root/.ssh/id_rsa'):
+            with self.subTest(path=malicious):
+                with self.assertRaises(ValueError):
+                    self.store.get_full_path(malicious)
+
+    def test_write_rejects_traversal(self):
+        with self.assertRaises(ValueError):
+            self.store.write('../escape.txt', 'pwned')
+
+    def test_read_rejects_traversal(self):
+        with self.assertRaises(ValueError):
+            self.store.read('../../etc/passwd')
+
+    def test_path_within_root_allowed(self):
+        """Normal relative paths are resolved but stay under the root."""
+        resolved = self.store.get_full_path('a/b/c.txt')
+        self.assertTrue(resolved.startswith(os.path.abspath(self.temp_dir)))
 
 
 class TestInMemoryFileStore(TestCase, _StorageTest):

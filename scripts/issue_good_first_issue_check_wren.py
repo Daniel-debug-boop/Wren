@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OpenHands good first issue classification.
+"""Wren good first issue classification.
 
 Evaluates GitHub issues for good-first-issue suitability
 using heuristic checks on labels, title, and body.
@@ -70,7 +70,7 @@ def parse_args() -> argparse.Namespace:
     parent = build_common_argparser()
     parser = argparse.ArgumentParser(
         parents=[parent],
-        description=('OpenHands good first issue classifier.'),
+        description=('Wren good first issue classifier.'),
     )
     parser.add_argument(
         '--event-json',

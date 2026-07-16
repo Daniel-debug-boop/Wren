@@ -26,6 +26,7 @@ from wren.app_server.middleware import (
     InMemoryRateLimiter,
     LocalhostCORSMiddleware,
     RateLimitMiddleware,
+    SecurityHeadersMiddleware,
 )
 from wren.app_server.orchestration.router import router as orchestration_router
 from wren.app_server.orchestration.harness_router import router as harness_router
@@ -94,6 +95,7 @@ if os.getenv('SERVE_FRONTEND', 'true').lower() == 'true':
             '/', SPAStaticFiles(directory='./frontend/build', html=True), name='dist'
         )
 
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(LocalhostCORSMiddleware)
 app.add_middleware(CacheControlMiddleware)
 app.add_middleware(

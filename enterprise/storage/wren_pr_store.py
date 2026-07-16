@@ -4,24 +4,24 @@ from datetime import datetime
 
 from sqlalchemy import and_, desc, select
 from storage.database import a_session_maker
-from storage.wren_pr import OpenhandsPR
+from storage.wren_pr import WrenPR
 
 from wren.app_server.integrations.service_types import ProviderType
 from wren.app_server.utils.logger import wren_logger as logger
 
 
-class OpenhandsPRStore:
-    async def insert_pr(self, pr: OpenhandsPR) -> None:
+class WrenPRStore:
+    async def insert_pr(self, pr: WrenPR) -> None:
         """
         Insert a new PR or delete and recreate if repo_id and pr_number already exist.
         """
         async with a_session_maker() as session:
             # Check if PR already exists
             result = await session.execute(
-                select(OpenhandsPR).filter(
-                    OpenhandsPR.repo_id == pr.repo_id,
-                    OpenhandsPR.pr_number == pr.pr_number,
-                    OpenhandsPR.provider == pr.provider,
+                select(WrenPR).filter(
+                    WrenPR.repo_id == pr.repo_id,
+                    WrenPR.pr_number == pr.pr_number,
+                    WrenPR.provider == pr.provider,
                 )
             )
             existing_pr = result.scalars().first()
@@ -47,8 +47,8 @@ class OpenhandsPRStore:
         """
         async with a_session_maker() as session:
             result = await session.execute(
-                select(OpenhandsPR).filter(
-                    OpenhandsPR.repo_id == repo_id, OpenhandsPR.pr_number == pr_number
+                select(WrenPR).filter(
+                    WrenPR.repo_id == repo_id, WrenPR.pr_number == pr_number
                 )
             )
             pr = result.scalars().first()
@@ -88,13 +88,13 @@ class OpenhandsPRStore:
         async with a_session_maker() as session:
             # Use row-level locking to prevent concurrent modifications
             result = await session.execute(
-                select(OpenhandsPR)
+                select(WrenPR)
                 .filter(
-                    OpenhandsPR.repo_id == repo_id, OpenhandsPR.pr_number == pr_number
+                    WrenPR.repo_id == repo_id, WrenPR.pr_number == pr_number
                 )
                 .with_for_update()
             )
-            pr: OpenhandsPR | None = result.scalars().first()
+            pr: WrenPR | None = result.scalars().first()
 
             if not pr:
                 # Current PR snapshot is stale
@@ -120,27 +120,27 @@ class OpenhandsPRStore:
 
     async def get_unprocessed_prs(
         self, limit: int = 50, max_retries: int = 3
-    ) -> list[OpenhandsPR]:
+    ) -> list[WrenPR]:
         """
-        Get unprocessed PR entries from the OpenhandsPR table.
+        Get unprocessed PR entries from the WrenPR table.
 
         Args:
             limit: Maximum number of PRs to retrieve (default: 50)
 
         Returns:
-            List of OpenhandsPR objects that need processing
+            List of WrenPR objects that need processing
         """
         async with a_session_maker() as session:
             result = await session.execute(
-                select(OpenhandsPR)
+                select(WrenPR)
                 .filter(
                     and_(
-                        ~OpenhandsPR.processed,
-                        OpenhandsPR.process_attempts < max_retries,
-                        OpenhandsPR.provider == ProviderType.GITHUB.value,
+                        ~WrenPR.processed,
+                        WrenPR.process_attempts < max_retries,
+                        WrenPR.provider == ProviderType.GITHUB.value,
                     )
                 )
-                .order_by(desc(OpenhandsPR.updated_at))
+                .order_by(desc(WrenPR.updated_at))
                 .limit(limit)
             )
             unprocessed_prs = list(result.scalars().all())
@@ -148,6 +148,6 @@ class OpenhandsPRStore:
             return unprocessed_prs
 
     @classmethod
-    def get_instance(cls) -> OpenhandsPRStore:
-        """Get an instance of the OpenhandsPRStore."""
-        return OpenhandsPRStore()
+    def get_instance(cls) -> WrenPRStore:
+        """Get an instance of the WrenPRStore."""
+        return WrenPRStore()

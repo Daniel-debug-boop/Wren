@@ -74,6 +74,29 @@ class CacheControlMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Apply baseline security headers to every response."""
+
+    async def dispatch(
+        self, request: Request, call_next: RequestResponseEndpoint
+    ) -> Response:
+        response = await call_next(request)
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+        response.headers['Permissions-Policy'] = (
+            'camera=(), microphone=(), geolocation=()'
+        )
+        # Only set HSTS when the request arrived over HTTPS (e.g. behind a
+        # reverse proxy). Browsers ignore HSTS over plain HTTP so this avoids
+        # pinning local dev environments to TLS.
+        if request.url.scheme == 'https':
+            response.headers['Strict-Transport-Security'] = (
+                'max-age=31536000; includeSubDomains'
+            )
+        return response
+
+
 class InMemoryRateLimiter:
     """Sliding-window rate limiter. Resets on process restart.
     Use RedisRateLimiter for production deployments.

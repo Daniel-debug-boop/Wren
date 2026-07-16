@@ -31,7 +31,7 @@ export default function SidebarHistory({
               key={item.id}
               type="button"
               onClick={() => onSelect(item.id)}
-              className="group flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left press transition-all duration-200"
+              className="group flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left press transition-all duration-200 hover:bg-surface-hover/60"
               style={{
                 animation: `fade-in-up 0.4s var(--ease-out) both`,
                 animationDelay: `${index * 50}ms`,

@@ -281,7 +281,13 @@ export function useConversationWebSocket({
 
   const connectWebSocket = useCallback(
     (agentServerUrl: string, sessionApiKey: string) => {
-      if (wsRef.current?.readyState === WebSocket.OPEN) return;
+      // Drop any existing socket so conversation switches don't leak a stale
+      // connection or reuse a socket bound to a different conversation id.
+      if (wsRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        wsRef.current.close();
+        wsRef.current = null;
+      }
 
       const conversationId = state?.conversationId;
       if (!conversationId) return;

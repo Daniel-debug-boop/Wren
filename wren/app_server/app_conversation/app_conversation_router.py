@@ -1115,6 +1115,27 @@ async def batch_get_app_conversation_start_tasks(
     return start_tasks
 
 
+@router.get('/start-tasks/{start_task_id}')
+async def get_app_conversation_start_task(
+    start_task_id: UUID,
+    app_conversation_start_task_service: AppConversationStartTaskService = (
+        app_conversation_start_task_service_dependency
+    ),
+) -> AppConversationStartTask:
+    """Get a single conversation start task by id."""
+    task = (
+        await app_conversation_start_task_service.get_app_conversation_start_task(
+            start_task_id
+        )
+    )
+    if task is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='Start task not found',
+        )
+    return task
+
+
 @router.get('/{conversation_id}/file')
 async def read_conversation_file(
     conversation_id: UUID,

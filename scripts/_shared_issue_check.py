@@ -1,7 +1,7 @@
 """Shared utilities for issue-check scripts.
 
-Extracted from issue_duplicate_check_openhands.py and
-issue_good_first_issue_check_openhands.py to
+Extracted from issue_duplicate_check_wren.py and
+issue_good_first_issue_check_wren.py to
 eliminate R0801 duplicate code.
 """
 

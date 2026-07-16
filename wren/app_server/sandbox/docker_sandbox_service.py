@@ -51,15 +51,39 @@ def _get_use_host_network_default() -> bool:
 
     This function is called at runtime (not at class definition time) to ensure
     that environment variable changes are picked up correctly.
+
+    Host network mode bypasses Docker's network isolation entirely and is a
+    serious security escape. It is OFF by default and must be explicitly opted
+    into via AGENT_SERVER_USE_HOST_NETWORK.
     """
     value = os.getenv('AGENT_SERVER_USE_HOST_NETWORK', '')
-    return value.lower() in ('true', '1', 'yes')
+    enabled = value.lower() in ('true', '1', 'yes')
+    if enabled:
+        _logger.warning(
+            'SECURITY: AGENT_SERVER_USE_HOST_NETWORK is enabled. Sandbox '
+            'containers will share the host network namespace, bypassing '
+            'Docker network isolation. Only enable this in trusted, single-tenant '
+            'environments.'
+        )
+    return enabled
 
 
 def _get_kvm_enabled_default() -> bool:
-    """Get the default value for kvm_enabled from environment variables."""
+    """Get the default value for kvm_enabled from environment variables.
+
+    Mounting /dev/kvm read-write into an untrusted agent sandbox grants
+    hardware-virtualization access. It is OFF by default and must be explicitly
+    opted into via SANDBOX_KVM_ENABLED.
+    """
     value = os.getenv('SANDBOX_KVM_ENABLED', '')
-    return value.lower() in ('true', '1', 'yes')
+    enabled = value.lower() in ('true', '1', 'yes')
+    if enabled:
+        _logger.warning(
+            'SECURITY: SANDBOX_KVM_ENABLED is enabled. The host /dev/kvm device '
+            'will be mounted read-write into sandbox containers, granting '
+            'hardware-virtualization access. Only enable in trusted environments.'
+        )
+    return enabled
 
 
 class VolumeMount(BaseModel):

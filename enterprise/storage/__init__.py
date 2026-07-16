@@ -16,7 +16,7 @@ from storage.linear_conversation import LinearConversation
 from storage.linear_user import LinearUser
 from storage.linear_workspace import LinearWorkspace
 from storage.maintenance_task import MaintenanceTask, MaintenanceTaskStatus
-from storage.wren_pr import OpenhandsPR
+from storage.wren_pr import WrenPR
 from storage.org import Org
 from storage.org_git_claim import OrgGitClaim
 from storage.org_invitation import OrgInvitation
@@ -61,7 +61,7 @@ __all__ = [
     'LinearWorkspace',
     'MaintenanceTask',
     'MaintenanceTaskStatus',
-    'OpenhandsPR',
+    'WrenPR',
     'Org',
     'OrgGitClaim',
     'OrgInvitation',

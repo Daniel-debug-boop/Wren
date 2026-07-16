@@ -16,8 +16,8 @@ from integrations.types import PRStatus, ResolverViewInterface
 from integrations.utils import HOST
 from pydantic import SecretStr
 from server.auth.constants import GITHUB_APP_CLIENT_ID, GITHUB_APP_PRIVATE_KEY
-from storage.wren_pr import OpenhandsPR
-from storage.wren_pr_store import OpenhandsPRStore
+from storage.wren_pr import WrenPR
+from storage.wren_pr_store import WrenPRStore
 
 from wren.app_server.config import get_global_config
 from wren.app_server.conversation_paths import get_conversation_dir
@@ -433,7 +433,7 @@ class GitHubDataCollector:
             },
         }
 
-    async def save_full_pr(self, wren_pr: OpenhandsPR) -> None:
+    async def save_full_pr(self, wren_pr: WrenPR) -> None:
         """
         Save PR information including metadata and commit details using GraphQL
 
@@ -584,8 +584,8 @@ class GitHubDataCollector:
             wren_general_comment_count,
         )
 
-        # Update the OpenhandsPR object with OpenHands statistics
-        store = OpenhandsPRStore.get_instance()
+        # Update the WrenPR object with OpenHands statistics
+        store = WrenPRStore.get_instance()
         wren_helped_author = wren_commit_count > 0
 
         # Update the PR with OpenHands statistics
@@ -666,9 +666,9 @@ class GitHubDataCollector:
         # Determine status based on whether it was merged
         status = PRStatus.MERGED if merged else PRStatus.CLOSED
 
-        store = OpenhandsPRStore.get_instance()
+        store = WrenPRStore.get_instance()
 
-        pr = OpenhandsPR(
+        pr = WrenPR(
             repo_name=repo_name,
             repo_id=repo_id,
             pr_number=pr_number,

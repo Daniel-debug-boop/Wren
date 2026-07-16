@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import SidebarNav from "./SidebarNav";
 import SidebarHistory from "./SidebarHistory";
 import WorkspaceFooter from "./WorkspaceFooter";
@@ -36,30 +37,75 @@ function toHistoryItems(convs: AppConversation[]) {
 // Icons for non-dev modes only: plan, code, review, debug, ask
 const MODE_ICONS: Record<string, React.ReactNode> = {
   plan: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6 1.5v9M1.5 6h9" />
       <circle cx="6" cy="6" r="4.5" />
     </svg>
   ),
   code: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M4.5 3l-3 3 3 3M7.5 3l3 3-3 3" />
     </svg>
   ),
   review: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="6" cy="6" r="4.5" />
       <path d="M4 6l1.5 1.5L8 4.5" />
     </svg>
   ),
   debug: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="6" cy="6" r="4.5" />
       <path d="M6 3.5v2.5l1.5 1.5" />
     </svg>
   ),
   ask: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="6" cy="6" r="4.5" />
       <path d="M6 4.5v.5M6 7v.5" />
     </svg>
@@ -85,14 +131,72 @@ export default function Sidebar() {
         if (!cancelled) setHistoryItems(toHistoryItems(page.items));
       })
       .catch(() => {});
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <aside className="glass-sidebar flex w-[240px] shrink-0 flex-col">
+      {/* Brand header */}
+      <div className="flex items-center justify-between px-3 pt-3 pb-2">
+        <div className="flex items-center gap-2">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-lg"
+            style={{
+              background:
+                "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+              boxShadow:
+                "0 0 16px color-mix(in srgb, var(--accent) 22%, transparent)",
+            }}
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M12 2 2 7l10 5 10-5-10-5Z" />
+              <path d="m2 17 10 5 10-5" />
+              <path d="m2 12 10 5 10-5" />
+            </svg>
+          </div>
+          <span
+            className="text-sm font-semibold tracking-tight"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Wren
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate("/conversations/new")}
+          title="New chat"
+          className="press flex h-7 w-7 items-center justify-center rounded-lg text-text-tertiary transition-all duration-200 hover:bg-surface-hover hover:text-accent"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M8 3v10M3 8h10" />
+          </svg>
+        </button>
+      </div>
+
       {/* Mode selector row — simplified for non-devs */}
-      <div className="flex gap-0.5 px-2 pt-2 pb-1.5">
-        {VIBE_MODES.map((id) => {
+      <div className="flex gap-0.5 px-2 pt-1 pb-1.5">
+        {VIBE_MODES.map((id, i) => {
           const modeDef = MODES.find((m) => m.id === id);
           if (!modeDef) return null;
           const isActive = mode === id;
@@ -105,9 +209,12 @@ export default function Sidebar() {
                 if (mode !== id) navigate("/");
               }}
               title={modeDef.description}
-              className={`flex flex-col items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200 flex-1 ${
-                isActive ? "bg-accent/10 text-accent" : "text-text-tertiary hover:text-text-secondary"
+              className={`flex flex-col items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200 flex-1 animate-fade-in-up ${
+                isActive
+                  ? "bg-accent/10 text-accent"
+                  : "text-text-tertiary hover:text-text-secondary"
               }`}
+              style={{ animationDelay: `${i * 45}ms` }}
             >
               <span className="opacity-80">{MODE_ICONS[id]}</span>
               <span>{modeDef.shortLabel}</span>
@@ -117,7 +224,10 @@ export default function Sidebar() {
       </div>
 
       {/* Separator */}
-      <div className="mx-3 h-px" style={{ background: "var(--glass-border)" }} />
+      <div
+        className="mx-3 h-px"
+        style={{ background: "var(--glass-border)" }}
+      />
 
       <SidebarNav />
       <SidebarHistory

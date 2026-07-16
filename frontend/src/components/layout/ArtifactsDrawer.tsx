@@ -1,6 +1,16 @@
 import { useState, useCallback, useEffect, useRef } from "react";
+import DOMPurify from "dompurify";
 import { useArtifacts } from "./ArtifactsContext";
 import { DiffViewRaw } from "#/components/ui/DiffView";
+
+/**
+ * Sanitize untrusted agent-provided HTML before rendering it via
+ * dangerouslySetInnerHTML. Agent output is untrusted and could carry
+ * <script> or event-handler-based XSS.
+ */
+export function sanitizePreview(html: string): string {
+  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } });
+}
 
 type TabId = "code" | "diff" | "preview" | "terminal";
 
@@ -237,7 +247,9 @@ export default function ArtifactsDrawer() {
             {activeTab === "preview" && data.preview && (
               <div
                 className="glass flex min-h-[200px] items-center justify-center rounded-lg"
-                dangerouslySetInnerHTML={{ __html: data.preview }}
+                dangerouslySetInnerHTML={{
+                  __html: sanitizePreview(data.preview),
+                }}
               />
             )}
 

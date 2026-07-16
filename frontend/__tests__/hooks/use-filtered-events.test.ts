@@ -41,9 +41,9 @@ function createV0SystemEvent(id: number): OpenHandsAction {
     source: "environment",
     action: "system",
     args: {
-      content: "source .openhands/setup.sh",
+      content: "source .wren/setup.sh",
       tools: null,
-      openhands_version: null,
+      wren_version: null,
       agent_class: null,
     },
     message: "Running setup script",

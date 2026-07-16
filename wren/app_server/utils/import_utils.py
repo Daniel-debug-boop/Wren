@@ -36,7 +36,12 @@ def _get_impl(cls: type[T], impl_name: str | None) -> type[T]:
     if impl_name is None:
         return cls
     impl_class = import_from(impl_name)
-    assert cls == impl_class or issubclass(impl_class, cls)
+    if not (cls == impl_class or issubclass(impl_class, cls)):
+        raise TypeError(
+            f"Implementation {impl_name!r} must be a subclass of "
+            f"{cls.__module__}.{cls.__qualname__}, "
+            f"got {impl_class.__module__}.{impl_class.__qualname__}"
+        )
     return impl_class
 
 

@@ -16,7 +16,6 @@ Architecture:
 
 from __future__ import annotations
 
-import json
 import logging
 import time
 from dataclasses import dataclass, field
@@ -165,7 +164,7 @@ class ContextBudget:
         )
 
         _logger.debug(
-            'ContextBudget: turn %d role=%s in=%d out=%d total=%d cost=$%.4f',
+            'ContextBudget: turn %d role=%s in=%d out=%d total=%d cost=$%.4',
             turn.turn_index,
             role,
             input_tokens,

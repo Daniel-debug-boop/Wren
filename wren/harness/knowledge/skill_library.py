@@ -6,11 +6,9 @@ Provides lookup by name, tag, or vector similarity.
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Any
 
 from wren.harness.knowledge.vector_store import VectorStore
 

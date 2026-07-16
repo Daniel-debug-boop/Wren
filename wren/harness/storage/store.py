@@ -6,8 +6,6 @@ This is the ONLY file outside storage/ that should import database.py directly.
 
 from __future__ import annotations
 
-import json
-import time
 from typing import Any
 
 from wren.harness.storage.database import DB

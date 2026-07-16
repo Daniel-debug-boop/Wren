@@ -34,7 +34,7 @@ async def _run_goal(cfg: Cfg, goal: str) -> None:
     try:
         await orch.start()
         result = await orch.process_goal(goal)
-        print(f'\n=== RESULT ===')
+        print('\n=== RESULT ===')
         print(f'Goal:         {goal[:80]}')
         print(f'Tasks:        {result.get("task_count", 0)}')
         print(

@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "#/components/ui/Button";
@@ -10,6 +11,14 @@ import ApiKeysService, {
 const PROVIDER_IDS = Object.keys(PROVIDER_METADATA);
 
 export default function ApiKeysPage() {
+  return (
+    <ErrorBoundary>
+      <ApiKeysContent />
+    </ErrorBoundary>
+  );
+}
+
+function ApiKeysContent() {
   const navigate = useNavigate();
   const [providers, setProviders] = useState<ProviderConfig[]>(() =>
     ApiKeysService.getAll(),

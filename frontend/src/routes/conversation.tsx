@@ -23,6 +23,7 @@ import type {
 import { ReviewWorkspace } from "#/components/ui/ReviewWorkspace";
 import { AutonomousOrchestrator } from "#/components/ui/AutonomousOrchestrator";
 import { MessageBubble } from "#/components/conversation/MessageBubble";
+import { ErrorBoundary } from "#/components/ErrorBoundary";
 import { ThinkingPanel, type ThinkingStep } from "#/components/ui/ThinkingPanel";
 import { Terminal } from "#/components/Terminal";
 import { SuggestionTextarea } from "#/components/conversation/SuggestionTextarea";
@@ -31,6 +32,14 @@ import { useConversationWebSocket } from "#/hooks/use-conversation-websocket";
 
 /* ── Page Component ── */
 export default function ConversationPage() {
+  return (
+    <ErrorBoundary>
+      <ConversationContent />
+    </ErrorBoundary>
+  );
+}
+
+function ConversationContent() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const artifacts = useArtifacts();
   const { mode: contextMode } = useMode();

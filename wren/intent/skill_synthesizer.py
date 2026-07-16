@@ -132,7 +132,7 @@ class SkillSynthesizer:
                 'authentication',
                 'authorization',
                 'encryption',
-                'csrf',
+                'csr',
                 'oauth',
                 'jwt',
             ],
@@ -234,7 +234,7 @@ class SkillSynthesizer:
             '---',
             f'name: {gap.topic.lower().replace(" ", "-")}',
             f'description: Auto-generated skill for {gap.topic}',
-            f'triggers:',
+            'triggers:',
         ]
         for kw in gap.keywords:
             lines.append(f'  - {kw}')
@@ -244,15 +244,15 @@ class SkillSynthesizer:
                 '',
                 f'# {gap.topic.title()}',
                 '',
-                f'## Overview',
+                '## Overview',
                 '',
                 f'{gap.description}',
                 '',
-                f'## Context',
+                '## Context',
                 '',
                 f'This skill was auto-generated because: {gap.context}',
                 '',
-                f'## Key Rules',
+                '## Key Rules',
                 '',
             ]
         )
@@ -264,26 +264,26 @@ class SkillSynthesizer:
         ):
             lines.extend(
                 [
-                    f'1. Always validate input before processing',
-                    f'2. Handle errors gracefully with descriptive messages',
-                    f'3. Follow the principle of least privilege',
-                    f'4. Document edge cases and assumptions',
-                    f'5. Test with both valid and invalid inputs',
+                    '1. Always validate input before processing',
+                    '2. Handle errors gracefully with descriptive messages',
+                    '3. Follow the principle of least privilege',
+                    '4. Document edge cases and assumptions',
+                    '5. Test with both valid and invalid inputs',
                 ]
             )
         else:
             lines.extend(
                 [
-                    f'1. Understand the problem completely before implementing',
-                    f'2. Check if existing solutions already address this',
-                    f'3. Use standard library when possible',
-                    f'4. Prefer platform-native features over third-party',
-                    f'5. Write minimal, necessary code',
-                    f'6. Always handle errors and edge cases',
-                    f'7. Validate at trust boundaries',
-                    f'8. Log meaningful information for debugging',
-                    f'9. Write tests for critical paths',
-                    f'10. Document decisions and trade-offs',
+                    '1. Understand the problem completely before implementing',
+                    '2. Check if existing solutions already address this',
+                    '3. Use standard library when possible',
+                    '4. Prefer platform-native features over third-party',
+                    '5. Write minimal, necessary code',
+                    '6. Always handle errors and edge cases',
+                    '7. Validate at trust boundaries',
+                    '8. Log meaningful information for debugging',
+                    '9. Write tests for critical paths',
+                    '10. Document decisions and trade-offs',
                 ]
             )
 
@@ -310,8 +310,8 @@ class SkillSynthesizer:
                 '## References',
                 '',
                 f'- Official documentation for {gap.topic}',
-                f'- Stack Overflow common solutions',
-                f'- GitHub Issues for known problems',
+                '- Stack Overflow common solutions',
+                '- GitHub Issues for known problems',
             ]
         )
 

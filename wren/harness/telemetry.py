@@ -6,7 +6,6 @@ All harness subsystems emit through here instead of raw print/logging.
 
 from __future__ import annotations
 
-import json
 import logging
 import sys
 import time

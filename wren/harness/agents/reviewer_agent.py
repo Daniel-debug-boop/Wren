@@ -347,7 +347,7 @@ class ReviewerAgent(ChildAgent):
             'be', 'been', 'being', 'do', 'does', 'did', 'will', 'would', 'could',
             'should', 'may', 'might', 'can', 'shall', 'this', 'that', 'these',
             'those', 'with', 'without', 'for', 'and', 'nor', 'but', 'or', 'yet',
-            'so', 'if', 'then', 'else', 'when', 'than', 'too', 'very', 'just',
+            'so', 'i', 'then', 'else', 'when', 'than', 'too', 'very', 'just',
             'not', 'no', 'its', 'it\'s', 'their', 'them', 'they', 'all', 'each',
         }
         return [

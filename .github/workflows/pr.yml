@@ -11,4 +11,4 @@ jobs:
   pr-title:
     permissions:
       pull-requests: write
-    uses: Daniel-debug-boop/release-actions/.github/workflows/pr-title.yml@main
+    uses: OpenHands/release-actions/.github/workflows/pr-title.yml@main

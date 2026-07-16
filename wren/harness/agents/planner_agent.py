@@ -112,7 +112,7 @@ class PlannerAgent(ChildAgent):
         plan = await self._generate_plan(goal, files, description, context_block)
 
         _logger.info(
-            'PlannerAgent: done changes=%d complexity=%.1f',
+            'PlannerAgent: done changes=%d complexity=%.1',
             len(plan.changes),
             plan.complexity_score,
         )

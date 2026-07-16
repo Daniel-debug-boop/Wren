@@ -7,6 +7,7 @@ import { Button } from "#/components/ui/Button";
 import { Input } from "#/components/ui/Input";
 import { EmptyState } from "#/components/ui/EmptyState";
 import { Footer } from "#/components/ui/Footer";
+import { ErrorBoundary } from "#/components/ErrorBoundary";
 import ApiKeysService, {
   PROVIDER_METADATA,
   ROLE_PROVIDER_PREFS,
@@ -60,6 +61,14 @@ const CATEGORIES: {
 ];
 
 export default function SettingsPage() {
+  return (
+    <ErrorBoundary>
+      <SettingsContent />
+    </ErrorBoundary>
+  );
+}
+
+function SettingsContent() {
   const navigate = useNavigate();
   const { data: config } = useConfig();
   const { isCloud } = useAppMode();

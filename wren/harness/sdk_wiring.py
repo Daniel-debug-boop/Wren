@@ -308,7 +308,7 @@ def _build_sdk_context() -> SDKContext:
             'github_get_pull_request_files',
             'Get files changed in a PR',
             ['reviewing diffs', 'PR analysis'],
-            ['github', 'pr', 'diff'],
+            ['github', 'pr', 'dif'],
         ),
         (
             'github_create_pull_request_review',

@@ -63,7 +63,6 @@ class CodingHarness(ChildAgent):
         critique = self._critiquer.critique_code(code_output, language=language)
 
         # Quality gates
-        import asyncio
 
         qctx: dict[str, Any] = {
             'response': code_output,
@@ -94,7 +93,7 @@ class CodingHarness(ChildAgent):
             )
 
         _logger.info(
-            'CodingHarness: done success=%s score=%.2f',
+            'CodingHarness: done success=%s score=%.2',
             result['success'],
             critique.score,
         )

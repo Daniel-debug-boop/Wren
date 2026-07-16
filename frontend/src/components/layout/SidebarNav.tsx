@@ -28,6 +28,27 @@ export default function SidebarNav() {
       ),
     },
     {
+      id: "skills",
+      label: "Skills",
+      path: "/skills",
+      icon: (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+        >
+          <path d="M7 1l1.5 3L12 4.5 9.5 7l.5 3.5L7 9l-3 1.5L4.5 7 2 4.5 5.5 4 7 1z" />
+          <path d="M4 13l3-1.5L10 13l-1-3 2-1.5-3-.5L7 5l-1 3-3 .5L5 10l-1 3z" />
+        </svg>
+      ),
+    },
+    {
       id: "keys",
       label: "API Keys",
       path: "/api-keys",

@@ -11,6 +11,7 @@ export default [
       index("routes/home.tsx"),
       route("conversations/new", "routes/new-conversation.tsx"),
       route("conversations/:conversationId", "routes/conversation.tsx"),
+      route("skills", "routes/skills.tsx"),
       route("settings", "routes/settings.tsx"),
       route("settings/integrations", "routes/settings/integrations.tsx"),
       route("api-keys", "routes/api-keys.tsx"),

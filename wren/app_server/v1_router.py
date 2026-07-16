@@ -18,6 +18,7 @@ from wren.app_server.settings.settings_router import (
     router as settings_router,
 )
 from wren.app_server.user import skills_router, user_router
+from wren.app_server.github.issue_to_pr_router import router as github_issue_to_pr_router
 from wren.app_server.tool_registry.router import router as tool_registry_router
 from wren.app_server.web_client import web_client_router
 
@@ -36,4 +37,5 @@ router.include_router(webhook_router.router)
 router.include_router(web_client_router.router)
 router.include_router(git_router)
 router.include_router(config_router)
+router.include_router(github_issue_to_pr_router)
 router.include_router(tool_registry_router)

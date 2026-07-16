@@ -119,7 +119,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </p>
             <button
               type="button"
-              className="btn-premium btn-premium-gold"
+              className="btn-accent"
               onClick={this.handleReset}
               aria-label="Try again"
               style={{ width: "100%" }}

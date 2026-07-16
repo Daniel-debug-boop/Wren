@@ -4,6 +4,8 @@ Launches the Wren backend server in OSS/solo mode with no auth required.
 
 Commands:
     oh                  Start the server (default)
+    oh code             Terminal-based agentic coding (like Claude Code/Aider)
+    oh code "prompt"    One-shot agentic coding with a prompt
     oh chat             Open the TUI chat interface
     oh doctor           Check dependencies and diagnose issues
     oh health           Check if a running server is healthy
@@ -315,6 +317,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help='Wren backend URL (default: http://localhost:3000)',
     )
 
+    # Code (agentic coding)
+    from wren.cli.code_command import register_code_subcommand
+
+    register_code_subcommand(sub)
+
     # Build subcommands
     from wren.cli.build_commands import register_build_subcommands
 
@@ -554,6 +561,15 @@ def main(argv: list[str] | None = None) -> None:
         return
     if args.command == 'chat':
         cmd_chat(args)
+        return
+
+    # Code command
+    if args.command == 'code':
+        from wren.cli.code_command import cmd_code
+
+        import asyncio
+
+        asyncio.run(cmd_code(args))
         return
 
     # Build commands

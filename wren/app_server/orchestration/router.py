@@ -623,7 +623,7 @@ async def error_retry(
     operation_name: str = Body(...),
     max_retries: int = Body(5),
 ):
-    _loop = AdaptiveRetryLoop(max_retries=max_retries)  # noqa: F841 — kept for future use
+    __loop = AdaptiveRetryLoop(max_retries=max_retries)  # noqa: F841 — kept for future use
     return {
         'operation': operation_name,
         'max_retries': max_retries,

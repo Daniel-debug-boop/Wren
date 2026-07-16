@@ -14,7 +14,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass  # field unused
 from typing import Any
 
 from wren.harness.agents.base import ChildAgent
@@ -84,7 +84,7 @@ class WriterAgent(ChildAgent):
             feedback_lines = ['', '=== REVIEW FEEDBACK (fix these issues) ===']
             for f in review_feedback.get('failures', [])[:_MAX_FEEDBACK_FILES]:
                 file_path = f.get('file_path', '?')
-                chk = f.get('check_name', '?')
+                _chk = f.get('check_name', '?')  # noqa: F841
                 msg = f.get('message', '')
                 suggestion = f.get('suggestion', '')
                 feedback_lines.append(f'  - {file_path}: {msg}')

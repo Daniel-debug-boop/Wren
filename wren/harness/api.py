@@ -88,7 +88,7 @@ class HarnessAPI:
             task_desc: str = ''
 
         orch = self._orch
-        rate_headers = self._rate_headers
+        _rate_headers = self._rate_headers  # noqa: F841
 
         @app.on_event('startup')
         async def startup():

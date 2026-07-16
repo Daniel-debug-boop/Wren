@@ -6,7 +6,7 @@ import asyncio
 import logging
 from datetime import datetime
 
-from textual import on, work
+from textual import on  # work unused
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
@@ -15,7 +15,7 @@ from textual.widgets import (
     Footer,
     Header,
     Input,
-    Label,
+    # Label,  # noqa: F401
     RichLog,
     Static,
 )

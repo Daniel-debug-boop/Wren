@@ -258,7 +258,7 @@ def run_post_completion(
     # ── Final reflection ───────────────────────────────────────
     if CONFIG.auto_reflect_on_complete:
         try:
-            sml = _self_memory_loop(pr)
+            _sml = _self_memory_loop(pr)  # noqa: F841
             _logger.info('OHOS post-completion reflection started')
             # sml.reflect is async — caller must await separately
             actions.append('reflection_queued')

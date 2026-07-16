@@ -131,7 +131,7 @@ class ReviewerAgent(ChildAgent):
         _logger.debug('ReviewerAgent: init')
 
     async def _execute(self, task: dict[str, Any]) -> dict[str, Any]:
-        description = task.get('description', task.get('task', ''))
+        _description = task.get('description', task.get('task', ''))  # noqa: F841
         files = task.get('files', [])
         plan = task.get('plan', {})
         write_result = task.get('write_result', {})

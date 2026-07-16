@@ -106,7 +106,7 @@ class ChildAgent(ABC):
         self._token = token
         self._budget = budget
         self._bus = bus
-        from wren.harness.thinking.pipeline import ThinkPipeline
+        # from wren.harness.thinking.pipeline import ThinkPipeline  # noqa: F401
 
         self._think_pipeline = think_pipeline or ThinkPipeline(
             agent_id=self.agent_id, agent_type=self.agent_type

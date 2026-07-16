@@ -244,7 +244,7 @@ class ToolScraper:
             return {
                 'name': repo_name,
                 'command': 'uvx',
-                'args': ['--from', f'git+{repo_url}', repo_name],
+                'args': ['--from', 'git+{repo_url}', repo_name],
             }
 
         if any(t in topics for t in ['typescript', 'javascript', 'node']):

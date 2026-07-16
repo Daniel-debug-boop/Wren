@@ -18,7 +18,7 @@ from enum import Enum
 from typing import Any, Callable, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from wren.harness.auth import BusAuth
+    # from wren.harness.auth import BusAuth  # noqa: F401
 
 _logger = logging.getLogger(__name__)
 

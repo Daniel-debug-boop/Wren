@@ -18,17 +18,17 @@ sys.path.insert(0, str(project_root))
 # Import the Base metadata for autogenerate support
 # Import all models to ensure they are registered with the metadata
 # This is necessary for alembic autogenerate to detect all tables
-from wren.app_server.app_conversation.sql_app_conversation_info_service import (  # noqa: E402
+from wren.app_server.app_conversation.sql_app_conversation_info_service import (  # noqa: E402, F401
     StoredConversationMetadata,  # noqa: F401
 )
-from wren.app_server.app_conversation.sql_app_conversation_start_task_service import (  # noqa: E402
+from wren.app_server.app_conversation.sql_app_conversation_start_task_service import (  # noqa: E402, F401
     StoredAppConversationStartTask,  # noqa: F401
 )
 from wren.app_server.config import get_global_config  # noqa: E402
-from wren.app_server.event_callback.sql_event_callback_service import (  # noqa: E402
+from wren.app_server.event_callback.sql_event_callback_service import (  # noqa: E402, F401
     StoredEventCallback,  # noqa: F401
 )
-from wren.app_server.sandbox.remote_sandbox_service import (  # noqa: E402
+from wren.app_server.sandbox.remote_sandbox_service import (  # noqa: E402, F401
     StoredRemoteSandbox,  # noqa: F401
 )
 from wren.app_server.utils.sql_utils import Base  # noqa: E402

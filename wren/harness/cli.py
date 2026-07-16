@@ -17,7 +17,7 @@ import time
 
 from wren.harness.meta_orchestrator import MetaOrchestrator
 from wren.harness.config import HarnessConfig as Cfg
-from wren.harness.telemetry import T
+# from wren.harness.telemetry import T  # noqa: F401
 from wren.harness.health import HealthChecker
 
 

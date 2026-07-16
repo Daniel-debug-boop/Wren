@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import { FileTree, type FileNode } from "#/components/ide/FileTree";
 
 import { Button } from "#/components/ui/Button";
 import { ConversationApi } from "#/api/conversation-service/conversation-service.api";
@@ -9,7 +10,6 @@ import { suggestMode, type ModeId } from "#/types/mode";
 import { AgentTimeline } from "#/components/ui/AgentTimeline";
 import { PlanView } from "#/components/ui/PlanView";
 import { IDEWorkspace } from "#/components/ide/IDEWorkspace";
-import type { FileNode } from "#/components/ide/FileTree";
 import { StackTraceViewer } from "#/components/ui/StackTraceViewer";
 import type {
   FixSuggestion,
@@ -23,6 +23,8 @@ import type {
 import { ReviewWorkspace } from "#/components/ui/ReviewWorkspace";
 import { AutonomousOrchestrator } from "#/components/ui/AutonomousOrchestrator";
 import { MessageBubble } from "#/components/conversation/MessageBubble";
+import { ThinkingPanel, type ThinkingStep } from "#/components/ui/ThinkingPanel";
+import { Terminal } from "#/components/Terminal";
 
 import { useConversationWebSocket } from "#/hooks/use-conversation-websocket";
 
@@ -54,6 +56,13 @@ export default function ConversationPage() {
   const [autoModeFlash, setAutoModeFlash] = useState<string | null>(null);
   const [showAgentPanel, setShowAgentPanel] = useState(false);
 
+  /* ── Thinking / CoT state ── */
+  const [thinkingSteps, setThinkingSteps] = useState<ThinkingStep[]>([]);
+  const [thinkingCollapsed, setThinkingCollapsed] = useState(false);
+
+  /* ── Terminal visibility ── */
+  const [showChatTerminal, setShowChatTerminal] = useState(false);
+
   /* ── Timeline ── */
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
   const timelineEventIdRef = useRef(0);
@@ -81,7 +90,7 @@ export default function ConversationPage() {
     {
       id: "welcome",
       type: "system",
-      text: "Wren IDE Terminal — connected",
+      text: "Wren Terminal v1.0 — Type 'help' for available commands",
       timestamp: Date.now(),
     },
   ]);
@@ -105,7 +114,7 @@ export default function ConversationPage() {
           prev.some((m) => m.id === msg.id) ? prev : [...prev, msg],
         ),
       onUpdateMessage: (updater) => setMessages(updater),
-      onTimelineEvent: (event) =>
+      onTimelineEvent: (event) => {
         setTimelineEvents((prev) => [
           ...prev,
           {
@@ -113,8 +122,37 @@ export default function ConversationPage() {
             id: `tl-${timelineEventIdRef.current++}`,
             timestamp: new Date(),
           },
-        ]),
-      onError: (err) => setError(err || null),
+        ]);
+        // Extract agent thinking from action events with thoughts
+        const detail = event.detail;
+        if (detail && event.type === "action") {
+          setThinkingSteps((prev) => [
+            ...prev,
+            {
+              id: `think-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+              timestamp: Date.now(),
+              type: "reasoning",
+              title: event.title || "Agent reasoning",
+              content: detail,
+            },
+          ]);
+        }
+      },
+      onError: (err) => {
+        setError(err || null);
+        if (err) {
+          setThinkingSteps((prev) => [
+            ...prev,
+            {
+              id: `think-err-${Date.now()}`,
+              timestamp: Date.now(),
+              type: "error",
+              title: "Error",
+              content: err || "An error occurred",
+            },
+          ]);
+        }
+      },
       onRunningChange: setIsRunning,
       onModeSuggested: (mode) => setSelectedMode(mode),
       onModeFlash: (mode) => {
@@ -262,7 +300,8 @@ export default function ConversationPage() {
         return;
       }
 
-      // Reset mode-specific state on new message
+      // Reset thinking + mode-specific state on new message
+      setThinkingSteps([]);
       if (selectedMode === "debug") {
         setDebugError(null);
         setDebugFixes([]);
@@ -439,58 +478,24 @@ export default function ConversationPage() {
   }
 
   return (
-    <div className="flex h-full" data-testid="conversation-screen">
-      {/* ── Left: Chat Area ── */}
-      <div className="flex flex-1 flex-col min-w-0">
-        {/* ── Chat messages ── */}
-        {selectedMode === "review" && reviewFiles.length > 0 ? (
-          <div className="flex-1 overflow-y-auto px-4 py-6">
-            <div className="mx-auto max-w-3xl animate-fade-in-up">
-              <ReviewWorkspace
-                files={reviewFiles}
-                onAcceptFile={(path) => {
-                  setReviewFiles((prev) =>
-                    prev.map((f) =>
-                      f.path === path ? { ...f, status: "accepted" } : f,
-                    ),
-                  );
-                }}
-                onRejectFile={(path) => {
-                  setReviewFiles((prev) =>
-                    prev.map((f) =>
-                      f.path === path ? { ...f, status: "rejected" } : f,
-                    ),
-                  );
-                }}
-                onApproveAll={() => {
-                  setReviewOverallStatus("approved");
-                  setReviewFiles((prev) =>
-                    prev.map((f) => ({ ...f, status: "accepted" as const })),
-                  );
-                }}
-                onRejectAll={() => {
-                  setReviewOverallStatus("changes-requested");
-                  setReviewFiles((prev) =>
-                    prev.map((f) => ({ ...f, status: "rejected" as const })),
-                  );
-                }}
-                overallStatus={reviewOverallStatus}
-              />
-            </div>
+    <div className="flex h-full flex-col" data-testid="conversation-screen">
+      {isCodeMode ? (
+        /* ── IDE Layout: sidebar + editor + agent panel ── */
+        <div className="flex flex-1 overflow-hidden">
+          {/* ── Left: Files sidebar ── */}
+          <div className="w-64 shrink-0 border-r overflow-y-auto" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--surface) 90%, transparent)" }}>
+            <FileTree
+              files={workspaceFiles}
+              onOpenFile={(path) => {
+                /* open file in editor - placeholder */
+              }}
+              editable={true}
+              viewMode="tree"
+            />
           </div>
-        ) : selectedMode === "debug" && debugError ? (
-          <div className="flex-1 overflow-y-auto px-4 py-6">
-            <div className="mx-auto max-w-3xl animate-fade-in-up">
-              <StackTraceViewer
-                errorMessage={debugError.message}
-                errorType={debugError.type}
-                rawStack={debugError.stack}
-                fixSuggestions={debugFixes}
-              />
-            </div>
-          </div>
-        ) : isCodeMode ? (
-          <div className="flex-1 min-h-0 overflow-hidden">
+
+          {/* ── Center: Code editor ── */}
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
             <IDEWorkspace
               files={workspaceFiles}
               timelineEvents={timelineEvents}
@@ -498,293 +503,392 @@ export default function ConversationPage() {
               onTerminalCommand={handleTerminalCommand}
             />
           </div>
-        ) : (
-          /* ── Chat messages ── */
-          <div className="flex-1 overflow-y-auto px-4 py-6">
-            <div className="mx-auto max-w-3xl">
-              <div className="flex flex-col gap-4">
-                {/* Timeline (collapsible) */}
-                {timelineEvents.length > 0 && (
-                  <div className="mb-2 animate-fade-in-up">
-                    <AgentTimeline events={timelineEvents} />
-                  </div>
-                )}
 
-                {/* Plan steps shown inline for plan/debug */}
-                {planSteps.length > 0 && (
-                  <div className="mb-2 animate-fade-in-up">
-                    <PlanView
-                      steps={planSteps}
-                      onApprove={handlePlanApprove}
-                      onReject={handlePlanReject}
-                    />
-                  </div>
-                )}
-
-                {messages.length === 0 ? (
-                  <>
-                    <div className="glass-bubble animate-fade-in-up max-w-[85%] self-start p-4">
-                      <p
-                        className="text-sm leading-relaxed"
-                        style={{
-                          color: "var(--text-primary)",
-                          fontWeight: 480,
-                        }}
-                      >
-                        I'm ready to help. What would you like me to work on?
-                      </p>
-                    </div>
-                    <div
-                      className="animate-fade-in-up max-w-[85%] self-end rounded-2xl p-4"
-                      style={{
-                        background:
-                          "color-mix(in srgb, var(--accent) 15%, transparent)",
-                        border:
-                          "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
-                        backdropFilter: "blur(12px)",
-                      }}
-                    >
-                      <p
-                        className="text-sm leading-relaxed"
-                        style={{
-                          color: "var(--text-primary)",
-                          fontWeight: 480,
-                        }}
-                      >
-                        Build a React component for a glassmorphism card
-                      </p>
-                    </div>
-                  </>
-                ) : (
-                  messages.map((message) => (
-                    <MessageBubble key={message.id} message={message} />
-                  ))
-                )}
-
-                {isRunning && (
-                  <div className="flex items-center gap-2 px-4 py-2">
-                    <div className="flex items-center gap-1">
-                      {[0, 1, 2].map((i) => (
-                        <span
-                          key={i}
-                          className="inline-block h-1.5 w-1.5 rounded-full animate-pulse-glow"
-                          style={{
-                            background: "var(--accent)",
-                            boxShadow:
-                              "0 0 12px color-mix(in srgb, var(--accent) 30%, transparent)",
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <span
-                      className="text-xs"
-                      style={{ color: "var(--text-subtle)" }}
-                    >
-                      Thinking
-                    </span>
-                  </div>
-                )}
-
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error banner */}
-        {error && (
-          <div className="mx-auto max-w-3xl px-4 pb-4">
+          {/* ── Right: Agent panel ── */}
+          {showAgentPanel && (
             <div
-              className="card border-error/30 p-4"
-              style={{ borderColor: "var(--error)" }}
-            >
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-sm" style={{ color: "var(--error)" }}>
-                  {error}
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setError(null)}
-                >
-                  Dismiss
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── Simplified input area ── */}
-        <div className="shrink-0 px-6 pb-6 pt-1">
-          <div className="mx-auto max-w-3xl">
-            <div
-              className="glass-input relative overflow-hidden transition-all duration-300"
+              className="w-80 shrink-0 border-l overflow-y-auto"
               style={{
-                borderColor: focused
-                  ? "color-mix(in srgb, var(--accent) 50%, transparent)"
-                  : "var(--border-strong)",
-                boxShadow: focused
-                  ? "0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-md)"
-                  : "var(--shadow-sm), var(--shadow-inner)",
+                borderColor: "var(--border)",
+                background: "color-mix(in srgb, var(--surface) 80%, transparent)",
               }}
             >
-              <div className="flex flex-col">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={handleInput}
-                  onKeyDown={handleKeyDown}
-                  onFocus={() => setFocused(true)}
-                  onBlur={() => setFocused(false)}
-                  placeholder={
-                    isRunning ? "Agent is working..." : "Type a message..."
-                  }
-                  rows={1}
-                  disabled={isRunning || planSteps.length > 0}
-                  className="w-full resize-none border-none bg-transparent px-4 py-3.5 text-sm leading-relaxed outline-none placeholder:select-none"
-                  style={{
-                    color: "var(--text-primary)",
-                    caretColor: "var(--accent)",
-                  }}
-                />
-                <div
-                  className="flex items-center justify-between px-3 py-2"
-                  style={{ borderTop: "1px solid var(--border)" }}
-                >
-                  <div className="flex items-center gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowAgentPanel(!showAgentPanel)}
-                      className="press flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium"
-                      style={{
-                        background: showAgentPanel
-                          ? "color-mix(in srgb, var(--accent) 10%, transparent)"
-                          : "transparent",
-                        color: showAgentPanel
-                          ? "var(--accent)"
-                          : "var(--text-muted)",
-                      }}
-                      title="Toggle agent activity panel"
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      >
-                        <circle cx="6" cy="6" r="4.5" />
-                        <path d="M6 3.5v5M3.5 6h5" />
-                      </svg>
-                      Agent
-                    </button>
-                    {autoModeFlash && (
-                      <div
-                        className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium animate-fade-in-up"
-                        style={{
-                          background:
-                            "color-mix(in srgb, var(--accent) 12%, transparent)",
-                          color: "var(--accent)",
-                          border:
-                            "1px solid color-mix(in srgb, var(--accent) 15%, transparent)",
-                        }}
-                      >
-                        Auto
+              <AutonomousOrchestrator
+                goal={messages.find((m) => m.role === "user")?.content || "Build the requested feature"}
+                conversationId={conversationId}
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        /* ── Chat Layout: chat + agent panel ── */
+        <div className="flex h-full">
+          {/* ── Left: Chat Area ── */}
+          <div className="flex flex-1 flex-col min-w-0">
+            {/* ── Chat messages ── */}
+            {selectedMode === "review" && reviewFiles.length > 0 ? (
+              <div className="flex-1 overflow-y-auto px-4 py-6">
+                <div className="mx-auto max-w-3xl animate-fade-in-up">
+                  <ReviewWorkspace
+                    files={reviewFiles}
+                    onAcceptFile={(path) => {
+                      setReviewFiles((prev) =>
+                        prev.map((f) =>
+                          f.path === path ? { ...f, status: "accepted" } : f,
+                        ),
+                      );
+                    }}
+                    onRejectFile={(path) => {
+                      setReviewFiles((prev) =>
+                        prev.map((f) =>
+                          f.path === path ? { ...f, status: "rejected" } : f,
+                        ),
+                      );
+                    }}
+                    onApproveAll={() => {
+                      setReviewOverallStatus("approved");
+                      setReviewFiles((prev) =>
+                        prev.map((f) => ({ ...f, status: "accepted" as const })),
+                      );
+                    }}
+                    onRejectAll={() => {
+                      setReviewOverallStatus("changes-requested");
+                      setReviewFiles((prev) =>
+                        prev.map((f) => ({ ...f, status: "rejected" as const })),
+                      );
+                    }}
+                    overallStatus={reviewOverallStatus}
+                  />
+                </div>
+              </div>
+            ) : selectedMode === "debug" && debugError ? (
+              <div className="flex-1 overflow-y-auto px-4 py-6">
+                <div className="mx-auto max-w-3xl animate-fade-in-up">
+                  <StackTraceViewer
+                    errorMessage={debugError.message}
+                    errorType={debugError.type}
+                    rawStack={debugError.stack}
+                    fixSuggestions={debugFixes}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto px-4 py-6">
+                <div className="mx-auto max-w-3xl">
+                  <div className="flex flex-col gap-4">
+                    {/* Timeline (collapsible) */}
+                    {timelineEvents.length > 0 && (
+                      <div className="mb-2 animate-fade-in-up">
+                        <AgentTimeline events={timelineEvents} />
                       </div>
                     )}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      type="button"
-                      onClick={() => sendMessage(input)}
-                      disabled={
-                        !input.trim() || isRunning || planSteps.length > 0
-                      }
-                      className="btn-accent h-8 gap-1.5 px-3 text-xs font-semibold"
-                    >
-                      {isRunning ? (
-                        <>
-                          <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                          Running
-                        </>
-                      ) : (
-                        <>
-                          <svg
-                            width="14"
-                            height="14"
-                            viewBox="0 0 14 14"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+
+                    {/* Thinking / Chain-of-Thought panel */}
+                    {thinkingSteps.length > 0 && (
+                      <div className="animate-fade-in-up">
+                        <ThinkingPanel
+                          steps={thinkingSteps}
+                          collapsed={thinkingCollapsed}
+                          onToggleCollapse={() => setThinkingCollapsed((c) => !c)}
+                        />
+                      </div>
+                    )}
+
+                    {/* Plan steps shown inline for plan/debug */}
+                    {planSteps.length > 0 && (
+                      <div className="mb-2 animate-fade-in-up">
+                        <PlanView
+                          steps={planSteps}
+                          onApprove={handlePlanApprove}
+                          onReject={handlePlanReject}
+                        />
+                      </div>
+                    )}
+
+                    {messages.length === 0 ? (
+                      <>
+                        <div className="glass-bubble animate-fade-in-up max-w-[85%] self-start p-4">
+                          <p
+                            className="text-sm leading-relaxed"
+                            style={{
+                              color: "var(--text-primary)",
+                              fontWeight: 480,
+                            }}
                           >
-                            <path d="M12 7l-4-4-4 4M12 6l-4-4-4 4" />
-                          </svg>
-                          Send
-                        </>
-                      )}
+                            I'm ready to help. What would you like me to work on?
+                          </p>
+                        </div>
+                        <div
+                          className="animate-fade-in-up max-w-[85%] self-end rounded-2xl p-4"
+                          style={{
+                            background:
+                              "color-mix(in srgb, var(--accent) 15%, transparent)",
+                            border:
+                              "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
+                            backdropFilter: "blur(12px)",
+                          }}
+                        >
+                          <p
+                            className="text-sm leading-relaxed"
+                            style={{
+                              color: "var(--text-primary)",
+                              fontWeight: 480,
+                            }}
+                          >
+                            Build a React component for a glassmorphism card
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      messages.map((message) => (
+                        <MessageBubble key={message.id} message={message} />
+                      ))
+                    )}
+
+                    {isRunning && (
+                      <div className="flex items-center gap-2 px-4 py-2">
+                        <div className="flex items-center gap-1">
+                          {[0, 1, 2].map((i) => (
+                            <span
+                              key={i}
+                              className="inline-block h-1.5 w-1.5 rounded-full animate-pulse-glow"
+                              style={{
+                                background: "var(--accent)",
+                                boxShadow:
+                                  "0 0 12px color-mix(in srgb, var(--accent) 30%, transparent)",
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--text-subtle)" }}
+                        >
+                          Thinking
+                        </span>
+                      </div>
+                    )}
+
+                    <div ref={messagesEndRef} />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error banner */}
+            {error && (
+              <div className="mx-auto max-w-3xl px-4 pb-4">
+                <div
+                  className="card border-error/30 p-4"
+                  style={{ borderColor: "var(--error)" }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-sm" style={{ color: "var(--error)" }}>
+                      {error}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setError(null)}
+                    >
+                      Dismiss
                     </Button>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            )}
 
-        {/* Resume banner */}
-        {(needsResume ||
-          (conversation?.sandboxStatus &&
-            conversation.sandboxStatus !== "RUNNING")) && (
-          <div className="mx-auto max-w-3xl px-6 pt-2">
-            <div className="card gradient-accent-border p-4">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <p
-                    className="text-sm font-medium"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {conversation?.title || "Conversation"} is not running
-                  </p>
-                  <p
-                    className="text-xs"
-                    style={{ color: "var(--text-subtle)" }}
-                  >
-                    {conversation?.sandboxStatus === "MISSING"
-                      ? "The sandbox no longer exists. Start a new conversation to continue."
-                      : "Click Resume to reconnect and continue where you left off."}
-                  </p>
+            {/* ── Toggleable Terminal (chat mode) ── */}
+            {showChatTerminal && (
+              <div className="shrink-0 px-6 pb-2 animate-fade-in-up">
+                <div className="mx-auto max-w-3xl">
+                  <Terminal
+                    lines={terminalLines}
+                    onCommand={handleTerminalCommand}
+                    height={200}
+                  />
                 </div>
-                <Button
-                  onClick={handleResume}
-                  disabled={isResuming}
-                  className="whitespace-nowrap"
+              </div>
+            )}
+
+            {/* ── Chat input ── */}
+            <div className="shrink-0 px-6 pb-6 pt-1">
+              <div className="mx-auto max-w-3xl">
+                <div
+                  className="glass-input relative overflow-hidden transition-all duration-300"
+                  style={{
+                    borderColor: focused
+                      ? "color-mix(in srgb, var(--accent) 50%, transparent)"
+                      : "var(--border-strong)",
+                    boxShadow: focused
+                      ? "0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent), var(--shadow-md)"
+                      : "var(--shadow-sm), var(--shadow-inner)",
+                  }}
                 >
-                  {isResuming ? "Resuming..." : "Resume"}
-                </Button>
+                  <div className="flex flex-col">
+                    <textarea
+                      ref={inputRef}
+                      value={input}
+                      onChange={handleInput}
+                      onKeyDown={handleKeyDown}
+                      onFocus={() => setFocused(true)}
+                      onBlur={() => setFocused(false)}
+                      placeholder={isRunning ? "Agent is working..." : "Type a message..."}
+                      rows={1}
+                      disabled={isRunning || planSteps.length > 0}
+                      className="w-full resize-none border-none bg-transparent px-4 py-3.5 text-sm leading-relaxed outline-none placeholder:select-none"
+                      style={{
+                        color: "var(--text-primary)",
+                        caretColor: "var(--accent)",
+                      }}
+                    />
+                    <div
+                      className="flex items-center justify-between px-3 py-2"
+                      style={{ borderTop: "1px solid var(--border)" }}
+                    >
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setShowChatTerminal(!showChatTerminal)}
+                          className="press flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium"
+                          style={{
+                            background: showChatTerminal
+                              ? "color-mix(in srgb, var(--accent) 10%, transparent)"
+                              : "transparent",
+                            color: showChatTerminal
+                              ? "var(--accent)"
+                              : "var(--text-muted)",
+                          }}
+                          title="Toggle terminal"
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          >
+                            <path d="M1.5 2.5l3 3-3 3M5.5 8.5h4" />
+                          </svg>
+                          Terminal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowAgentPanel(!showAgentPanel)}
+                          className="press flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium"
+                          style={{
+                            background: showAgentPanel
+                              ? "color-mix(in srgb, var(--accent) 10%, transparent)"
+                              : "transparent",
+                            color: showAgentPanel
+                              ? "var(--accent)"
+                              : "var(--text-muted)",
+                          }}
+                          title="Toggle agent activity panel"
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                          >
+                            <circle cx="6" cy="6" r="4.5" />
+                            <path d="M6 3.5v5M3.5 6h5" />
+                          </svg>
+                          Agent
+                        </button>
+                        {autoModeFlash && (
+                          <div
+                            className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium animate-fade-in-up"
+                            style={{
+                              background:
+                                "color-mix(in srgb, var(--accent) 12%, transparent)",
+                              color: "var(--accent)",
+                              border:
+                                "1px solid color-mix(in srgb, var(--accent) 15%, transparent)",
+                            }}
+                          >
+                            Auto
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Button
+                          type="button"
+                          onClick={() => sendMessage(input)}
+                          disabled={
+                            !input.trim() || isRunning || planSteps.length > 0
+                          }
+                          className="btn-accent h-8 gap-1.5 px-3 text-xs font-semibold"
+                        >
+                          {isRunning ? (
+                            <>
+                              <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                              Running
+                            </>
+                          ) : (
+                            <>
+                              <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 14 14"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              >
+                                <path d="M12 7l-4-4-4 4M12 6l-4-4-4 4" />
+                              </svg>
+                              Send
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
 
-      {/* ── Right: Agent Panel ── */}
-      {showAgentPanel && (
-        <div
-          className="w-80 shrink-0 border-l overflow-y-auto"
-          style={{
-            borderColor: "var(--border)",
-            background: "color-mix(in srgb, var(--surface) 80%, transparent)",
-          }}
-        >
-          <AutonomousOrchestrator
-            goal={
-              messages.find((m) => m.role === "user")?.content ||
-              "Build the requested feature"
-            }
-            conversationId={conversationId}
-          />
+            {/* Resume banner */}
+            {(needsResume ||
+              (conversation?.sandboxStatus &&
+                conversation.sandboxStatus !== "RUNNING")) && (
+              <div className="mx-auto max-w-3xl px-6 pt-2">
+                <div className="card gradient-accent-border p-4">
+                  <div className="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                      <p
+                        className="text-sm font-medium"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        {conversation?.title || "Conversation"} is not running
+                      </p>
+                      <p
+                        className="text-xs"
+                        style={{ color: "var(--text-subtle)" }}
+                      >
+                        {conversation?.sandboxStatus === "MISSING"
+                          ? "The sandbox no longer exists. Start a new conversation to continue."
+                          : "Click Resume to reconnect and continue where you left off."}
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleResume}
+                      disabled={isResuming}
+                      className="whitespace-nowrap"
+                    >
+                      {isResuming ? "Resuming..." : "Resume"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

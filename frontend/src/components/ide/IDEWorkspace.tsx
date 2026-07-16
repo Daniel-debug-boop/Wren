@@ -1,7 +1,7 @@
 /* 3-pane IDE workspace: FileTree | Editor+Terminal | AgentTimeline */
 import { useState, useRef, useCallback } from "react";
 import { FileTree, type FileNode } from "./FileTree";
-import { EditorPanel } from "./EditorPanel";
+import { MonacoEditor } from "./MonacoEditor";
 import { Terminal } from "#/components/Terminal";
 import { AgentTimeline } from "#/components/ui/AgentTimeline";
 
@@ -106,8 +106,7 @@ export function IDEWorkspace({
           >
             <FileTree
               files={files}
-              activeFile={activeFile}
-              onFileSelect={handleFileSelect}
+              onOpenFile={handleFileSelect}
             />
           </div>
           {/* Resize handle */}
@@ -124,7 +123,7 @@ export function IDEWorkspace({
         {/* Editor */}
         <div className="flex-1 min-h-0 overflow-hidden">
           {activeFile ? (
-            <EditorPanel filename={activeFile} content={activeCode} />
+            <MonacoEditor filename={activeFile} content={activeCode} />
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-2">

@@ -30,6 +30,82 @@ function RelTime({ ts }: { ts: number }) {
   );
 }
 
+function Section({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div style={{ borderBottom: "1px solid var(--border)" }}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between px-3 py-2 text-left press"
+        style={{ color: "var(--text-primary)" }}
+      >
+        <span className="text-[10px] font-semibold uppercase tracking-wider">
+          {title}
+        </span>
+        <span
+          style={{
+            color: "var(--text-quiet)",
+            fontSize: 10,
+            transform: open ? "rotate(180deg)" : "none",
+            transition: "transform 0.2s",
+          }}
+        >
+          ▾
+        </span>
+      </button>
+      {open && (
+        <div className="px-3 pb-2 flex flex-col gap-1.5">{children}</div>
+      )}
+    </div>
+  );
+}
+
+function TaskRow({ task }: { task: SubTaskItem }) {
+  const meta =
+    task.status === "running"
+      ? { label: "Running", color: "var(--accent)" }
+      : task.status === "completed"
+        ? { label: "Done", color: "var(--success)" }
+        : task.status === "failed"
+          ? { label: "Failed", color: "var(--error)" }
+          : { label: "Pending", color: "var(--text-quiet)" };
+  return (
+    <div
+      className="flex items-center gap-2 py-0.5"
+      style={{ fontSize: 11, color: "var(--text-subtle)" }}
+    >
+      <span
+        className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full"
+        style={{
+          background: `color-mix(in srgb, ${meta.color} 15%, transparent)`,
+          color: meta.color,
+          fontSize: 7,
+        }}
+      >
+        {task.status === "running"
+          ? "◉"
+          : task.status === "completed"
+            ? "✓"
+            : task.status === "failed"
+              ? "✗"
+              : "○"}
+      </span>
+      <span className="truncate flex-1">{task.name}</span>
+      <span style={{ color: meta.color, fontSize: 9 }}>{meta.label}</span>
+    </div>
+  );
+}
+
 export function AutonomousOrchestrator({
   goal,
   conversationId: convIdProp,
@@ -138,82 +214,6 @@ export function AutonomousOrchestrator({
             </span>
           ))}
         </div>
-      </div>
-    );
-  }
-
-  function Section({
-    title,
-    open,
-    onToggle,
-    children,
-  }: {
-    title: string;
-    open: boolean;
-    onToggle: () => void;
-    children: React.ReactNode;
-  }) {
-    return (
-      <div style={{ borderBottom: "1px solid var(--border)" }}>
-        <button
-          type="button"
-          onClick={onToggle}
-          className="flex w-full items-center justify-between px-3 py-2 text-left press"
-          style={{ color: "var(--text-primary)" }}
-        >
-          <span className="text-[10px] font-semibold uppercase tracking-wider">
-            {title}
-          </span>
-          <span
-            style={{
-              color: "var(--text-quiet)",
-              fontSize: 10,
-              transform: open ? "rotate(180deg)" : "none",
-              transition: "transform 0.2s",
-            }}
-          >
-            ▾
-          </span>
-        </button>
-        {open && (
-          <div className="px-3 pb-2 flex flex-col gap-1.5">{children}</div>
-        )}
-      </div>
-    );
-  }
-
-  function TaskRow({ task }: { task: SubTaskItem }) {
-    const meta =
-      task.status === "running"
-        ? { label: "Running", color: "var(--accent)" }
-        : task.status === "completed"
-          ? { label: "Done", color: "var(--success)" }
-          : task.status === "failed"
-            ? { label: "Failed", color: "var(--error)" }
-            : { label: "Pending", color: "var(--text-quiet)" };
-    return (
-      <div
-        className="flex items-center gap-2 py-0.5"
-        style={{ fontSize: 11, color: "var(--text-subtle)" }}
-      >
-        <span
-          className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full"
-          style={{
-            background: `color-mix(in srgb, ${meta.color} 15%, transparent)`,
-            color: meta.color,
-            fontSize: 7,
-          }}
-        >
-          {task.status === "running"
-            ? "◉"
-            : task.status === "completed"
-              ? "✓"
-              : task.status === "failed"
-                ? "✗"
-                : "○"}
-        </span>
-        <span className="truncate flex-1">{task.name}</span>
-        <span style={{ color: meta.color, fontSize: 9 }}>{meta.label}</span>
       </div>
     );
   }

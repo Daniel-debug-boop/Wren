@@ -334,7 +334,7 @@ class ApiKeysService {
   static async testConnection(
     provider: string,
     apiKey: string,
-    baseUrl?: string,
+    _baseUrl?: string,
   ): Promise<{ success: boolean; error?: string }> {
     const meta = PROVIDER_METADATA[provider];
     if (!meta) {

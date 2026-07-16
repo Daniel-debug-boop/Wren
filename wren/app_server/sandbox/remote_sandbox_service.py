@@ -906,7 +906,7 @@ async def poll_agent_servers(api_url: str, api_key: str, sleep_interval: int):
                     get_app_conversation_info_service(
                         state
                     ) as app_conversation_info_service,
-                    get_db_session(state) as _db_session,
+                    get_db_session(state) as _,
                 ):
                     async for app_conversation_info in page_iterator(
                         app_conversation_info_service.search_app_conversation_info
@@ -1002,7 +1002,7 @@ async def refresh_conversation(
         # Phase 2: Write - acquire DB session and save conversation info
         # (short-lived session, no network I/O held)
         async with (
-            get_db_session(state) as _db_session,
+            get_db_session(state) as _,
             get_app_conversation_info_service(state) as app_conversation_info_service,
         ):
             await app_conversation_info_service.save_app_conversation_info(
@@ -1033,7 +1033,7 @@ async def refresh_conversation(
             # Phase 4: Write - acquire DB session for each event save
             # (short-lived session per event, no network I/O held)
             async with (
-                get_db_session(state) as _db_session,
+                get_db_session(state) as _,
                 get_event_service(state) as event_service,
                 get_event_callback_service(state) as event_callback_service,
             ):

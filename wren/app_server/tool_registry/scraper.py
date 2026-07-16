@@ -172,7 +172,7 @@ class ToolScraper:
         """Search the web using Scrapling-style fetch for tool docs."""
         search_urls = [
             f'https://github.com/topics/{capability}-mcp',
-            f'https://github.com/topics/mcp-server',
+            'https://github.com/topics/mcp-server',
             f'https://pypi.org/search/?q={capability}+mcp',
         ]
 
@@ -216,7 +216,7 @@ class ToolScraper:
                                     'command': 'npx',
                                     'args': [
                                         '-y',
-                                        f'@smithery/cli@latest',
+                                        '@smithery/cli@latest',
                                         'run',
                                         name,
                                     ],
@@ -244,7 +244,7 @@ class ToolScraper:
             return {
                 'name': repo_name,
                 'command': 'uvx',
-                'args': [f'--from', f'git+{repo_url}', repo_name],
+                'args': ['--from', f'git+{repo_url}', repo_name],
             }
 
         if any(t in topics for t in ['typescript', 'javascript', 'node']):

@@ -43,6 +43,7 @@ from wren.app_server.sandbox.sandbox_service import (
     SandboxService,
     SandboxServiceInjector,
 )
+from wren.app_server.sandbox.sandbox_pool import PooledSandboxService
 from wren.app_server.sandbox.sandbox_spec_models import SandboxSpecInfo
 from wren.app_server.sandbox.sandbox_spec_service import (
     SandboxSpecService,
@@ -1082,6 +1083,13 @@ class RemoteSandboxServiceInjector(SandboxServiceInjector):
         default=10,
         description='Maximum number of sandboxes allowed to run simultaneously',
     )
+    prewarm_count: int = Field(
+        default=0,
+        description=(
+            'Number of sandboxes to pre-warm in the pool for instant start. '
+            'Set to 0 to disable pre-warming. Default is 0.'
+        ),
+    )
 
     async def inject(
         self, state: InjectorState, request: Request | None = None
@@ -1115,7 +1123,7 @@ class RemoteSandboxServiceInjector(SandboxServiceInjector):
             get_httpx_client(state, request) as httpx_client,
             get_db_session(state, request) as db_session,
         ):
-            yield RemoteSandboxService(
+            service = RemoteSandboxService(
                 sandbox_spec_service=sandbox_spec_service,
                 api_url=self.api_url,
                 api_key=self.api_key,
@@ -1128,3 +1136,13 @@ class RemoteSandboxServiceInjector(SandboxServiceInjector):
                 httpx_client=httpx_client,
                 db_session=db_session,
             )
+            if self.prewarm_count > 0:
+                pooled = PooledSandboxService(service, warm_count=self.prewarm_count)
+                asyncio.create_task(pooled.warm_pool())
+                _logger.info(
+                    "Pre-warming %d sandbox(es) for remote pool",
+                    self.prewarm_count,
+                )
+                yield pooled
+            else:
+                yield service

@@ -33,6 +33,7 @@ from wren.app_server.sandbox.sandbox_service import (
     SandboxService,
     SandboxServiceInjector,
 )
+from wren.app_server.sandbox.sandbox_pool import PooledSandboxService
 from wren.app_server.sandbox.sandbox_spec_service import (
     SandboxSpecService,
     resolve_sandbox_spec,
@@ -625,6 +626,13 @@ class DockerSandboxServiceInjector(SandboxServiceInjector):
         default=5,
         description='Maximum number of sandboxes allowed to run simultaneously',
     )
+    prewarm_count: int = Field(
+        default=0,
+        description=(
+            'Number of sandboxes to pre-warm in the pool for instant start. '
+            'Set to 0 to disable pre-warming. Default is 0.'
+        ),
+    )
     mounts: list[VolumeMount] = Field(default_factory=list)
     exposed_ports: list[ExposedPort] = Field(
         default_factory=lambda: [
@@ -720,7 +728,7 @@ class DockerSandboxServiceInjector(SandboxServiceInjector):
             get_httpx_client(state) as httpx_client,
             get_sandbox_spec_service(state) as sandbox_spec_service,
         ):
-            yield DockerSandboxService(
+            service = DockerSandboxService(
                 sandbox_spec_service=sandbox_spec_service,
                 container_name_prefix=self.container_name_prefix,
                 host_port=self.host_port,
@@ -737,3 +745,13 @@ class DockerSandboxServiceInjector(SandboxServiceInjector):
                 use_host_network=self.use_host_network,
                 kvm_enabled=self.kvm_enabled,
             )
+            if self.prewarm_count > 0:
+                pooled = PooledSandboxService(service, warm_count=self.prewarm_count)
+                asyncio.create_task(pooled.warm_pool())
+                _logger.info(
+                    "Pre-warming %d sandbox(es) for Docker pool",
+                    self.prewarm_count,
+                )
+                yield pooled
+            else:
+                yield service

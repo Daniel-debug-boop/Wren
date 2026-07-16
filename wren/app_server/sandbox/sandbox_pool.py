@@ -18,7 +18,12 @@ import logging
 import time
 from dataclasses import dataclass, field
 
-from wren.app_server.sandbox.sandbox_models import SandboxInfo, SandboxStatus
+from wren.app_server.sandbox.sandbox_models import (
+    SandboxInfo,
+    SandboxPage,
+    SandboxRecord,
+    SandboxStatus,
+)
 from wren.app_server.sandbox.sandbox_service import SandboxService
 
 _logger = logging.getLogger(__name__)
@@ -183,3 +188,109 @@ class SandboxPool:
 
     async def __aexit__(self, *args) -> None:
         await self.drain()
+
+
+class PooledSandboxService(SandboxService):
+    """Wraps a ``SandboxService`` with a pre-warmed sandbox pool.
+
+    Delegates every method to the inner service except ``start_sandbox``,
+    which first tries the pool. If the pool is empty or a specific
+    ``sandbox_spec_id`` was requested, falls back to the inner service.
+
+    Usage:
+        service = PooledSandboxService(docker_service, warm_count=2)
+        await service.start_sandbox()        # uses pool
+        await service.get_sandbox(id)        # delegated
+    """
+
+    def __init__(
+        self,
+        inner: SandboxService,
+        warm_count: int = 2,
+    ):
+        self._inner = inner
+        self._pool = SandboxPool(
+            sandbox_service=inner,
+            warm_count=warm_count,
+        )
+
+    # ── Pool-aware start ─────────────────────────────────────────────
+
+    async def start_sandbox(
+        self,
+        sandbox_spec_id: str | None = None,
+        sandbox_id: str | None = None,
+    ) -> SandboxInfo:
+        """Start a sandbox — try the pool first for default-param starts."""
+        if sandbox_spec_id is None and sandbox_id is None:
+            return await self._pool.acquire()
+        return await self._inner.start_sandbox(sandbox_spec_id, sandbox_id)
+
+    # ── Delegated methods ────────────────────────────────────────────
+
+    async def search_sandboxes(
+        self,
+        page_id: str | None = None,
+        limit: int = 100,
+    ) -> SandboxPage:
+        return await self._inner.search_sandboxes(page_id, limit)
+
+    async def get_sandbox(self, sandbox_id: str) -> SandboxInfo | None:
+        return await self._inner.get_sandbox(sandbox_id)
+
+    async def get_sandbox_by_session_api_key(
+        self, session_api_key: str
+    ) -> SandboxInfo | None:
+        return await self._inner.get_sandbox_by_session_api_key(session_api_key)
+
+    async def get_sandbox_record_by_session_api_key(
+        self, session_api_key: str
+    ) -> SandboxRecord | None:
+        return await self._inner.get_sandbox_record_by_session_api_key(
+            session_api_key
+        )
+
+    async def batch_get_sandboxes(
+        self, sandbox_ids: list[str]
+    ) -> list[SandboxInfo | None]:
+        return await self._inner.batch_get_sandboxes(sandbox_ids)
+
+    async def resume_sandbox(self, sandbox_id: str) -> bool:
+        return await self._inner.resume_sandbox(sandbox_id)
+
+    async def pause_sandbox(self, sandbox_id: str) -> bool:
+        return await self._inner.pause_sandbox(sandbox_id)
+
+    async def delete_sandbox(self, sandbox_id: str) -> bool:
+        return await self._inner.delete_sandbox(sandbox_id)
+
+    async def archive_conversation_workspace(
+        self,
+        sandbox_id: str,
+        conversation_id: str | None = None,
+        workspace_path: str | None = None,
+    ) -> bool:
+        return await self._inner.archive_conversation_workspace(
+            sandbox_id, conversation_id, workspace_path
+        )
+
+    async def pause_old_sandboxes(self, max_num_sandboxes: int) -> list[str]:
+        return await self._inner.pause_old_sandboxes(max_num_sandboxes)
+
+    # ── Pool management ──────────────────────────────────────────────
+
+    async def warm_pool(self) -> None:
+        """Start warming sandboxes in the background."""
+        await self._pool.warm()
+
+    async def pool_stats(self) -> dict:
+        """Get pool statistics."""
+        return await self._pool.stats()
+
+    async def drain_pool(self) -> None:
+        """Drain and discard all pooled sandboxes."""
+        await self._pool.drain()
+
+    def pool(self) -> SandboxPool:
+        """Expose the underlying pool for direct management."""
+        return self._pool

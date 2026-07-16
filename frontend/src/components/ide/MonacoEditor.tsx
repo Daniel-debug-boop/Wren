@@ -3,7 +3,7 @@ import { useRef, useCallback, useEffect } from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 
-interface InlineSuggestion {
+export interface InlineSuggestion {
   insertText: string;
   range?: {
     startLineNumber: number;
@@ -78,35 +78,24 @@ export function MonacoEditor({
 
   const lang = language || extToLanguage(filename);
 
-  const handleEditorMount: OnMount = useCallback((editor, monaco) => {
-    editorRef.current = editor;
+  const handleEditorMount: OnMount = useCallback((ed, monaco) => {
+    editorRef.current = ed;
     monacoRef.current = monaco;
 
     /* Register inline completions provider for all languages */
-    const m = monaco as unknown as {
-      languages: {
-        registerInlineCompletionsProvider: (
-          lang: string,
-          provider: {
-            provideInlineCompletions: (
-              model: editor.ITextModel,
-              position: { lineNumber: number; column: number },
-            ) => { items: Array<{ insertText: string; range: object }> };
-            handleRejection?: (c: unknown) => void;
-          },
-        ) => { dispose: () => void };
-        Range: new (...args: number[]) => object;
-      };
-      KeyCode: { Tab: number };
-      Position: new (ln: number, col: number) => { lineNumber: number; column: number };
+    const languages = monaco.languages as unknown as {
+      registerInlineCompletionsProvider: (
+        lang: string,
+        provider: Record<string, unknown>,
+      ) => { dispose: () => void };
     };
-    const disposer = m.languages.registerInlineCompletionsProvider("*", {
-      provideInlineCompletions: (model, position) => {
-        const suggestions = currentSuggestions.current;
-        if (suggestions.length === 0) return { items: [] };
-
-        return {
-          items: suggestions.map((s) => ({
+    const disposer = languages.registerInlineCompletionsProvider("*", {
+      provideInlineCompletions: (
+        _model: unknown,
+        position: { lineNumber: number; column: number },
+      ) => {
+        const items = currentSuggestions.current.map(
+          (s: InlineSuggestion) => ({
             insertText: s.insertText,
             range: s.range
               ? new monaco.Range(
@@ -121,25 +110,20 @@ export function MonacoEditor({
                   position.lineNumber,
                   position.column,
                 ),
-          })),
-        };
+          }),
+        );
+        return { items };
       },
       handleRejection: () => {
-        /* suggestion rejected — do nothing */
+        /* suggestion rejected */
       },
     });
 
     disposerRef.current = disposer;
 
-    /* Add keybinding to accept inline suggestion with Tab */
-    editor.addAction({
-      id: "accept-inline-suggestion",
-      label: "Accept Inline Suggestion",
-      keybindings: [monaco.KeyCode.Tab],
-      run: (ed) => {
-        ed.trigger("keyboard", "acceptInlineSuggestion", null);
-      },
-    });
+    /* Unbind default Tab indent to prevent conflict with inline suggestion accept.
+       Monaco already accepts inline suggestions on Tab when inlineSuggest.enabled
+       is true, so no custom action is needed. */
   }, []);
 
   /* Clean up disposer on unmount */
@@ -251,6 +235,7 @@ export function MonacoEditor({
               bracketPairs: true,
               indentation: true,
             },
+            unicodeHighlight: { ambiguousCharacters: false },
           }}
         />
       </div>

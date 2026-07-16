@@ -25,6 +25,7 @@ import { AutonomousOrchestrator } from "#/components/ui/AutonomousOrchestrator";
 import { MessageBubble } from "#/components/conversation/MessageBubble";
 import { ThinkingPanel, type ThinkingStep } from "#/components/ui/ThinkingPanel";
 import { Terminal } from "#/components/Terminal";
+import { SuggestionTextarea } from "#/components/conversation/SuggestionTextarea";
 
 import { useConversationWebSocket } from "#/hooks/use-conversation-websocket";
 
@@ -62,6 +63,37 @@ export default function ConversationPage() {
 
   /* ── Terminal visibility ── */
   const [showChatTerminal, setShowChatTerminal] = useState(false);
+
+  /* ── Inline suggestion for chat input ── */
+  const [inputSuggestion, setInputSuggestion] = useState<string | null>(null);
+
+  /* Generate input suggestions from agent context */
+  useEffect(() => {
+    if (!input.trim() || isRunning) {
+      setInputSuggestion(null);
+      return;
+    }
+    const lastMsg = messages[messages.length - 1];
+    if (!lastMsg || lastMsg.role === "user") {
+      setInputSuggestion(null);
+      return;
+    }
+    /* Suggest mode-appropriate follow-ups based on last agent message */
+    const content = lastMsg.content.toLowerCase();
+    if (content.includes("fix") || content.includes("error")) {
+      setInputSuggestion(" and test it");
+    } else if (content.includes("plan")) {
+      setInputSuggestion(null);
+    } else if (content.includes("review") || content.includes("diff")) {
+      setInputSuggestion(" and apply the changes");
+    } else if (input.startsWith("build") || input.startsWith("create")) {
+      setInputSuggestion(" a React component");
+    } else if (input.startsWith("refactor") || input.startsWith("optimize")) {
+      setInputSuggestion(" the codebase");
+    } else {
+      setInputSuggestion(null);
+    }
+  }, [input, messages, isRunning]);
 
   /* ── Timeline ── */
   const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
@@ -726,9 +758,18 @@ export default function ConversationPage() {
                   }}
                 >
                   <div className="flex flex-col">
-                    <textarea
+                    <SuggestionTextarea
                       ref={inputRef}
                       value={input}
+                      suggestion={inputSuggestion}
+                      onAcceptSuggestion={() => {
+                        if (inputSuggestion) {
+                          setInput((prev) => prev + inputSuggestion);
+                          setInputSuggestion(null);
+                          // Focus back after accepting
+                          setTimeout(() => inputRef.current?.focus(), 0);
+                        }
+                      }}
                       onChange={handleInput}
                       onKeyDown={handleKeyDown}
                       onFocus={() => setFocused(true)}

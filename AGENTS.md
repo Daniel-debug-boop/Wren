@@ -412,7 +412,7 @@ To add a new LLM model to Wren, you need to update multiple files across both fr
      - `VERIFIED_OPENAI_MODELS` for OpenAI models
      - `VERIFIED_ANTHROPIC_MODELS` for Anthropic models
      - `VERIFIED_MISTRAL_MODELS` for Mistral models
-     - `VERIFIED_OPENHANDS_MODELS` for models available through Wren provider
+     - `VERIFIED_WREN_MODELS` for models available through Wren provider
 
 2. **Backend CLI Integration** (`wren/cli/utils.py`):
    - Add the model to the appropriate `VERIFIED_*_MODELS` arrays
@@ -441,7 +441,7 @@ To add a new LLM model to Wren, you need to update multiple files across both fr
 - **VERIFIED_OPENAI_MODELS**: OpenAI models (LiteLLM doesn't return provider prefix)
 - **VERIFIED_ANTHROPIC_MODELS**: Anthropic models (LiteLLM doesn't return provider prefix)
 - **VERIFIED_MISTRAL_MODELS**: Mistral models (LiteLLM doesn't return provider prefix)
-- **VERIFIED_OPENHANDS_MODELS**: Models available through Wren managed provider
+- **VERIFIED_WREN_MODELS**: Models available through Wren managed provider
 
 #### Model Feature Support Arrays:
 

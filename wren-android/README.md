@@ -23,7 +23,7 @@ No Termux terminal ever visible. No commands to type. No technical knowledge nee
 ### 1. Build the Wren frontend
 
 ```bash
-cd OpenHands-main
+cd wren
 cd frontend && npm install && npm run build
 ```
 

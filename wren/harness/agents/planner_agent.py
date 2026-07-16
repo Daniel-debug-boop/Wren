@@ -163,7 +163,7 @@ class PlannerAgent(ChildAgent):
                     plan = self._plan_from_dict(plan_data, goal)
                     # Tag the plan with project context info
                     if context_block:
-                        plan.summary += f' (using project context)'
+                        plan.summary += ' (using project context)'
                     return plan
             except Exception as e:
                 _logger.warning('PlannerAgent: bus planning failed: %s', e)

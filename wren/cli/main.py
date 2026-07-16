@@ -100,7 +100,7 @@ def _check_package(name: str, import_name: str = '') -> CheckResult:
     except ImportError:
         cmds = [
             f'pip install {name}',
-            f'poetry install  (if using poetry)',
+            'poetry install  (if using poetry)',
         ]
         return CheckResult(name, False, 'not installed', ' | '.join(cmds))
 
@@ -259,7 +259,7 @@ def cmd_health(host: str, port: int) -> None:
         print(_red(f'  ✗ Server returned HTTP {e.code}'))
     except urllib.error.URLError as e:
         print(_red(f'  ✗ Cannot connect: {e.reason}'))
-        print(f'    Is the server running? Start with: oh')
+        print('    Is the server running? Start with: oh')
     except Exception as e:
         print(_red(f'  ✗ Error: {e}'))
 
@@ -518,7 +518,7 @@ def cmd_start(args) -> None:
     print(_bold('  Wren') + f'  v{__version__}')
     print(f'  Backend:   {_cyan(f"http://{args.host}:{args.port}")}')
     print(f'  Frontend:  {_cyan("served by backend")}')
-    print(f'  Mode:      solo (no auth)')
+    print('  Mode:      solo (no auth)')
     print()
 
     if not args.no_browser:

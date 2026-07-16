@@ -158,13 +158,13 @@ class ProgressDisplay:
 
     def banner(self, project_type: str, project_name: str) -> None:
         print()
-        print(f'  == Wren App Builder v1.0.0 ==')
+        print('  == Wren App Builder v1.0.0 ==')
         print(f'  {project_type}: {_bold(project_name)}')
         print()
 
     def summary(self, result: BuildResult) -> None:
         print()
-        print(f'  === Build Complete ===')
+        print('  === Build Complete ===')
         if result.artifact_path:
             print(f'  Artifact: {result.artifact_path}')
         if result.deploy_url:

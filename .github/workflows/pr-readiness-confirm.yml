@@ -213,7 +213,7 @@ jobs:
 
   # ── Convert stale unconfirmed PRs back to draft ──
   check-stale-unconfirmed:
-    if: github.event_name == 'schedule' && github.repository == 'OpenHands/OpenHands'
+    if: github.event_name == 'schedule' && github.repository == 'Daniel-debug-boop/Wren'
     runs-on: ubuntu-24.04
     steps:
       - name: Find and convert stale unconfirmed PRs

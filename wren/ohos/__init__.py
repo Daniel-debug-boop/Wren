@@ -1,4 +1,4 @@
-"""OpenHands Orchestration System (OHOS) — the autonomous engine.
+"""Wren Orchestration System (OHOS) — the autonomous engine.
 
 OHOS is always active. It cannot be disabled. Every conversation
 gets the full auto-mode pipeline: goal detection, error recovery,

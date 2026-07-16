@@ -16,7 +16,7 @@ Turn your Android phone into a portable AI software engineering server.
 
 ```bash
 # On your computer:
-cd OpenHands-main
+cd wren
 tar czf wren-termux.tar.gz termux/
 # Transfer wren-termux.tar.gz to phone via USB / ShareIt / Telegram
 ```
@@ -26,7 +26,7 @@ Or clone directly on phone:
 ```bash
 # In Termux:
 pkg install git
-git clone --depth=1 https://github.com/All-Hands-AI/OpenHands.git ~/wren
+git clone --depth=1 https://github.com/Daniel-debug-boop/Wren.git ~/wren
 ```
 
 ### 2. Run bootstrap (single command)

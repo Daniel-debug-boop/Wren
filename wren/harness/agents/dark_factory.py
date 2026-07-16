@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from dataclasses import dataclass  # field unused
+from dataclasses import dataclass
 from typing import Any
 
 _logger = logging.getLogger(__name__)

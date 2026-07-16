@@ -146,12 +146,12 @@ runtime = [
 
 [tool.poetry]
 name = "wren-dev"
-version = "1.8.0"
+version = "0.1.0-alpha"
 description = "Wren — AI software engineer"
 authors = [ "Daniel" ]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/daniel/wren"
+repository = "https://github.com/Daniel-debug-boop/Wren"
 packages = [
   { include = "wren/**/*" },
   { include = "pyproject.toml", to = "wren" },

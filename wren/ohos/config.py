@@ -4,7 +4,7 @@ All settings are hardcoded with sensible defaults. No env-var gating —
 OHOS is always active.
 """
 
-from dataclasses import dataclass  # field unused
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)

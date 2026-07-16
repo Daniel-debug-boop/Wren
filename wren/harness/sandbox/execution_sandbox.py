@@ -10,7 +10,7 @@ import asyncio
 import logging
 import shlex
 import time
-from dataclasses import dataclass  # field unused
+from dataclasses import dataclass
 from typing import Any
 
 from wren.harness.message_bus import (

@@ -15,7 +15,7 @@ Usage:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass  # field unused
+from dataclasses import dataclass
 
 from wren.tool.base import ToolDef, ToolCategory, ToolSafety
 from wren.tool.registry import ToolRegistry

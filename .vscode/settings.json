@@ -16,6 +16,11 @@
             "name": "openhands",
             "depth": 10,
             "includeAllSymbols": true
+        },
+        {
+            "name": "wren",
+            "depth": 10,
+            "includeAllSymbols": true
         }
     ],
     "python.analysis.stubPath": "./.venv/lib/python3.12/site-packages",

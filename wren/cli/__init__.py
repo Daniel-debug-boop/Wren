@@ -1,3 +1,3 @@
-"""OpenHands CLI — solo mode entry point."""
+"""Wren CLI — solo mode entry point."""
 
 __version__ = '0.1.0'

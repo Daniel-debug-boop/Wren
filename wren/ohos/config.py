@@ -1,4 +1,4 @@
-"""Global configuration for the OpenHands Orchestration System (OHOS).
+"""Global configuration for the Wren Orchestration System (OHOS).
 
 All settings are hardcoded with sensible defaults. No env-var gating —
 OHOS is always active.

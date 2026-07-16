@@ -1,4 +1,4 @@
-"""Hardcoded integration points — the glue between OHOS and the OpenHands server.
+"""Hardcoded integration points — the glue between OHOS and the Wren server.
 
 These are the ONLY files in OHOS that know about the server's internal
 APIs. Everything else is pure orchestration.

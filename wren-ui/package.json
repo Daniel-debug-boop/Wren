@@ -34,12 +34,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenHands/OpenHands.git",
+    "url": "https://github.com/Daniel-debug-boop/Wren.git",
     "directory": "wren-ui"
   },
-  "homepage": "https://www.all-hands.dev/",
+  "homepage": "https://github.com/Daniel-debug-boop/Wren",
   "bugs": {
-    "url": "https://github.com/OpenHands/OpenHands/issues"
+    "url": "https://github.com/Daniel-debug-boop/Wren/issues"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "4.0.1",

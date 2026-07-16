@@ -19,7 +19,7 @@ export default defineConfig({
         index: resolve(__dirname, "index.ts"),
         tokens: resolve(__dirname, "tokens.css"),
       },
-      name: "OpenHandsUI",
+      name: "WrenUI",
       formats: ["es"],
       fileName: "index",
     },

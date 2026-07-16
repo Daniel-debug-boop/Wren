@@ -109,8 +109,8 @@ dependencies = [
   "structlog (>=26.1.0,<27.0.0)",
 ]
 
-urls.Homepage = "https://github.com/OpenHands/OpenHands"
-urls.Repository = "https://github.com/OpenHands/OpenHands"
+urls.Homepage = "https://github.com/Daniel-debug-boop/Wren"
+urls.Repository = "https://github.com/Daniel-debug-boop/Wren"
 
 [project.scripts]
 oh = "wren.cli.main:main"

@@ -4,21 +4,58 @@
     <img src="https://assets.wren.dev/logo-whitebackground.png" alt="Wren" width="280" style="margin-bottom: 0px;"/>
   </div>
   <br/>
-  <h1 align="center" style="margin: 0px; font-size: 2.5rem; letter-spacing: -0.02em;">
+  <h1 align="center" style="margin: 0px; font-size: 2.5rem; letter-spacing: -0.02em; animation: fadeInUp 0.8s ease-out;">
     AI Engineering Platform
   </h1>
-  <p align="center" style="font-size: 1.15rem; max-width: 600px; margin: 12px auto 24px; color: #666;">
+  <p align="center" style="font-size: 1.15rem; max-width: 600px; margin: 12px auto 24px; color: #666; animation: fadeInUp 1s ease-out 0.1s both;">
     Self-host your AI coding agents. Chat, code, review, debug — all in one workspace.
     <br/>
     Bring your own LLM, own your data, own the workflow.
   </p>
-  <p align="center">
+  <p align="center" style="animation: fadeInUp 1.2s ease-out 0.2s both;">
     <a href="#quickstart"><img src="https://img.shields.io/badge/🚀_Quickstart-000?style=for-the-badge" alt="Quickstart"/></a>
     <a href="#features"><img src="https://img.shields.io/badge/✨_Features-000?style=for-the-badge" alt="Features"/></a>
     <a href="#architecture"><img src="https://img.shields.io/badge/🏗️_Architecture-000?style=for-the-badge" alt="Architecture"/></a>
   </p>
   <br/>
 </div>
+
+<style>
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; }
+  }
+</style>
+
+---
+
+<div align="center">
+  <table style="animation: fadeInUp 1.4s ease-out 0.3s both;">
+    <tr>
+      <td align="center" style="transition: transform 0.2s; animation: float 4s ease-in-out infinite;"><strong>🧠 Multi-Agent Workspace</strong></td>
+      <td align="center" style="transition: transform 0.2s; animation: float 4s ease-in-out 0.5s infinite;"><strong>💬 Conversational Coding</strong></td>
+      <td align="center" style="transition: transform 0.2s; animation: float 4s ease-in-out 1s infinite;"><strong>🔧 Bring Your Own LLM</strong></td>
+    </tr>
+    <tr>
+      <td align="center" style="transition: transform 0.2s;"><strong>📋 Plan → Code → Review → Debug</strong></td>
+      <td align="center" style="transition: transform 0.2s;"><strong>🖥️ Built-in IDE & Terminal</strong></td>
+      <td align="center" style="transition: transform 0.2s;"><strong>🤖 Autonomous Mode</strong></td>
+    </tr>
+  </table>
+</div>
+
+<br/>
 
 ---
 
@@ -94,17 +131,17 @@ docker run -it --rm \
 
 ## <a id="features"></a> ✦ Features
 
-### 🧠 Multi-Mode Workspace
+### 🧠 Three Core Modes
+
+Wren is designed for non-coders. Pick a mode and let the agent handle the rest in the background.
 
 | Mode | Purpose |
 |------|---------|
-| **Vibe Code** | Full agentic coding — chat, edit, run, repeat |
-| **Plan** | Analyze requests, generate execution plans, approve before running |
-| **Code** | Focused code generation and editing |
-| **Review** | Diff scanning, inline comments, approve/reject changes |
-| **Debug** | Root-cause error analysis with fix suggestions |
-| **Ask** | Q&A about your codebase |
-| **Autonomous** | Self-driving execution — the agent plans, codes, and iterates without hand-holding |
+| **Vibe Code** | Full agentic coding — chat, edit, run, repeat. Best for building apps from scratch. |
+| **Autonomous** | Self-driving execution — agent plans, codes, and iterates with Working Memory + Lessons Learned, no hand-holding. |
+| **Game** | Specialized mode for game development — scaffolding, asset wiring, and playable previews. |
+
+> All other legacy modes (Plan, Code, Review, Debug, Ask) remain available under the hood for power users.
 
 ### 💬 Conversational Interface
 - Chat with AI agents in natural language
@@ -112,8 +149,9 @@ docker run -it --rm \
 - Automatic mode suggestion based on your input
 - Rich message bubbles with mode badges and action tags
 
-### 🖥️ Built-in IDE Workspace
-- File tree explorer with real-time updates
+### 🖥️ Built-in IDE Workspace (Code / Vibe Code modes)
+- **TopBar** — Wren logo, version badge, active mode badge, live agent status pill (running / idle + task count + elapsed time), and a one-click **Deploy** button with an animated frosted-glass progress modal
+- **FileTree** — real file explorer with tree / list views, edit & delete actions, and live updates
 - **Monaco Editor** with syntax highlighting, bracket matching, and multi-cursor support
 - **Inline Completions** with Tab-to-accept ghost text suggestions
 - Live terminal with command history and bidirectional WebSocket communication

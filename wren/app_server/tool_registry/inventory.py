@@ -187,9 +187,7 @@ class ToolInventory:
             return None
 
         name = fm.get('name') or file_path.stem
-        skill_type = fm.get('type', 'knowledge')
         triggers = fm.get('triggers') or []
-        agent = fm.get('agent', '')
         description = text[end + 3 :].strip()[:200] if end + 3 < len(text) else ''
 
         mcp_servers: list[dict[str, Any]] = []

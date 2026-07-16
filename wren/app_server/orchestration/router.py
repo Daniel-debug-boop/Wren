@@ -15,7 +15,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body, HTTPException, WebSocket, WebSocketDisconnect
 
-from wren.app_server.orchestration.manager import ManagerAgent, SubTask
+from wren.app_server.orchestration.manager import ManagerAgent
 from wren.app_server.orchestration.self_memory_loop import SelfMemoryLoop
 from wren.app_server.orchestration.sub_agent_service import SubAgentService
 from wren.app_server.orchestration.error_recovery import (
@@ -623,7 +623,7 @@ async def error_retry(
     operation_name: str = Body(...),
     max_retries: int = Body(5),
 ):
-    loop = AdaptiveRetryLoop(max_retries=max_retries)
+    _loop = AdaptiveRetryLoop(max_retries=max_retries)  # noqa: F841 — kept for future use
     return {
         'operation': operation_name,
         'max_retries': max_retries,

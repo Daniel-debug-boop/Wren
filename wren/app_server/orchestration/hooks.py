@@ -8,8 +8,6 @@ Registered at conversation start via AppConversationStartRequest.processors.
 """
 
 import logging
-import os
-import time
 from uuid import UUID
 
 from wren.app_server.event_callback.event_callback_models import (
@@ -21,7 +19,6 @@ from wren.app_server.event_callback.event_callback_result_models import (
     EventCallbackResultStatus,
 )
 from wren.app_server.orchestration.working_memory import (
-    WorkingMemory,
     get_wm_for_conversation,
 )
 from wren import Event
@@ -60,7 +57,7 @@ class WorkingMemoryProcessor(EventCallbackProcessor):
                 thought = event.thought.strip()
                 if len(thought) > 30:
                     wm.add_progress(
-                        step=f'agent thought',
+                        step='agent thought',
                         status='running',
                         detail=thought[:200],
                     )

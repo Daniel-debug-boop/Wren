@@ -23,7 +23,6 @@ Usage:
 
 from __future__ import annotations
 
-import asyncio
 import colorsys
 import logging
 from collections import Counter
@@ -239,7 +238,6 @@ class DesignAnalyzer:
 
         families = re.findall(font_pattern, css, re.IGNORECASE)
         sizes = [int(s) for s in re.findall(size_pattern, css, re.IGNORECASE)]
-        weights = [int(w) for w in re.findall(weight_pattern, css, re.IGNORECASE)]
 
         results = []
         size_counts = Counter(sizes)

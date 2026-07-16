@@ -103,6 +103,24 @@ export default defineConfig(({ mode }) => {
     ssr: {
       noExternal: ["react-syntax-highlighter"],
     },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            // Separate vendor chunks for better caching
+            if (id.includes('node_modules/react-dom')) return 'vendor-react';
+            if (id.includes('node_modules/react')) return 'vendor-react';
+            if (id.includes('node_modules/@tanstack')) return 'vendor-query';
+            if (id.includes('node_modules/monaco-editor') || id.includes('node_modules/@monaco-editor')) return 'vendor-monaco';
+            if (id.includes('node_modules/framer-motion')) return 'vendor-motion';
+            if (id.includes('node_modules/lucide-react') || id.includes('node_modules/react-icons')) return 'vendor-icons';
+            if (id.includes('node_modules')) return 'vendor';
+          },
+        },
+      },
+      // Warn about bundle size
+      chunkSizeWarningLimit: 400,
+    },
     clearScreen: false,
     test: {
       environment: "jsdom",

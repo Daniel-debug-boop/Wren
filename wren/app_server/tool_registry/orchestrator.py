@@ -10,6 +10,7 @@ pipeline:
 """
 
 import logging
+from pathlib import Path
 from typing import Any
 
 from wren.app_server.tool_registry.installer import ToolInstaller

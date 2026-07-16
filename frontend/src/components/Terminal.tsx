@@ -195,6 +195,22 @@ export function Terminal({
           ))}
         </AnimatePresence>
 
+        {/* Empty state when no lines yet */}
+        {lines.length === 0 && !readOnly && (
+          <div
+            style={{
+              padding: '2rem 0',
+              textAlign: 'center',
+              color: 'var(--color-text-tertiary)',
+              fontSize: '0.75rem',
+            }}
+          >
+            <span className="inline-block animate-pulse-glow">
+              {'>'}_ Terminal ready — type a command
+            </span>
+          </div>
+        )}
+
         {/* Input Line */}
         {!readOnly && (
           <div

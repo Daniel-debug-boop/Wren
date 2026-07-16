@@ -211,6 +211,35 @@ export default function SkillsPage() {
           </div>
 
           {/* Category Pills */}
+          {/* Skill count stat cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            {[
+              { label: "Total", value: skills.length, color: "var(--accent)" },
+              { label: "Built-in", value: skills.filter(s => s.source === "global").length, color: "var(--success)" },
+              { label: "User", value: skills.filter(s => s.source === "user").length, color: "var(--gold)" },
+              { label: "With Triggers", value: skills.filter(s => s.triggers && s.triggers.length > 0).length, color: "var(--pink)" },
+            ].map((stat) => (
+              <div
+                key={stat.label}
+                className="card p-3 text-center animate-fade-in-up"
+                style={{ borderColor: "var(--border)" }}
+              >
+                <p
+                  className="text-2xl font-bold"
+                  style={{ color: stat.color }}
+                >
+                  {stat.value}
+                </p>
+                <p
+                  className="text-xs mt-0.5"
+                  style={{ color: "var(--text-subtle)" }}
+                >
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
           <div className="flex flex-wrap gap-2 mb-8">
             {CATEGORIES.map((cat) => {
               const count = categoryCounts[cat.id] || 0;

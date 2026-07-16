@@ -21,9 +21,13 @@ type SettingsCategory =
   | "api-keys"
   | "secrets";
 
-const CATEGORIES = [
+const CATEGORIES: {
+  id: SettingsCategory;
+  label: string;
+  description: string;
+}[] = [
   {
-    id: "application" as SettingsCategory,
+    id: "application",
     label: "Application",
     description: "General application preferences",
   },
@@ -58,10 +62,10 @@ const CATEGORIES = [
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { data: config } = useConfig();
-  const { isOss, isSaas, isCloud } = useAppMode();
+  const { isCloud } = useAppMode();
   const [active, setActive] = useState<SettingsCategory>("application");
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [density, setDensity] = useState<"comfortable" | "compact">(
+  const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
+  const [density, setDensity] = useState<"comfortable" | "compact" | "normal">(
     "comfortable",
   );
   const [displayName, setDisplayName] = useState("");
@@ -118,8 +122,6 @@ export default function SettingsPage() {
       setSaving(false);
     }
   }, [theme, density, displayName, llmModel, llmApiKey]);
-
-  const current = CATEGORIES.find((c) => c.id === active)!;
 
   return (
     <div
@@ -621,9 +623,11 @@ export default function SettingsPage() {
                               provider.charAt(0).toUpperCase() +
                               provider.slice(1)
                             }
-                            connected={config?.providers_configured?.includes(
-                              provider,
-                            )}
+                            connected={
+                              config?.providers_configured?.includes(
+                                provider,
+                              ) ?? false
+                            }
                             onConnect={() =>
                               navigate(
                                 `/settings/integrations?provider=${provider}`,
@@ -636,7 +640,7 @@ export default function SettingsPage() {
                   </SettingsSection>
                 )}
 
-{/* API Keys */}
+                {/* API Keys */}
                 {active === "api-keys" && <ApiKeysSettings />}
 
                 {/* Secrets */}
@@ -902,7 +906,8 @@ function ApiKeysSettings() {
             className="p-3 rounded-xl flex items-center gap-3"
             style={{
               background: "color-mix(in srgb, var(--success) 8%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--success) 20%, transparent)",
+              border:
+                "1px solid color-mix(in srgb, var(--success) 20%, transparent)",
             }}
           >
             <svg
@@ -918,7 +923,10 @@ function ApiKeysSettings() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             <div>
-              <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              <p
+                className="text-sm font-medium"
+                style={{ color: "var(--text)" }}
+              >
                 {providers.length} provider{providers.length !== 1 ? "s" : ""}
               </p>
               <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
@@ -930,7 +938,8 @@ function ApiKeysSettings() {
             className="p-3 rounded-xl flex items-center gap-3"
             style={{
               background: "color-mix(in srgb, var(--accent) 8%, transparent)",
-              border: "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
+              border:
+                "1px solid color-mix(in srgb, var(--accent) 20%, transparent)",
             }}
           >
             <svg
@@ -945,7 +954,10 @@ function ApiKeysSettings() {
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
             </svg>
             <div>
-              <p className="text-sm font-medium" style={{ color: "var(--text)" }}>
+              <p
+                className="text-sm font-medium"
+                style={{ color: "var(--text)" }}
+              >
                 {rolesEnabled}/4 roles
               </p>
               <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
@@ -960,7 +972,9 @@ function ApiKeysSettings() {
           {providers.map((p) => {
             const meta = PROVIDER_METADATA[p.provider];
             const rolesForProvider = Object.entries(ROLE_PROVIDER_PREFS)
-              .filter(([, info]) => info.preferredProviders.includes(p.provider))
+              .filter(([, info]) =>
+                info.preferredProviders.includes(p.provider),
+              )
               .map(([role]) => role);
 
             return (
@@ -986,7 +1000,10 @@ function ApiKeysSettings() {
                     >
                       {meta?.name || p.provider}
                     </p>
-                    <p className="text-xs font-mono truncate" style={{ color: "var(--text-subtle)" }}>
+                    <p
+                      className="text-xs font-mono truncate"
+                      style={{ color: "var(--text-subtle)" }}
+                    >
                       {p.model}
                     </p>
                   </div>
@@ -997,7 +1014,8 @@ function ApiKeysSettings() {
                         key={role}
                         className="text-[10px] px-1.5 py-0.5 rounded font-medium"
                         style={{
-                          background: "color-mix(in srgb, var(--accent) 8%, transparent)",
+                          background:
+                            "color-mix(in srgb, var(--accent) 8%, transparent)",
                           color: "var(--accent)",
                         }}
                       >

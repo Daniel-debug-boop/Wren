@@ -8,6 +8,10 @@
     "**/.client/**/*.tsx",
     ".react-router/types/**/*",
   ],
+  "exclude": [
+    "__tests__",
+    "**/__tests__/**",
+  ],
   "compilerOptions": {
     "lib": [
       "dom",

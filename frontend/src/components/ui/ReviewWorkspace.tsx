@@ -23,7 +23,6 @@ interface ReviewWorkspaceProps {
   files: ReviewFile[];
   onAcceptFile?: (path: string) => void;
   onRejectFile?: (path: string) => void;
-  onComment?: (path: string, line: number, text: string) => void;
   onApproveAll?: () => void;
   onRejectAll?: () => void;
   overallStatus?: "pending" | "approved" | "changes-requested";
@@ -84,11 +83,22 @@ function FileReviewCard({
         }}
       >
         <div className="flex items-center gap-2 min-w-0">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-subtle)", flexShrink: 0 }}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            style={{ color: "var(--text-subtle)", flexShrink: 0 }}
+          >
             <path d="M3 1h8l2 2v9a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z" />
             <path d="M5 1v4h4V1" />
           </svg>
-          <span className="text-sm font-mono truncate" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="text-sm font-mono truncate"
+            style={{ color: "var(--text-primary)" }}
+          >
             {file.path}
           </span>
           <span
@@ -109,12 +119,21 @@ function FileReviewCard({
               onClick={onAccept}
               className="press flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all"
               style={{
-                background: "color-mix(in srgb, var(--color-success) 10%, transparent)",
+                background:
+                  "color-mix(in srgb, var(--color-success) 10%, transparent)",
                 color: "var(--color-success)",
-                border: "1px solid color-mix(in srgb, var(--color-success) 20%, transparent)",
+                border:
+                  "1px solid color-mix(in srgb, var(--color-success) 20%, transparent)",
               }}
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M2 5l2 2 4-4" />
               </svg>
               Accept
@@ -126,10 +145,18 @@ function FileReviewCard({
               style={{
                 background: "color-mix(in srgb, var(--error) 8%, transparent)",
                 color: "var(--error)",
-                border: "1px solid color-mix(in srgb, var(--error) 15%, transparent)",
+                border:
+                  "1px solid color-mix(in srgb, var(--error) 15%, transparent)",
               }}
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
                 <path d="M2 2l6 6M8 2l-6 6" />
               </svg>
               Reject
@@ -145,19 +172,37 @@ function FileReviewCard({
 
       {/* Comments */}
       {file.comments.length > 0 && (
-        <div className="px-4 py-2 border-t" style={{ borderColor: "var(--border)" }}>
-          <p className="text-[10px] font-semibold uppercase mb-1" style={{ color: "var(--text-quiet)" }}>
+        <div
+          className="px-4 py-2 border-t"
+          style={{ borderColor: "var(--border)" }}
+        >
+          <p
+            className="text-[10px] font-semibold uppercase mb-1"
+            style={{ color: "var(--text-quiet)" }}
+          >
             Comments ({file.comments.length})
           </p>
           {file.comments.map((c) => (
             <div key={c.id} className="flex items-start gap-2 py-1">
-              <span className="text-[10px] font-mono shrink-0 mt-0.5" style={{ color: "var(--text-quiet)" }}>
+              <span
+                className="text-[10px] font-mono shrink-0 mt-0.5"
+                style={{ color: "var(--text-quiet)" }}
+              >
                 L{c.line}
               </span>
               <div>
-                <p className="text-xs" style={{ color: "var(--text-primary)" }}>{c.text}</p>
-                <span className="text-[9px]" style={{ color: "var(--text-quiet)" }}>
-                  {c.author} · {c.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                <p className="text-xs" style={{ color: "var(--text-primary)" }}>
+                  {c.text}
+                </p>
+                <span
+                  className="text-[9px]"
+                  style={{ color: "var(--text-quiet)" }}
+                >
+                  {c.author} ·{" "}
+                  {c.timestamp.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
                 </span>
               </div>
             </div>
@@ -167,7 +212,10 @@ function FileReviewCard({
 
       {/* Comment input */}
       {file.status === "pending" && (
-        <div className="border-t px-4 py-2" style={{ borderColor: "var(--border)" }}>
+        <div
+          className="border-t px-4 py-2"
+          style={{ borderColor: "var(--border)" }}
+        >
           {showCommentInput ? (
             <div className="flex gap-2">
               <input
@@ -195,7 +243,10 @@ function FileReviewCard({
               />
               <button
                 type="button"
-                onClick={() => { setShowCommentInput(false); setCommentText(""); }}
+                onClick={() => {
+                  setShowCommentInput(false);
+                  setCommentText("");
+                }}
                 className="text-[10px] press px-2"
                 style={{ color: "var(--text-quiet)" }}
               >
@@ -209,7 +260,14 @@ function FileReviewCard({
               className="flex items-center gap-1 text-[11px] press transition-colors"
               style={{ color: "var(--text-subtle)" }}
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
                 <path d="M1.5 6a4.5 4.5 0 118.6 2.1l-.7 1.8-1.8.8A4.5 4.5 0 011.5 6z" />
               </svg>
               Add comment
@@ -240,7 +298,9 @@ export function ReviewWorkspace({
   const handleAccept = useCallback(
     (path: string) => {
       setFiles((prev) =>
-        prev.map((f) => (f.path === path ? { ...f, status: "accepted" as const } : f)),
+        prev.map((f) =>
+          f.path === path ? { ...f, status: "accepted" as const } : f,
+        ),
       );
       onAcceptFile?.(path);
     },
@@ -250,7 +310,9 @@ export function ReviewWorkspace({
   const handleReject = useCallback(
     (path: string) => {
       setFiles((prev) =>
-        prev.map((f) => (f.path === path ? { ...f, status: "rejected" as const } : f)),
+        prev.map((f) =>
+          f.path === path ? { ...f, status: "rejected" as const } : f,
+        ),
       );
       onRejectFile?.(path);
     },
@@ -279,7 +341,10 @@ export function ReviewWorkspace({
       >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+            <h3
+              className="text-sm font-semibold mb-1"
+              style={{ color: "var(--text-primary)" }}
+            >
               Code Review
             </h3>
             <div className="flex items-center gap-3 text-xs">
@@ -307,12 +372,21 @@ export function ReviewWorkspace({
                 onClick={onApproveAll}
                 className="press flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
                 style={{
-                  background: "color-mix(in srgb, var(--color-success) 10%, transparent)",
+                  background:
+                    "color-mix(in srgb, var(--color-success) 10%, transparent)",
                   color: "var(--color-success)",
-                  border: "1px solid color-mix(in srgb, var(--color-success) 20%, transparent)",
+                  border:
+                    "1px solid color-mix(in srgb, var(--color-success) 20%, transparent)",
                 }}
               >
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="M2 5l2 2 4-4" />
                 </svg>
                 Approve All
@@ -324,9 +398,11 @@ export function ReviewWorkspace({
                 onClick={onRejectAll}
                 className="press flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all"
                 style={{
-                  background: "color-mix(in srgb, var(--error) 8%, transparent)",
+                  background:
+                    "color-mix(in srgb, var(--error) 8%, transparent)",
                   color: "var(--error)",
-                  border: "1px solid color-mix(in srgb, var(--error) 15%, transparent)",
+                  border:
+                    "1px solid color-mix(in srgb, var(--error) 15%, transparent)",
                 }}
               >
                 Reject All
@@ -343,7 +419,10 @@ export function ReviewWorkspace({
           onClick={() => setView("list")}
           className="press rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all"
           style={{
-            background: view === "list" ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent",
+            background:
+              view === "list"
+                ? "color-mix(in srgb, var(--accent) 10%, transparent)"
+                : "transparent",
             color: view === "list" ? "var(--accent)" : "var(--text-subtle)",
           }}
         >
@@ -354,7 +433,10 @@ export function ReviewWorkspace({
           onClick={() => setView("unified")}
           className="press rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all"
           style={{
-            background: view === "unified" ? "color-mix(in srgb, var(--accent) 10%, transparent)" : "transparent",
+            background:
+              view === "unified"
+                ? "color-mix(in srgb, var(--accent) 10%, transparent)"
+                : "transparent",
             color: view === "unified" ? "var(--accent)" : "var(--text-subtle)",
           }}
         >
@@ -368,7 +450,15 @@ export function ReviewWorkspace({
           className="flex flex-col items-center gap-3 py-12 rounded-xl"
           style={{ border: "1px dashed var(--border-strong)" }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-quiet)" }}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            style={{ color: "var(--text-quiet)" }}
+          >
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
             <path d="M14 2v6h6" />
           </svg>
@@ -389,14 +479,20 @@ export function ReviewWorkspace({
         </div>
       ) : (
         /* Unified view: concatenate all diffs */
-        <div className="rounded-xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ border: "1px solid var(--border)" }}
+        >
           <div className="p-2">
             {files
               .filter((f) => f.diff)
               .map((f) => (
                 <div key={f.path} className="mb-4 last:mb-0">
                   <div className="flex items-center gap-2 mb-2 px-2">
-                    <span className="text-xs font-mono" style={{ color: "var(--text-primary)" }}>
+                    <span
+                      className="text-xs font-mono"
+                      style={{ color: "var(--text-primary)" }}
+                    >
                       {f.path}
                     </span>
                     <span
@@ -431,8 +527,10 @@ export function ReviewWorkspace({
         <div
           className="rounded-xl p-3 text-center text-sm"
           style={{
-            background: "color-mix(in srgb, var(--color-success) 6%, transparent)",
-            border: "1px solid color-mix(in srgb, var(--color-success) 15%, transparent)",
+            background:
+              "color-mix(in srgb, var(--color-success) 6%, transparent)",
+            border:
+              "1px solid color-mix(in srgb, var(--color-success) 15%, transparent)",
             color: "var(--color-success)",
           }}
         >
@@ -445,4 +543,4 @@ export function ReviewWorkspace({
   );
 }
 
-export type { ReviewFile, ReviewComment };
+export type { ReviewFile };

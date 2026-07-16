@@ -15,7 +15,7 @@ type LaunchTarget = "header" | "repo" | "task" | null;
 export default function HomeScreen() {
   const navigate = useNavigate();
   const { data: config } = useConfig();
-  const { isOss, isSaas, isCloud } = useAppMode();
+  const { isCloud } = useAppMode();
 
   const [settings404, setSettings404] = useState(false);
   const [settingsChecked, setSettingsChecked] = useState(false);
@@ -24,9 +24,6 @@ export default function HomeScreen() {
   const [selectedRepo, setSelectedRepo] = useState<GitRepository | null>(null);
   const [repositories, setRepositories] = useState<GitRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
-  const [branches, setBranches] = useState<
-    { name: string; commit_sha: string; protected: boolean }[]
-  >([]);
   const [selectedBranch, setSelectedBranch] = useState("main");
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [repoDropdownOpen, setRepoDropdownOpen] = useState(false);
@@ -87,7 +84,6 @@ export default function HomeScreen() {
     if (!selectedRepo) return;
     GitService.getRepositoryBranches({ repository_id: selectedRepo.id })
       .then((res) => {
-        setBranches(res.items ?? []);
         const main = res.items?.find(
           (b) => b.name === "main" || b.name === "master",
         );
@@ -110,7 +106,9 @@ export default function HomeScreen() {
     setCtaDismissed(true);
     try {
       localStorage.setItem("homepage_cta_dismissed", "true");
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   const filteredRepos = useMemo(() => {
@@ -122,7 +120,7 @@ export default function HomeScreen() {
 
   const isLaunching = launchTarget !== null;
 
-  const ProviderIcon = ({ name, className }: { name: string; className?: string }) => {
+  const ProviderIcon = ({ name }: { name: string }) => {
     const icons: Record<string, React.ReactNode> = {
       github: (
         <svg
@@ -149,25 +147,6 @@ export default function HomeScreen() {
     };
     return icons[name] || icons.github;
   };
-
-  const BranchIcon = (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="6" y1="3" x2="6" y2="15" />
-      <circle cx="18" cy="6" r="3" />
-      <circle cx="6" cy="18" r="3" />
-      <path d="M18 9a9 9 0 0 1 0 18" />
-    </svg>
-  );
 
   return (
     <div data-testid="home-screen" className="flex min-h-screen flex-col">
@@ -345,7 +324,6 @@ export default function HomeScreen() {
                         >
                           <ProviderIcon
                             name={p}
-                            className="mr-2 w-4 h-4 flex-shrink-0"
                           />
                           {p === "github"
                             ? "GitHub"

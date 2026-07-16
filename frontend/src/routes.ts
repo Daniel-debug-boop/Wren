@@ -15,6 +15,7 @@ export default [
       route("settings/integrations", "routes/settings/integrations.tsx"),
       route("api-keys", "routes/api-keys.tsx"),
       route("video", "routes/video.tsx"),
+      route("orchestration", "routes/orchestration.tsx"),
       route("modes", "routes/modes.tsx"),
     ]),
     route("login", "routes/login.tsx"),

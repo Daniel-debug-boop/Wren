@@ -1,5 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { DEFAULT_MODE, type ModeId } from "#/types/mode";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+  type ReactNode,
+} from "react";
+import { DEFAULT_MODE, MODES, type ModeId } from "#/types/mode";
 import SettingsService from "#/api/settings-service/settings-service.api";
 
 const LS_KEY = "wren-mode";
@@ -9,8 +16,8 @@ function getInitialMode(): ModeId {
   try {
     const saved = localStorage.getItem(LS_KEY);
     if (!saved) return DEFAULT_MODE;
-    const validModes: Array<string> = ["plan", "code", "review", "debug", "ask", "video"];
-    if (validModes.includes(saved)) return saved as ModeId;
+    const validModes = MODES.map((m) => m.id);
+    if (validModes.includes(saved as ModeId)) return saved as ModeId;
   } catch {
     /* localStorage unavailable */
   }
@@ -27,7 +34,7 @@ const ModeContext = createContext<ModeContextValue | null>(null);
 export function ModeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<ModeId>(getInitialMode);
 
-  const setMode = (m: ModeId) => {
+  const setMode = useCallback((m: ModeId) => {
     setModeState(m);
     try {
       localStorage.setItem(LS_KEY, m);
@@ -38,13 +45,11 @@ export function ModeProvider({ children }: { children: ReactNode }) {
     SettingsService.saveSettings({ mode: m }).catch(() => {
       /* best-effort */
     });
-  };
+  }, []);
 
-  return (
-    <ModeContext.Provider value={{ mode, setMode }}>
-      {children}
-    </ModeContext.Provider>
-  );
+  const value = useMemo(() => ({ mode, setMode }), [mode, setMode]);
+
+  return <ModeContext.Provider value={value}>{children}</ModeContext.Provider>;
 }
 
 export function useMode(): ModeContextValue {

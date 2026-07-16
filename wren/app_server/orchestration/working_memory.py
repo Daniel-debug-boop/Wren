@@ -155,10 +155,6 @@ class WorkingMemory:
 
         return '\n'.join(lines)
 
-    def clear_session(self) -> None:
-        self._entries = []
-        self._flush()
-
     # ------------------------------------------------------------------
     # Persistence
     # ------------------------------------------------------------------
@@ -181,3 +177,33 @@ class WorkingMemory:
             os.replace(tmp, self._mem_path)
         except OSError as e:
             _logger.warning('Failed to flush working memory: %s', e)
+
+    def clear_session(self) -> None:
+        self._entries = []
+        self._flush()
+
+    # ------------------------------------------------------------------
+    # Conversation-scoped factory (for hooks / event processors)
+    # ------------------------------------------------------------------
+
+
+_instance_registry: dict[str, WorkingMemory] = {}
+
+
+def get_wm_for_conversation(
+    conversation_id: str | None = None,
+) -> WorkingMemory:
+    """Return a conversation-scoped WorkingMemory instance.
+
+    Shares the same backing directory so REST API and hook processors
+    see the same state for a given conversation.
+    """
+    cid = conversation_id or 'default'
+    if cid not in _instance_registry:
+        base = Path(os.getcwd()) / '.wren' / 'conversations' / cid
+        _instance_registry[cid] = WorkingMemory(project_root=str(base))
+    return _instance_registry[cid]
+
+
+def clear_wm_registry() -> None:
+    _instance_registry.clear()

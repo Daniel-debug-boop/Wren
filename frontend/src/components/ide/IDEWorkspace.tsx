@@ -19,11 +19,21 @@ interface TimelineEvent {
 interface IDEWorkspaceProps {
   files: FileNode[];
   timelineEvents: TimelineEvent[];
-  terminalLines: Array<{ id: string; type: "input" | "output" | "system"; text: string; timestamp: number }>;
+  terminalLines: Array<{
+    id: string;
+    type: "input" | "output" | "system";
+    text: string;
+    timestamp: number;
+  }>;
   onTerminalCommand?: (cmd: string) => void;
 }
 
-export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalCommand }: IDEWorkspaceProps) {
+export function IDEWorkspace({
+  files,
+  timelineEvents,
+  terminalLines,
+  onTerminalCommand,
+}: IDEWorkspaceProps) {
   const [activeFile, setActiveFile] = useState<string>("");
   const [activeCode, setActiveCode] = useState<string>("");
   const [showTimeline, setShowTimeline] = useState(true);
@@ -34,7 +44,7 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
   /* drag-resize state */
   const [leftWidth, setLeftWidth] = useState(240);
   const [rightWidth, setRightWidth] = useState(280);
-  const [terminalHeight, setTerminalHeight] = useState(200);
+  const [terminalHeight] = useState(200);
   const isDraggingLeft = useRef(false);
   const isDraggingRight = useRef(false);
   const isDraggingTerminal = useRef(false);
@@ -45,12 +55,15 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
     setActiveCode(`// ${path}\n// Select a file to view its contents`);
   }, []);
 
-  const handleDragStart = useCallback((ref: React.MutableRefObject<boolean>) => (e: React.MouseEvent) => {
-    e.preventDefault();
-    ref.current = true;
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-  }, []);
+  const handleDragStart = useCallback(
+    (ref: React.MutableRefObject<boolean>) => (e: React.MouseEvent) => {
+      e.preventDefault();
+      ref.current = true;
+      document.body.style.cursor = "col-resize";
+      document.body.style.userSelect = "none";
+    },
+    [],
+  );
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!containerRef.current) return;
@@ -115,7 +128,15 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="flex flex-col items-center gap-2">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-quiet)" }}>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  style={{ color: "var(--text-quiet)" }}
+                >
                   <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                   <path d="M14 2v6h6" />
                   <path d="M12 18v-6M9 15h6" />
@@ -171,7 +192,14 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
               onClick={() => setShowFileTree(!showFileTree)}
               className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
                 <path d="M1.5 2h2.5l1 1h3.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5V2.5a.5.5 0 01.5-.5z" />
               </svg>
               {showFileTree ? "Hide" : "Files"}
@@ -181,7 +209,14 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
               onClick={() => setShowTerminal(!showTerminal)}
               className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
                 <path d="M1.5 2l3 3-3 3M5 7.5h3.5" />
               </svg>
               {showTerminal ? "Hide" : "Terminal"}
@@ -193,7 +228,14 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
               onClick={() => setShowTimeline(!showTimeline)}
               className="flex items-center gap-1 hover:opacity-80 transition-opacity"
             >
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
                 <circle cx="2.5" cy="2.5" r="1" />
                 <circle cx="2.5" cy="7.5" r="1" />
                 <path d="M5 2.5h3.5M5 7.5h3.5" />
@@ -201,7 +243,10 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
               Timeline
             </button>
             <span className="flex items-center gap-1">
-              <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: "var(--color-success)" }} />
+              <span
+                className="inline-block w-1.5 h-1.5 rounded-full"
+                style={{ background: "var(--color-success)" }}
+              />
               Sandbox Ready
             </span>
           </div>
@@ -227,9 +272,19 @@ export function IDEWorkspace({ files, timelineEvents, terminalLines, onTerminalC
           >
             <div
               className="flex items-center gap-2 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
-              style={{ color: "var(--text-quiet)", borderBottom: "1px solid var(--border)" }}
+              style={{
+                color: "var(--text-quiet)",
+                borderBottom: "1px solid var(--border)",
+              }}
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+              >
                 <circle cx="3" cy="3" r="1.5" />
                 <circle cx="9" cy="6" r="1.5" />
                 <circle cx="3" cy="9" r="1.5" />

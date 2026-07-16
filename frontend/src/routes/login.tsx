@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useNavigate } from "react-router";
 import { useConfig } from "#/hooks/query/use-config";
 import { Button } from "#/components/ui/Button";
 import { Input } from "#/components/ui/Input";
@@ -104,7 +104,6 @@ function buildProviderList(configProviders?: string[]) {
 
 export default function ProviderSetup() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const { data: config } = useConfig();
 
   const availableProviders = buildProviderList(config?.providers_configured);
@@ -114,7 +113,6 @@ export default function ProviderSetup() {
   const [apiKey, setApiKey] = useState("");
   const [baseUrl, setBaseUrl] = useState("");
   const [savedProviders, setSavedProviders] = useState<ProviderConfig[]>([]);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Load saved providers from localStorage on mount
@@ -124,7 +122,9 @@ export default function ProviderSetup() {
       if (stored) {
         setSavedProviders(JSON.parse(stored));
       }
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   }, []);
 
   useEffect(() => {

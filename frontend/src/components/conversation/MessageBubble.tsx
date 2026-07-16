@@ -1,6 +1,5 @@
 import { type Message } from "#/types/conversation";
 
-
 interface MessageBubbleProps {
   message: Message;
 }
@@ -11,7 +10,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isSystem) {
     return (
-      <div key={message.id} className="flex justify-center animate-fade-in-up py-2">
+      <div
+        key={message.id}
+        className="flex justify-center animate-fade-in-up py-2"
+      >
         <span
           className="rounded-full px-3 py-1 text-[11px] italic"
           style={{
@@ -33,7 +35,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     >
       {/* Mode badge + action tag */}
       {!isUser && (
-        <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-subtle)" }}>
+        <div
+          className="flex items-center gap-2 text-xs"
+          style={{ color: "var(--text-subtle)" }}
+        >
           {message.mode && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
@@ -48,7 +53,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           {message.actionType && (
             <span
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full"
-              style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}
+              style={{
+                background: "var(--accent-subtle)",
+                color: "var(--accent)",
+              }}
             >
               {message.actionTitle || message.actionType}
             </span>
@@ -80,11 +88,17 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           backdropFilter: "blur(12px)",
         }}
       >
-        <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "var(--text-primary)", fontWeight: 480 }}>
+        <p
+          className="text-sm leading-relaxed whitespace-pre-wrap"
+          style={{ color: "var(--text-primary)", fontWeight: 480 }}
+        >
           {message.content}
         </p>
         <span className="text-xs" style={{ color: "var(--text-quiet)" }}>
-          {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          {message.timestamp.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </span>
       </div>
     </div>

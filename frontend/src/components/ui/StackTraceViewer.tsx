@@ -55,7 +55,9 @@ function parseStackFrames(raw: string): StackFrame[] {
     }
 
     /* Python traceback: File "/path/file.py", line N, in fn */
-    const pyMatch = line.match(/File\s+"(.+?)",\s+line\s+(\d+)(?:,\s+in\s+(.+))?/);
+    const pyMatch = line.match(
+      /File\s+"(.+?)",\s+line\s+(\d+)(?:,\s+in\s+(.+))?/,
+    );
     if (pyMatch) {
       frames.push({
         file: pyMatch[1],
@@ -85,8 +87,12 @@ function FrameRow({
     <div
       className="flex items-start gap-2 py-1.5 px-2 rounded-lg transition-colors hover:opacity-90"
       style={{
-        borderLeft: isLast ? "2px solid var(--accent)" : "2px solid transparent",
-        background: isLast ? "color-mix(in srgb, var(--accent) 4%, transparent)" : "transparent",
+        borderLeft: isLast
+          ? "2px solid var(--accent)"
+          : "2px solid transparent",
+        background: isLast
+          ? "color-mix(in srgb, var(--accent) 4%, transparent)"
+          : "transparent",
       }}
     >
       <svg
@@ -102,10 +108,16 @@ function FrameRow({
       </svg>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-[11px] font-mono truncate" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="text-[11px] font-mono truncate"
+            style={{ color: "var(--text-primary)" }}
+          >
             {frame.function}
           </span>
-          <span className="text-[9px] font-mono shrink-0" style={{ color: "var(--text-quiet)" }}>
+          <span
+            className="text-[9px] font-mono shrink-0"
+            style={{ color: "var(--text-quiet)" }}
+          >
             {frame.file}:{frame.line}:{frame.column}
           </span>
         </div>
@@ -144,7 +156,10 @@ export function StackTraceViewer({
   fixSuggestions = [],
   onFileSelect,
 }: StackTraceViewerProps) {
-  const frames = useMemo(() => (rawStack ? parseStackFrames(rawStack) : []), [rawStack]);
+  const frames = useMemo(
+    () => (rawStack ? parseStackFrames(rawStack) : []),
+    [rawStack],
+  );
   const [showAllFrames, setShowAllFrames] = useState(false);
   const visibleFrames = showAllFrames ? frames : frames.slice(0, 5);
 
@@ -161,23 +176,39 @@ export function StackTraceViewer({
         <div className="flex items-start gap-3">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0"
-            style={{ background: "color-mix(in srgb, var(--error) 15%, transparent)" }}
+            style={{
+              background: "color-mix(in srgb, var(--error) 15%, transparent)",
+            }}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="var(--error)" strokeWidth="1.5">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="var(--error)"
+              strokeWidth="1.5"
+            >
               <circle cx="8" cy="8" r="6" />
               <path d="M8 5v3M8 11h0" />
             </svg>
           </div>
           <div className="min-w-0">
             {errorType && (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded" style={{
-                background: "color-mix(in srgb, var(--error) 10%, transparent)",
-                color: "var(--error)",
-              }}>
+              <span
+                className="text-[10px] font-mono px-1.5 py-0.5 rounded"
+                style={{
+                  background:
+                    "color-mix(in srgb, var(--error) 10%, transparent)",
+                  color: "var(--error)",
+                }}
+              >
                 {errorType}
               </span>
             )}
-            <p className="text-sm font-medium mt-1" style={{ color: "var(--error)" }}>
+            <p
+              className="text-sm font-medium mt-1"
+              style={{ color: "var(--error)" }}
+            >
               {errorMessage || "Unknown error"}
             </p>
           </div>
@@ -195,10 +226,16 @@ export function StackTraceViewer({
         >
           <div
             className="flex items-center justify-between px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-quiet)", borderBottom: "1px solid var(--border)" }}
+            style={{
+              color: "var(--text-quiet)",
+              borderBottom: "1px solid var(--border)",
+            }}
           >
             <span>Stack Trace</span>
-            <span className="font-mono normal-case" style={{ color: "var(--text-quiet)" }}>
+            <span
+              className="font-mono normal-case"
+              style={{ color: "var(--text-quiet)" }}
+            >
               {frames.length} frame{frames.length !== 1 ? "s" : ""}
             </span>
           </div>
@@ -219,7 +256,9 @@ export function StackTraceViewer({
                 className="w-full text-[10px] py-1.5 press rounded-lg transition-colors"
                 style={{ color: "var(--accent)" }}
               >
-                {showAllFrames ? "Show less" : `Show ${frames.length - 5} more frames`}
+                {showAllFrames
+                  ? "Show less"
+                  : `Show ${frames.length - 5} more frames`}
               </button>
             )}
           </div>
@@ -237,9 +276,19 @@ export function StackTraceViewer({
         >
           <div
             className="flex items-center gap-2 px-3 py-2 text-[10px] font-semibold uppercase tracking-wider"
-            style={{ color: "var(--text-quiet)", borderBottom: "1px solid var(--border)" }}
+            style={{
+              color: "var(--text-quiet)",
+              borderBottom: "1px solid var(--border)",
+            }}
           >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
               <path d="M9 2l1 1-6.5 6.5L2 10l.5-1.5L9 2z" />
             </svg>
             Fix Suggestions
@@ -250,21 +299,33 @@ export function StackTraceViewer({
                 key={i}
                 className="rounded-lg p-3"
                 style={{
-                  background: "color-mix(in srgb, var(--accent) 4%, transparent)",
-                  border: "1px solid color-mix(in srgb, var(--accent) 10%, transparent)",
+                  background:
+                    "color-mix(in srgb, var(--accent) 4%, transparent)",
+                  border:
+                    "1px solid color-mix(in srgb, var(--accent) 10%, transparent)",
                 }}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+                  <span
+                    className="text-xs font-semibold"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {s.title}
                   </span>
                   {s.file && (
-                    <span className="text-[9px] font-mono" style={{ color: "var(--text-quiet)" }}>
-                      {s.file}{s.line ? `:${s.line}` : ""}
+                    <span
+                      className="text-[9px] font-mono"
+                      style={{ color: "var(--text-quiet)" }}
+                    >
+                      {s.file}
+                      {s.line ? `:${s.line}` : ""}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px]" style={{ color: "var(--text-secondary)" }}>
+                <p
+                  className="text-[11px]"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {s.description}
                 </p>
                 {s.code && (
@@ -288,12 +349,21 @@ export function StackTraceViewer({
       {/* Empty state */}
       {!errorMessage && frames.length === 0 && (
         <div className="flex flex-col items-center gap-3 py-8">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" style={{ color: "var(--text-quiet)" }}>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            style={{ color: "var(--text-quiet)" }}
+          >
             <circle cx="12" cy="12" r="10" />
             <path d="M12 8v4M12 16h0" />
           </svg>
           <p className="text-sm" style={{ color: "var(--text-subtle)" }}>
-            No error data yet. Run your code in debug mode to see stack traces here.
+            No error data yet. Run your code in debug mode to see stack traces
+            here.
           </p>
         </div>
       )}

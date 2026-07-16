@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useTranslation } from "react-i18next";
 import SidebarNav from "./SidebarNav";
 import SidebarHistory from "./SidebarHistory";
 import WorkspaceFooter from "./WorkspaceFooter";
@@ -34,24 +33,9 @@ function toHistoryItems(convs: AppConversation[]) {
   }));
 }
 
-// Icons for non-dev modes only: plan, code, review, debug, ask
+// Icons for the three visible modes
 const MODE_ICONS: Record<string, React.ReactNode> = {
-  plan: (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M6 1.5v9M1.5 6h9" />
-      <circle cx="6" cy="6" r="4.5" />
-    </svg>
-  ),
-  code: (
+  "vibe-code": (
     <svg
       width="12"
       height="12"
@@ -65,7 +49,7 @@ const MODE_ICONS: Record<string, React.ReactNode> = {
       <path d="M4.5 3l-3 3 3 3M7.5 3l3 3-3 3" />
     </svg>
   ),
-  review: (
+  autonomous: (
     <svg
       width="12"
       height="12"
@@ -77,10 +61,11 @@ const MODE_ICONS: Record<string, React.ReactNode> = {
       strokeLinejoin="round"
     >
       <circle cx="6" cy="6" r="4.5" />
-      <path d="M4 6l1.5 1.5L8 4.5" />
+      <path d="M4.5 5l1.5 1.5L7.5 4" />
+      <path d="M3 9c1.5 1.5 4.5 1.5 6 0" />
     </svg>
   ),
-  debug: (
+  game: (
     <svg
       width="12"
       height="12"
@@ -91,29 +76,16 @@ const MODE_ICONS: Record<string, React.ReactNode> = {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="6" cy="6" r="4.5" />
-      <path d="M6 3.5v2.5l1.5 1.5" />
-    </svg>
-  ),
-  ask: (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 12 12"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="6" cy="6" r="4.5" />
-      <path d="M6 4.5v.5M6 7v.5" />
+      <rect x="1" y="3.5" width="10" height="5" rx="1" />
+      <circle cx="3" cy="6" r="0.8" fill="currentColor" />
+      <circle cx="9" cy="6" r="0.8" fill="currentColor" />
+      <path d="M6 4.5v3M4.5 6h3" />
     </svg>
   ),
 };
 
-// Simple modes for non-dev users
-const VIBE_MODES = ["ask", "code", "plan", "review", "debug"];
+// Only three visible modes — clean & simple
+const VIBE_MODES = ["vibe-code", "autonomous", "game"];
 
 export default function Sidebar() {
   const { open: artifactsOpen, toggle: toggleArtifacts } = useArtifacts();
@@ -195,7 +167,7 @@ export default function Sidebar() {
       </div>
 
       {/* Mode selector row — simplified for non-devs */}
-      <div className="flex gap-0.5 px-2 pt-1 pb-1.5">
+      <div className="flex flex-wrap gap-x-1 gap-y-0.5 px-2 pt-1 pb-1.5">
         {VIBE_MODES.map((id, i) => {
           const modeDef = MODES.find((m) => m.id === id);
           if (!modeDef) return null;
@@ -209,12 +181,12 @@ export default function Sidebar() {
                 if (mode !== id) navigate("/");
               }}
               title={modeDef.description}
-              className={`flex flex-col items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200 flex-1 animate-fade-in-up ${
+              className={`relative flex flex-col items-center gap-0.5 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200 animate-fade-in-up ${
                 isActive
                   ? "bg-accent/10 text-accent"
                   : "text-text-tertiary hover:text-text-secondary"
               }`}
-              style={{ animationDelay: `${i * 45}ms` }}
+              style={{ animationDelay: `${i * 35}ms` }}
             >
               <span className="opacity-80">{MODE_ICONS[id]}</span>
               <span>{modeDef.shortLabel}</span>

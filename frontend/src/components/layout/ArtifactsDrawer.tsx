@@ -155,7 +155,8 @@ export default function ArtifactsDrawer() {
                   <span
                     className="ml-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[9px] font-bold"
                     style={{
-                      background: "color-mix(in srgb, var(--glass-accent) 20%, transparent)",
+                      background:
+                        "color-mix(in srgb, var(--glass-accent) 20%, transparent)",
                       color: "var(--glass-accent)",
                     }}
                   >
@@ -166,7 +167,8 @@ export default function ArtifactsDrawer() {
                   <span
                     className="ml-1 inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full px-1 text-[9px]"
                     style={{
-                      background: "color-mix(in srgb, var(--glass-accent) 15%, transparent)",
+                      background:
+                        "color-mix(in srgb, var(--glass-accent) 15%, transparent)",
                       color: "var(--glass-text-tertiary)",
                     }}
                   >
@@ -218,9 +220,7 @@ export default function ArtifactsDrawer() {
                     <line x1="12" y1="18" x2="12" y2="12" />
                     <line x1="9" y1="15" x2="15" y2="15" />
                   </svg>
-                  <p className="text-xs">
-                    Agent output will appear here
-                  </p>
+                  <p className="text-xs">Agent output will appear here</p>
                   <p className="mt-1 text-[10px] opacity-60">
                     Code diffs, terminal output, and previews
                   </p>
@@ -283,9 +283,12 @@ export default function ArtifactsDrawer() {
           >
             <span className="text-[11px]">
               {activeTab === "code" && `Code · ${lineCount(data.code)} lines`}
-              {activeTab === "diff" && data.diff && `Diff · ${lineCount(data.diff)} lines`}
+              {activeTab === "diff" &&
+                data.diff &&
+                `Diff · ${lineCount(data.diff)} lines`}
               {activeTab === "preview" && "HTML Preview"}
-              {activeTab === "terminal" && `Terminal · ${lineCount(data.terminal)} lines`}
+              {activeTab === "terminal" &&
+                `Terminal · ${lineCount(data.terminal)} lines`}
             </span>
             <span
               className="text-[11px] font-medium"

@@ -9,6 +9,9 @@ export interface UserSettings {
   provider_tokens_set: Record<string, string>;
   is_new_user: boolean;
   mode: ModeId;
+  ui_theme?: "light" | "dark" | "system";
+  ui_density?: "compact" | "normal" | "comfortable";
+  display_name?: string;
 }
 
 export interface ProviderToken {

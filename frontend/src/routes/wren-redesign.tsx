@@ -1,6 +1,14 @@
-import { useState, useRef, useEffect, type ReactNode } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  type ReactNode,
+  type ReactElement,
+} from "react";
 
-type IconProps = { className?: string };
+type IconProps = {
+  className?: string;
+};
 
 function IcoLogo({ className }: IconProps) {
   return (
@@ -369,7 +377,7 @@ export default function WrenRedesign() {
   const navBtn = (
     key: "chat" | "explore" | "agents",
     label: string,
-    Ico: (p: IconProps) => JSX.Element,
+    Ico: (p: IconProps) => ReactElement,
   ) => {
     const on = active === key;
     return (
@@ -444,7 +452,7 @@ export default function WrenRedesign() {
               boxShadow: "0 8px 24px rgba(124,124,255,0.25)",
             }}
           >
-            <IcoPlus className="h-4 w-4" strokeWidth={2.2} /> New
+            <IcoPlus className="h-4 w-4" /> New
           </button>
         </div>
 
@@ -539,7 +547,7 @@ export default function WrenRedesign() {
                 Pro workspace
               </div>
             </div>
-            <IcoSpark className="h-4 w-4" style={{ color: MUTED }} />
+            <IcoSpark className="h-4 w-4" />
           </button>
         </div>
       </aside>
@@ -554,7 +562,7 @@ export default function WrenRedesign() {
             className="flex items-center gap-2 text-[13px] font-medium"
             style={{ color: TEXT }}
           >
-            <IcoSpark className="h-4 w-4" style={{ color: ACCENT_2 }} /> Chat
+            <IcoSpark className="h-4 w-4" /> Chat
           </div>
           <div
             className="ml-auto flex items-center gap-2 rounded-xl border px-3 py-1.5 text-[12px]"
@@ -714,7 +722,7 @@ export default function WrenRedesign() {
                   className="flex items-center gap-2 text-[13px] font-medium"
                   style={{ color: TEXT }}
                 >
-                  <IcoCode className="h-4 w-4" style={{ color: ACCENT_2 }} />{" "}
+                  <IcoCode className="h-4 w-4" />{" "}
                   Artifacts
                 </div>
                 <span

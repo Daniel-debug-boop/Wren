@@ -27,7 +27,9 @@ describe("MessageBubble", () => {
 
   it("renders user messages correctly", () => {
     render(<MessageBubble message={baseUserMessage} />);
-    expect(screen.getByText("Hello, can you help me build a component?")).toBeDefined();
+    expect(
+      screen.getByText("Hello, can you help me build a component?"),
+    ).toBeDefined();
   });
 
   it("renders assistant messages correctly", () => {

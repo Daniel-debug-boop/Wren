@@ -11,6 +11,8 @@ export interface AppConfig {
   updated_at: string;
   github_app_slug: string | null;
   github_client_id?: string | null;
+  user?: { email?: string; name?: string; avatar_url?: string };
+  llm_provider?: string;
 }
 
 export interface FeatureFlags {

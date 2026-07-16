@@ -20,7 +20,10 @@ from wren.app_server.event_callback.event_callback_result_models import (
     EventCallbackResult,
     EventCallbackResultStatus,
 )
-from wren.app_server.orchestration.working_memory import WorkingMemory
+from wren.app_server.orchestration.working_memory import (
+    WorkingMemory,
+    get_wm_for_conversation,
+)
 from wren import Event
 from wren.event import (
     ActionEvent,
@@ -50,7 +53,7 @@ class WorkingMemoryProcessor(EventCallbackProcessor):
         event: Event,
     ) -> EventCallbackResult | None:
         try:
-            wm = WorkingMemory()
+            wm = get_wm_for_conversation(str(conversation_id))
             event_type = type(event).__name__
 
             if isinstance(event, ActionEvent) and event.thought:
@@ -129,8 +132,9 @@ class ReflectionProcessor(EventCallbackProcessor):
                 SelfMemoryLoop,
             )
 
-            sml = SelfMemoryLoop()
-            wm = WorkingMemory()
+            cid_str = str(conversation_id)
+            wm = get_wm_for_conversation(cid_str)
+            sml = SelfMemoryLoop(working_memory=wm)
             summary = wm.summary()
             outcome = (
                 'success' if event.value in ('COMPLETED', 'STOPPED') else 'failure'

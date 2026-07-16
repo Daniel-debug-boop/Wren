@@ -117,7 +117,10 @@ export default function ApiKeysPage() {
     setSelectedProvider(providerId);
     // Scroll to the add form at top
     setTimeout(() => {
-      addFormRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      addFormRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
     }, 100);
   };
 
@@ -148,7 +151,9 @@ export default function ApiKeysPage() {
               height="20"
               viewBox="0 0 24 24"
               fill="none"
-              stroke={toast.type === "success" ? "var(--success)" : "var(--error)"}
+              stroke={
+                toast.type === "success" ? "var(--success)" : "var(--error)"
+              }
               strokeWidth="2"
               aria-hidden="true"
             >
@@ -208,8 +213,8 @@ export default function ApiKeysPage() {
                   className="text-sm mt-0.5"
                   style={{ color: "var(--text-subtle)" }}
                 >
-                  Add your LLM provider API keys. The Model Router
-                  automatically picks the best model for each task.
+                  Add your LLM provider API keys. The Model Router automatically
+                  picks the best model for each task.
                 </p>
               </div>
             </div>
@@ -223,10 +228,7 @@ export default function ApiKeysPage() {
             >
               Add an API key
             </h2>
-            <p
-              className="text-xs mb-5"
-              style={{ color: "var(--text-subtle)" }}
-            >
+            <p className="text-xs mb-5" style={{ color: "var(--text-subtle)" }}>
               Select your provider, enter your key, and you're done.
             </p>
 
@@ -520,7 +522,8 @@ export default function ApiKeysPage() {
                     </svg>
                   }
                 >
-                  {selectedProvider && providers.find((p) => p.provider === selectedProvider)
+                  {selectedProvider &&
+                  providers.find((p) => p.provider === selectedProvider)
                     ? "Update"
                     : "Save Key"}
                 </Button>
@@ -558,10 +561,7 @@ export default function ApiKeysPage() {
                 >
                   {providers.length}/{PROVIDER_IDS.length}
                 </p>
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--text-subtle)" }}
-                >
+                <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                   Providers configured
                 </p>
               </div>
@@ -594,10 +594,7 @@ export default function ApiKeysPage() {
                 >
                   {rolesEnabled}/4
                 </p>
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--text-subtle)" }}
-                >
+                <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                   Agent roles active
                 </p>
               </div>
@@ -632,10 +629,7 @@ export default function ApiKeysPage() {
                 >
                   {providers.length > 0 ? "Ready" : "Not configured"}
                 </p>
-                <p
-                  className="text-xs"
-                  style={{ color: "var(--text-subtle)" }}
-                >
+                <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                   Model Router status
                 </p>
               </div>
@@ -657,9 +651,7 @@ export default function ApiKeysPage() {
                   const rolesForProvider = Object.entries(
                     ApiKeysService.getRoleAvailability(),
                   )
-                    .filter(([, info]) =>
-                      info.providers.includes(p.provider),
-                    )
+                    .filter(([, info]) => info.providers.includes(p.provider))
                     .map(([role]) => role);
 
                   return (
@@ -671,8 +663,7 @@ export default function ApiKeysPage() {
                         <div
                           className="flex h-9 w-9 items-center justify-center rounded-lg text-xs font-bold flex-shrink-0 text-white"
                           style={{
-                            background:
-                              meta?.color || "var(--accent-subtle)",
+                            background: meta?.color || "var(--accent-subtle)",
                           }}
                         >
                           {(meta?.name || p.provider).charAt(0)}
@@ -762,10 +753,7 @@ export default function ApiKeysPage() {
               >
                 No API keys yet
               </h3>
-              <p
-                className="text-xs"
-                style={{ color: "var(--text-subtle)" }}
-              >
+              <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                 Select a provider above and add your first key.
               </p>
             </div>
@@ -780,10 +768,7 @@ export default function ApiKeysPage() {
                 paddingTop: "1rem",
               }}
             >
-              <p
-                className="text-xs"
-                style={{ color: "var(--text-subtle)" }}
-              >
+              <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
                 Keys stored locally in your browser.
               </p>
               <div className="flex gap-2">
@@ -791,9 +776,7 @@ export default function ApiKeysPage() {
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    navigator.clipboard.writeText(
-                      ApiKeysService.exportJson(),
-                    );
+                    navigator.clipboard.writeText(ApiKeysService.exportJson());
                     setToast({
                       message: "Config exported to clipboard",
                       type: "success",
@@ -818,9 +801,7 @@ export default function ApiKeysPage() {
                       } catch (e) {
                         setToast({
                           message:
-                            e instanceof Error
-                              ? e.message
-                              : "Import failed",
+                            e instanceof Error ? e.message : "Import failed",
                           type: "error",
                         });
                       }

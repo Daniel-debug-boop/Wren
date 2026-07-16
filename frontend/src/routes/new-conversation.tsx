@@ -5,10 +5,8 @@ import { useAppMode } from "#/hooks/use-app-mode";
 import SettingsService from "#/api/settings-service/settings-service.api";
 import GitService from "#/api/git-service/git-service.api";
 import type { GitRepository } from "#/types/git";
-import {
-  ConversationApi,
-  type AppConversationStartRequest,
-} from "#/api/conversation-service/conversation-service.api";
+import { ConversationApi } from "#/api/conversation-service/conversation-service.api";
+import type { AppConversationStartRequest } from "#/types/app-conversation";
 import { Button } from "#/components/ui/Button";
 
 type LaunchTarget = "header" | "repo" | "task" | null;
@@ -17,7 +15,7 @@ export default function NewConversationScreen() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { data: config } = useConfig();
-  const { isOss, isSaas, isCloud } = useAppMode();
+  const { isCloud } = useAppMode();
 
   // Pre-fill from search params (e.g., from suggested tasks)
   const initialRepo = searchParams.get("repo");
@@ -37,9 +35,6 @@ export default function NewConversationScreen() {
   const [selectedRepo, setSelectedRepo] = useState<GitRepository | null>(null);
   const [repositories, setRepositories] = useState<GitRepository[]>([]);
   const [loadingRepos, setLoadingRepos] = useState(false);
-  const [branches, setBranches] = useState<
-    { name: string; commit_sha: string; protected: boolean }[]
-  >([]);
   const [selectedBranch, setSelectedBranch] = useState(initialBranch || "main");
   const [providerDropdownOpen, setProviderDropdownOpen] = useState(false);
   const [repoDropdownOpen, setRepoDropdownOpen] = useState(false);
@@ -93,7 +88,6 @@ export default function NewConversationScreen() {
     if (!selectedRepo) return;
     GitService.getRepositoryBranches({ repository_id: selectedRepo.id })
       .then((res) => {
-        setBranches(res.items ?? []);
         const main = res.items?.find(
           (b) => b.name === "main" || b.name === "master",
         );
@@ -156,9 +150,7 @@ export default function NewConversationScreen() {
         const readyTask = await ConversationApi.pollUntilReady(
           task.id,
           (status) => {
-            if (status !== "READY") {
-              console.log("Start status:", status);
-            }
+            /* noop — status updates handled by pollUntilReady */
           },
         );
 
@@ -171,15 +163,22 @@ export default function NewConversationScreen() {
         }
       } catch (err) {
         // Detect 500 / sandbox errors and show a helpful message
-        const axiosErr = err as { response?: { status?: number }; message?: string };
+        const axiosErr = err as {
+          response?: { status?: number };
+          message?: string;
+        };
         const isServerError =
           axiosErr?.response?.status === 500 ||
-          (axiosErr?.message && axiosErr.message.includes("500")) ||
-          (axiosErr?.message && axiosErr.message.includes("Network Error"));
+          axiosErr?.message?.includes("500") ||
+          axiosErr?.message?.includes("Network Error");
         if (isServerError) {
           // Check for specific image pull errors
           const msg = axiosErr?.message || "";
-          if (msg.includes("Docker Image") || msg.includes("docker") || msg.includes("image")) {
+          if (
+            msg.includes("Docker Image") ||
+            msg.includes("docker") ||
+            msg.includes("image")
+          ) {
             setStartError(
               "⚠️ Agent server Docker image unavailable. Try pulling it manually: `docker pull ghcr.io/wren/agent-server:1.30.0-python`. Or use local runtime: `RUNTIME=local INSTALL_DOCKER=0 make run`",
             );

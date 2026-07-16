@@ -6,7 +6,11 @@ interface InputActionButtonProps {
   onClick?: () => void;
 }
 
-export function InputActionButton({ label, children, onClick }: InputActionButtonProps) {
+export function InputActionButton({
+  label,
+  children,
+  onClick,
+}: InputActionButtonProps) {
   return (
     <button
       type="button"

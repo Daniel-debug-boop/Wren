@@ -190,17 +190,14 @@ export const ROLE_PROVIDER_PREFS: Record<
 const API_BASE = "/api/v1/settings/llm-providers";
 
 /** Generic fetch wrapper that includes the auth token. */
-async function apiFetch<T>(
-  url: string,
-  options?: RequestInit,
-): Promise<T> {
+async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options?.headers as Record<string, string>),
   };
   if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+    headers.Authorization = `Bearer ${token}`;
   }
   const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
@@ -248,9 +245,7 @@ class ApiKeysService {
 
   /** Remove a provider config, syncing to the backend. */
   static remove(provider: string): ProviderConfig[] {
-    const all = ApiKeysService.getAll().filter(
-      (p) => p.provider !== provider,
-    );
+    const all = ApiKeysService.getAll().filter((p) => p.provider !== provider);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
 
     // Sync to backend (fire-and-forget)

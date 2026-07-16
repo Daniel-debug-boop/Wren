@@ -49,6 +49,28 @@ export default function SidebarNav() {
       ),
     },
     {
+      id: "orchestrate",
+      label: "Orchestrate",
+      path: "/orchestration",
+      icon: (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+        >
+          <circle cx="8" cy="8" r="6" />
+          <path d="M8 4v4l2.5 1.5" />
+          <path d="M5 11c1.5 1 4.5 1 6 0" />
+        </svg>
+      ),
+    },
+    {
       id: "settings",
       label: "Settings",
       path: "/settings",

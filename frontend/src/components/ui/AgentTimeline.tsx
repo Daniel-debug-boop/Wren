@@ -17,29 +17,74 @@ interface AgentTimelineProps {
 
 const ACTION_ICONS: Record<string, React.ReactNode> = {
   run: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polygon points="3 1.5 10 6 3 10.5" />
     </svg>
   ),
   edit: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M8.5 1.5l2 2L4 10H2V8l6.5-6.5z" />
     </svg>
   ),
   think: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="6" cy="6" r="4.5" />
       <path d="M6 3.5v2.5l1.5 1.5" />
     </svg>
   ),
   browse: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <circle cx="6" cy="6" r="4.5" />
       <path d="M6 1.5v9M1.5 6h9" />
     </svg>
   ),
   task: (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="1.5" y="1.5" width="9" height="9" rx="1.5" />
       <path d="M4 6l1.5 1.5L8 4.5" />
     </svg>
@@ -49,7 +94,15 @@ const ACTION_ICONS: Record<string, React.ReactNode> = {
 function getIcon(event: TimelineEvent): React.ReactNode {
   if (event.type === "error") {
     return (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      >
         <circle cx="6" cy="6" r="4.5" />
         <path d="M4.5 4.5l3 3M7.5 4.5l-3 3" />
       </svg>
@@ -57,12 +110,23 @@ function getIcon(event: TimelineEvent): React.ReactNode {
   }
   if (event.type === "message") {
     return (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="M11 6.5a4.5 4.5 0 0 1-4.5 4.5H2l1.5-1.5A4.5 4.5 0 1 1 11 6.5z" />
       </svg>
     );
   }
-  return event.actionType ? ACTION_ICONS[event.actionType] ?? ACTION_ICONS.task : ACTION_ICONS.task;
+  return event.actionType
+    ? (ACTION_ICONS[event.actionType] ?? ACTION_ICONS.task)
+    : ACTION_ICONS.task;
 }
 
 function getColor(event: TimelineEvent): string {
@@ -106,7 +170,10 @@ export function AgentTimeline({ events }: AgentTimelineProps) {
             <path d="M7 1v2M7 11v2M1 7h2M11 7h2" />
             <path d="M3.5 3.5l1.5 1.5M9 9l1.5 1.5M10.5 3.5L9 5M5 9l-1.5 1.5" />
           </svg>
-          <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="text-xs font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Agent Timeline
           </span>
           <span className="text-[10px]" style={{ color: "var(--text-quiet)" }}>
@@ -137,7 +204,12 @@ export function AgentTimeline({ events }: AgentTimelineProps) {
           style={{ borderTop: "1px solid var(--border)" }}
         >
           {events.map((event, idx) => (
-            <TimelineRow key={event.id} event={event} isLast={idx === events.length - 1} isFirst={idx === 0} />
+            <TimelineRow
+              key={event.id}
+              event={event}
+              isLast={idx === events.length - 1}
+              isFirst={idx === 0}
+            />
           ))}
         </div>
       )}
@@ -160,7 +232,10 @@ function TimelineRow({
   return (
     <div className="flex gap-3 relative">
       {/* Timeline line + dot */}
-      <div className="flex flex-col items-center shrink-0" style={{ width: "20px" }}>
+      <div
+        className="flex flex-col items-center shrink-0"
+        style={{ width: "20px" }}
+      >
         {!isFirst && (
           <div
             className="w-px flex-1"
@@ -192,26 +267,49 @@ function TimelineRow({
             onClick={() => setShowDetail((d) => !d)}
             className="press text-left"
           >
-            <span className="text-xs font-medium" style={{ color: "var(--text-primary)" }}>
+            <span
+              className="text-xs font-medium"
+              style={{ color: "var(--text-primary)" }}
+            >
               {event.title}
             </span>
           </button>
           <div className="flex items-center gap-1.5 shrink-0">
             {event.duration && (
-              <span className="text-[10px]" style={{ color: "var(--text-quiet)" }}>
+              <span
+                className="text-[10px]"
+                style={{ color: "var(--text-quiet)" }}
+              >
                 {event.duration}ms
               </span>
             )}
             {event.status === "running" && (
-              <span className="h-2 w-2 rounded-full animate-pulse-glow" style={{ background: "var(--accent)" }} />
+              <span
+                className="h-2 w-2 rounded-full animate-pulse-glow"
+                style={{ background: "var(--accent)" }}
+              />
             )}
             {event.status === "done" && (
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="var(--diff-add-text)" strokeWidth="1.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="var(--diff-add-text)"
+                strokeWidth="1.5"
+              >
                 <path d="M2 5l2 2 4-4" />
               </svg>
             )}
             {event.status === "error" && (
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="var(--diff-del-text)" strokeWidth="1.5">
+              <svg
+                width="10"
+                height="10"
+                viewBox="0 0 10 10"
+                fill="none"
+                stroke="var(--diff-del-text)"
+                strokeWidth="1.5"
+              >
                 <path d="M3 3l4 4M7 3l-4 4" />
               </svg>
             )}
@@ -219,7 +317,10 @@ function TimelineRow({
         </div>
 
         {showDetail && event.detail && (
-          <p className="mt-1 text-[11px] leading-relaxed" style={{ color: "var(--text-subtle)" }}>
+          <p
+            className="mt-1 text-[11px] leading-relaxed"
+            style={{ color: "var(--text-subtle)" }}
+          >
             {event.detail}
           </p>
         )}

@@ -93,7 +93,13 @@ export interface ReviewFile {
   path: string;
   diff: string;
   status: "pending" | "accepted" | "rejected";
-  comments: Array<{ line: number; text: string }>;
+  comments: Array<{
+    id: string;
+    line: number;
+    text: string;
+    author: string;
+    timestamp: Date;
+  }>;
 }
 
 /* ── Terminal types ── */

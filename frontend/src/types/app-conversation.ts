@@ -1,6 +1,12 @@
 // Frontend types for app conversation API
 // These mirror the backend models in wren/app_server/app_conversation/app_conversation_models.py
 
+export interface SuggestedTask {
+  name: string;
+  description?: string;
+  prompt: string;
+}
+
 export interface AppConversationStartRequest {
   sandbox_id?: string | null;
   conversation_id?: string | null;
@@ -14,6 +20,7 @@ export interface AppConversationStartRequest {
   selected_branch?: string | null;
   git_provider?: string | null;
   title?: string | null;
+  suggested_task?: SuggestedTask | null;
   trigger?:
     | "resolver"
     | "gui"

@@ -21,31 +21,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export interface AppConversationStartRequest {
-  sandbox_id?: string;
-  conversation_id?: string;
-  initial_message?: {
-    role: "user";
-    content: Array<{ type: "text"; text: string }>;
-  };
-  system_message_suffix?: string;
-  llm_model?: string;
-  selected_repository?: string;
-  selected_branch?: string;
-  git_provider?: string;
-  title?: string;
-  trigger?: string;
-  agent_type?: "default" | "plan";
-  mode?: "plan" | "code" | "review" | "debug" | "ask" | "video";
-  plugins?: Array<{
-    source: string;
-    ref?: string;
-    repo_path?: string;
-    parameters?: Record<string, unknown>;
-  }>;
-  secrets?: Record<string, string>;
-}
-
 export class ConversationApi {
   static async startConversation(
     request: AppConversationStartRequest,

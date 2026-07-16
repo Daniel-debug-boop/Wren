@@ -43,7 +43,7 @@ export function ArtifactsProvider({ children }: { children: ReactNode }) {
   const appendTerminal = useCallback((text: string) => {
     setData((prev) => ({
       ...prev,
-      terminal: (prev.terminal ?? "") + text + "\n",
+      terminal: `${(prev.terminal ?? "") + text}\n`,
     }));
   }, []);
 
@@ -72,7 +72,17 @@ export function ArtifactsProvider({ children }: { children: ReactNode }) {
       setCode,
       setPreview,
     }),
-    [open, data, toggle, close, setOpen, appendTerminal, setDiff, setCode, setPreview],
+    [
+      open,
+      data,
+      toggle,
+      close,
+      setOpen,
+      appendTerminal,
+      setDiff,
+      setCode,
+      setPreview,
+    ],
   );
 
   return (

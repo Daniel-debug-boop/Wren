@@ -1,8 +1,14 @@
 import { Link } from "react-router";
 
+interface FooterLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
 interface FooterProps {
   version?: string;
-  links?: Array<{ label: string; href: string }>;
+  links?: FooterLink[];
 }
 
 export function Footer({ version = "1.30.0", links = [] }: FooterProps) {

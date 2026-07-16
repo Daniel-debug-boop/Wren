@@ -17,8 +17,15 @@ interface PlanViewProps {
   onEditStep?: (stepId: string, description: string) => void;
 }
 
-export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewProps) {
-  const [expandedStep, setExpandedStep] = useState<string | null>(steps[0]?.id ?? null);
+export function PlanView({
+  steps,
+  onApprove,
+  onReject,
+  onEditStep,
+}: PlanViewProps) {
+  const [expandedStep, setExpandedStep] = useState<string | null>(
+    steps[0]?.id ?? null,
+  );
   const [editingStep, setEditingStep] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
 
@@ -42,27 +49,40 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
         className="rounded-xl p-4"
         style={{
           background: "color-mix(in srgb, var(--accent) 6%, var(--surface))",
-          border: "1px solid color-mix(in srgb, var(--accent) 15%, transparent)",
+          border:
+            "1px solid color-mix(in srgb, var(--accent) 15%, transparent)",
         }}
       >
         <div className="flex items-center gap-3 mb-3">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-lg"
             style={{
-              background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
-              boxShadow: "0 0 16px color-mix(in srgb, var(--accent) 20%, transparent)",
+              background:
+                "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+              boxShadow:
+                "0 0 16px color-mix(in srgb, var(--accent) 20%, transparent)",
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="white" stroke="none">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="white"
+              stroke="none"
+            >
               <path d="M8 0L16 8L8 16L0 8L8 0Z" />
             </svg>
           </div>
           <div>
-            <h3 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
+            <h3
+              className="text-sm font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
               Plan
             </h3>
             <p className="text-xs" style={{ color: "var(--text-subtle)" }}>
-              {steps.length} step{steps.length > 1 ? "s" : ""} · {totalFiles} file{totalFiles > 1 ? "s" : ""}
+              {steps.length} step{steps.length > 1 ? "s" : ""} · {totalFiles}{" "}
+              file{totalFiles > 1 ? "s" : ""}
               {highRiskCount > 0 && ` · ${highRiskCount} high-risk`}
             </p>
           </div>
@@ -72,7 +92,10 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
         <div className="flex gap-3 flex-wrap">
           <StatBadge label="Steps" value={String(steps.length)} />
           <StatBadge label="Files" value={String(totalFiles)} />
-          <StatBadge label="Risk" value={highRiskCount > 0 ? "⚠ High" : "✓ Low"} />
+          <StatBadge
+            label="Risk"
+            value={highRiskCount > 0 ? "⚠ High" : "✓ Low"}
+          />
         </div>
       </div>
 
@@ -90,14 +113,17 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
             {/* Step header */}
             <button
               type="button"
-              onClick={() => setExpandedStep(expandedStep === step.id ? null : step.id)}
+              onClick={() =>
+                setExpandedStep(expandedStep === step.id ? null : step.id)
+              }
               className="flex w-full items-center gap-3 px-4 py-3 press text-left"
             >
               {/* Step number */}
               <span
                 className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold"
                 style={{
-                  background: "color-mix(in srgb, var(--accent) 12%, transparent)",
+                  background:
+                    "color-mix(in srgb, var(--accent) 12%, transparent)",
                   color: "var(--accent)",
                 }}
               >
@@ -106,7 +132,10 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
 
               {/* Step title + risk */}
               <div className="flex-1 min-w-0">
-                <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                <span
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {step.title}
                 </span>
               </div>
@@ -116,7 +145,8 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
                 <span
                   className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
                   style={{
-                    background: "color-mix(in srgb, var(--diff-del) 15%, transparent)",
+                    background:
+                      "color-mix(in srgb, var(--diff-del) 15%, transparent)",
                     color: "var(--diff-del-text)",
                   }}
                 >
@@ -137,7 +167,10 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
 
               {/* Estimated tokens */}
               {step.estimatedTokens && (
-                <span className="shrink-0 text-[10px]" style={{ color: "var(--text-quiet)" }}>
+                <span
+                  className="shrink-0 text-[10px]"
+                  style={{ color: "var(--text-quiet)" }}
+                >
                   ~{step.estimatedTokens}
                 </span>
               )}
@@ -152,7 +185,10 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
                 strokeWidth="1.5"
                 style={{
                   color: "var(--text-quiet)",
-                  transform: expandedStep === step.id ? "rotate(0deg)" : "rotate(-90deg)",
+                  transform:
+                    expandedStep === step.id
+                      ? "rotate(0deg)"
+                      : "rotate(-90deg)",
                   transition: "transform 0.2s",
                 }}
               >
@@ -162,7 +198,10 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
 
             {/* Expanded content */}
             {expandedStep === step.id && (
-              <div className="border-t px-4 py-3" style={{ borderColor: "var(--border)" }}>
+              <div
+                className="border-t px-4 py-3"
+                style={{ borderColor: "var(--border)" }}
+              >
                 {editingStep === step.id ? (
                   <div className="flex flex-col gap-2">
                     <textarea
@@ -180,13 +219,20 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
                       <Button size="sm" onClick={() => handleEditSave(step.id)}>
                         Save
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setEditingStep(null)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => setEditingStep(null)}
+                      >
                         Cancel
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  <p
+                    className="text-xs leading-relaxed"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     {step.description}
                   </p>
                 )}
@@ -199,9 +245,11 @@ export function PlanView({ steps, onApprove, onReject, onEditStep }: PlanViewPro
                         key={f}
                         className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10.5px] font-mono"
                         style={{
-                          background: "color-mix(in srgb, var(--accent) 6%, transparent)",
+                          background:
+                            "color-mix(in srgb, var(--accent) 6%, transparent)",
                           color: "var(--accent)",
-                          border: "1px solid color-mix(in srgb, var(--accent) 10%, transparent)",
+                          border:
+                            "1px solid color-mix(in srgb, var(--accent) 10%, transparent)",
                         }}
                       >
                         {f}
@@ -260,10 +308,16 @@ function StatBadge({ label, value }: { label: string; value: string }) {
         background: "color-mix(in srgb, var(--accent) 5%, transparent)",
       }}
     >
-      <span className="text-[10px] font-medium" style={{ color: "var(--text-subtle)" }}>
+      <span
+        className="text-[10px] font-medium"
+        style={{ color: "var(--text-subtle)" }}
+      >
         {label}
       </span>
-      <span className="text-xs font-semibold" style={{ color: "var(--text-primary)" }}>
+      <span
+        className="text-xs font-semibold"
+        style={{ color: "var(--text-primary)" }}
+      >
         {value}
       </span>
     </div>

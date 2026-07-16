@@ -1,4 +1,13 @@
-export type ModeId = "plan" | "code" | "review" | "debug" | "ask" | "video" | "game" | "autonomous";
+export type ModeId =
+  | "vibe-code"
+  | "code"
+  | "plan"
+  | "review"
+  | "debug"
+  | "ask"
+  | "video"
+  | "game"
+  | "autonomous";
 
 export interface ModeDef {
   id: ModeId;
@@ -17,11 +26,23 @@ export const MODES: ModeDef[] = [
     id: "plan",
     label: "Plan",
     shortLabel: "Plan",
-    description: "Read-only analysis — produces structured plan, no file changes",
+    description:
+      "Read-only analysis — produces structured plan, no file changes",
     icon: "clipboard",
     systemPromptKey: "plan-agent",
     enabledByDefault: true,
     suggestOn: ["refactor", "migrate", "architect", "design", "how"],
+    autonomous: false,
+  },
+  {
+    id: "vibe-code",
+    label: "Vibe Code",
+    shortLabel: "Vibe",
+    description: "Full agentic coding — reads, edits, runs, tests",
+    icon: "code",
+    systemPromptKey: "code-agent",
+    enabledByDefault: true,
+    suggestOn: [],
     autonomous: false,
   },
   {
@@ -83,11 +104,21 @@ export const MODES: ModeDef[] = [
     id: "game",
     label: "Game",
     shortLabel: "Game",
-    description: "Design, prototype, and script a video-game or interactive experience.",
+    description:
+      "Design, prototype, and script a video-game or interactive experience.",
     icon: "gamepad",
     systemPromptKey: "game-agent",
     enabledByDefault: true,
-    suggestOn: ["game", "level", "boss", "quest", "character", "rpg", "platformer", "strategy"],
+    suggestOn: [
+      "game",
+      "level",
+      "boss",
+      "quest",
+      "character",
+      "rpg",
+      "platformer",
+      "strategy",
+    ],
     autonomous: false,
   },
   /* NEW: Autonomous mode flag */
@@ -95,7 +126,8 @@ export const MODES: ModeDef[] = [
     id: "autonomous",
     label: "Autonomous",
     shortLabel: "Auto",
-    description: "Self-driven execution — from plan to completed task without user approval.",
+    description:
+      "Self-driven execution — from plan to completed task without user approval.",
     icon: "robot",
     systemPromptKey: "autonomous-agent",
     enabledByDefault: true,
@@ -104,20 +136,32 @@ export const MODES: ModeDef[] = [
   },
 ];
 
-export const DEFAULT_MODE: ModeId = "code";
+export const DEFAULT_MODE: ModeId = "vibe-code";
 
 export function suggestMode(input: string): ModeId | null {
   const lower = input.toLowerCase().trim();
   // Autonomous mode triggers when user says to execute, finish, complete
-  if (lower.includes("complete") || lower.includes("execute") || 
-     lower.includes("finish") || lower.includes("run") || 
-     lower.includes("do it") || lower.includes("launch")) {
+  if (
+    lower === "run" ||
+    lower.startsWith("run ") ||
+    lower.endsWith(" run") ||
+    lower.includes(" run ") ||
+    lower.includes("complete") ||
+    lower.includes("execute") ||
+    lower.includes("finish") ||
+    lower.includes("do it") ||
+    lower.includes("launch")
+  ) {
     return "autonomous";
   }
   // Regular suggestion logic for all modes
   for (const mode of MODES) {
-    if (!mode.enabledByDefault) continue;
-    if (mode.suggestOn.some((kw) => lower.startsWith(kw) || lower.includes(` ${kw} `))) {
+    if (
+      mode.enabledByDefault &&
+      mode.suggestOn.some(
+        (kw) => lower.startsWith(kw) || lower.includes(` ${kw} `),
+      )
+    ) {
       return mode.id;
     }
   }
@@ -125,7 +169,7 @@ export function suggestMode(input: string): ModeId | null {
 }
 
 export function getModeDef(id: ModeId): ModeDef {
-  return MODES.find((m) => m.id === id) ?? MODES[1];
+  return MODES.find((m) => m.id === id) ?? MODES[0];
 }
 
 /* ── Runtime auto-selection from WebSocket events ── */
@@ -135,7 +179,10 @@ export type ModeEvent = {
   content?: string;
 };
 
-export function autoSelectMode(event: ModeEvent, currentMode: ModeId): ModeId | null {
+export function autoSelectMode(
+  event: ModeEvent,
+  currentMode: ModeId,
+): ModeId | null {
   // Never auto-select away from user's manual choice within a turn
   // Only suggest switches when events indicate a different view is needed
 
@@ -159,7 +206,8 @@ export function autoSelectMode(event: ModeEvent, currentMode: ModeId): ModeId | 
       if (event.actionType === "plan" && currentMode !== "plan") return "plan";
       // Running code action — switch to code IDE view
       if (event.actionType === "run" || event.actionType === "edit") {
-        if (currentMode !== "code") return "code";
+        if (currentMode === "vibe-code" || currentMode === "code") return null; // already in code view
+        return "code";
       }
       return null;
     }

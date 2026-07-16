@@ -56,13 +56,17 @@ function parseUnifiedDiff(diff: string): DiffFile[] {
       currentHunk.lines.push({
         type: "add",
         content: line.slice(1),
-        newLine: currentHunk.newStart + currentHunk.lines.filter((l) => l.type !== "del").length,
+        newLine:
+          currentHunk.newStart +
+          currentHunk.lines.filter((l) => l.type !== "del").length,
       });
     } else if (line.startsWith("-")) {
       currentHunk.lines.push({
         type: "del",
         content: line.slice(1),
-        oldLine: currentHunk.oldStart + currentHunk.lines.filter((l) => l.type !== "add").length,
+        oldLine:
+          currentHunk.oldStart +
+          currentHunk.lines.filter((l) => l.type !== "add").length,
       });
     } else {
       const ctxLine = line.startsWith(" ") ? line.slice(1) : line;
@@ -88,7 +92,10 @@ export function DiffViewRaw({ diff }: { diff: string }) {
   const files = useMemo(() => parseUnifiedDiff(diff), [diff]);
   if (files.length === 0) {
     return (
-      <div className="flex items-center justify-center py-12 text-sm" style={{ color: "var(--text-quiet)" }}>
+      <div
+        className="flex items-center justify-center py-12 text-sm"
+        style={{ color: "var(--text-quiet)" }}
+      >
         No changes to display
       </div>
     );
@@ -98,8 +105,14 @@ export function DiffViewRaw({ diff }: { diff: string }) {
 
 function DiffFileBlock({ file }: { file: DiffFile }) {
   const [collapsed, setCollapsed] = useState(false);
-  const addCount = file.hunks.reduce((s, h) => s + h.lines.filter((l) => l.type === "add").length, 0);
-  const delCount = file.hunks.reduce((s, h) => s + h.lines.filter((l) => l.type === "del").length, 0);
+  const addCount = file.hunks.reduce(
+    (s, h) => s + h.lines.filter((l) => l.type === "add").length,
+    0,
+  );
+  const delCount = file.hunks.reduce(
+    (s, h) => s + h.lines.filter((l) => l.type === "del").length,
+    0,
+  );
 
   return (
     <div
@@ -129,18 +142,27 @@ function DiffFileBlock({ file }: { file: DiffFile }) {
             <path d="M3 1h8l2 2v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1z" />
             <path d="M5 1v4h4V1" />
           </svg>
-          <span className="text-sm font-mono truncate" style={{ color: "var(--text-primary)" }}>
+          <span
+            className="text-sm font-mono truncate"
+            style={{ color: "var(--text-primary)" }}
+          >
             {file.path}
           </span>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           {addCount > 0 && (
-            <span className="text-xs font-medium" style={{ color: "var(--diff-add)" }}>
+            <span
+              className="text-xs font-medium"
+              style={{ color: "var(--diff-add)" }}
+            >
               +{addCount}
             </span>
           )}
           {delCount > 0 && (
-            <span className="text-xs font-medium" style={{ color: "var(--diff-del)" }}>
+            <span
+              className="text-xs font-medium"
+              style={{ color: "var(--diff-del)" }}
+            >
               -{delCount}
             </span>
           )}
@@ -181,14 +203,31 @@ function DiffFileBlock({ file }: { file: DiffFile }) {
                             : "transparent",
                     }}
                   >
-                    <td className="w-12 min-w-[3rem] select-none px-2 text-right" style={{ color: "var(--text-quiet)" }}>
-                      {line.type === "del" ? line.oldLine ?? "" : ""}
+                    <td
+                      className="w-12 min-w-[3rem] select-none px-2 text-right"
+                      style={{ color: "var(--text-quiet)" }}
+                    >
+                      {line.type === "del" ? (line.oldLine ?? "") : ""}
                     </td>
-                    <td className="w-12 min-w-[3rem] select-none px-2 text-right" style={{ color: "var(--text-quiet)" }}>
-                      {line.type === "add" ? line.newLine ?? "" : line.type === "ctx" ? (line.oldLine ?? "") : ""}
+                    <td
+                      className="w-12 min-w-[3rem] select-none px-2 text-right"
+                      style={{ color: "var(--text-quiet)" }}
+                    >
+                      {line.type === "add"
+                        ? (line.newLine ?? "")
+                        : line.type === "ctx"
+                          ? (line.oldLine ?? "")
+                          : ""}
                     </td>
-                    <td className="w-4 min-w-[1rem] select-none text-center" style={{ color: "var(--text-quiet)" }}>
-                      {line.type === "add" ? "+" : line.type === "del" ? "-" : " "}
+                    <td
+                      className="w-4 min-w-[1rem] select-none text-center"
+                      style={{ color: "var(--text-quiet)" }}
+                    >
+                      {line.type === "add"
+                        ? "+"
+                        : line.type === "del"
+                          ? "-"
+                          : " "}
                     </td>
                     <td
                       className="px-2 py-0 whitespace-pre"

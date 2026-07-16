@@ -35,12 +35,18 @@ class SelfMemoryLoop:
         fable_memory: FableMemoryManager | None = None,
     ):
         self._wm = working_memory or WorkingMemory(project_root)
+        # If working_memory is given, derive storage path from its project_root
+        wm_root: str = (
+            project_root
+            or (
+                str(self._wm._project_root)
+                if working_memory and hasattr(working_memory, '_project_root')
+                else None
+            )
+            or '.'
+        )
         self._fable = fable_memory or FableMemoryManager(
-            storage_path=(
-                f'{project_root or "."}/.wren/fable_memory.json'
-                if project_root
-                else '~/.wren/fable_memory.json'
-            ),
+            storage_path=f'{wm_root}/.wren/fable_memory.json',
         )
 
     # ------------------------------------------------------------------

@@ -5,7 +5,6 @@ All state is scoped per conversation via ``_ConversationStore`` so the UI
 panel sees the same ManagerAgent + WorkingMemory across REST calls.
 """
 
-import asyncio
 import json
 import logging
 import os
@@ -15,7 +14,6 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Body, HTTPException, WebSocket, WebSocketDisconnect
-from fastapi.responses import HTMLResponse
 
 from wren.app_server.orchestration.manager import ManagerAgent, SubTask
 from wren.app_server.orchestration.self_memory_loop import SelfMemoryLoop

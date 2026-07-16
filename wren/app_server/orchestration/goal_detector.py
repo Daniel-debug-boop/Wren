@@ -9,11 +9,9 @@ This ensures the agent enters manager mode automatically — no skill trigger
 reliance needed.
 """
 
-import json
 import logging
 import os
 import re
-from pathlib import Path
 from typing import Any
 
 from wren.app_server.orchestration.working_memory import WorkingMemory

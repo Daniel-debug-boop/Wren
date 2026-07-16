@@ -17,7 +17,6 @@ import asyncio
 import logging
 import time
 from dataclasses import dataclass, field
-from typing import AsyncIterator
 
 from wren.app_server.sandbox.sandbox_models import SandboxInfo, SandboxStatus
 from wren.app_server.sandbox.sandbox_service import SandboxService

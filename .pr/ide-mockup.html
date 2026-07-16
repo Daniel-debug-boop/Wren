@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wren — AI Codebase IDE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════
+   WREN IDE — Premium Canvas Environment
+   Inspired by Figma / Framer layered workspace aesthetic
+   ═══════════════════════════════════════════════════════════ */
+
+/* ─── RESET ─── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  /* Canvas — obsidian absolute */
+  --canvas:        #070708;
+  --canvas-grid:   rgba(255,255,255,0.1);
+
+  /* Panels — matte charcoal, high contrast against canvas */
+  --panel:         #111113;
+  --panel-inner:   #161619;
+  --surface:       #161619;
+  --elevated:      #1E1E22;
+  --hover:         #26262B;
+
+  /* Borders — whisper-thin, never stark */
+  --edge:          rgba(255,255,255,0.06);
+  --edge-inner:    rgba(255,255,255,0.04);
+  --edge-accent:   rgba(255,255,255,0.08);
+
+  /* Text — high contrast, crisp */
+  --t1:            #F2F2F5;
+  --t2:            #8B8B96;
+  --t3:            #55555E;
+  --t4:            #3A3A42;
+
+  /* Accent — single vibrant blue */
+  --accent:        #3B82F6;
+  --accent-dim:    rgba(59,130,246,0.10);
+  --accent-glow:   rgba(59,130,246,0.06);
+  --teal:          #14B8A6;
+  --teal-dim:      rgba(20,184,166,0.10);
+
+  /* Signal */
+  --red:           #FF5F57;
+  --yellow:        #FEBC2E;
+  --green:         #28C840;
+
+  /* Type */
+  --ui:            'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:          'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+}
+
+/* ─── ANTI-ALIASED TEXT ─── */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}
+html, body {
+  height: 100%;
+  background: var(--canvas);
+  color: var(--t1);
+  font-family: var(--ui);
+  overflow: hidden;
+  line-height: 1.5;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  -webkit-font-smoothing: inherit;
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--edge); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--t4); }
+
+/* ═══════════════════════════════════════════════════════════
+   APP SHELL
+   ═══════════════════════════════════════════════════════════ */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ─── TOP BAR ─── */
+/* ═══════════════════════════════════════════════════════════
+   TOPBAR — Polished Professional Header
+   ═══════════════════════════════════════════════════════════ */
+.deploy-btn {
+  padding: 5px 12px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: all 0.12s ease;
+  line-height: 1.4;
+}
+.deploy-btn:hover { filter: brightness(1.1); }
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--edge);
+  flex-shrink: 0;
+  gap: 12px;
+  z-index: 100;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+}
+.app-logo svg { width: 14px; height: 14px; fill: white; }
+
+.app-wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.app-name {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--t1);
+}
+.app-version {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--t4);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--elevated);
+  letter-spacing: 0.02em;
+}
+
+.mode-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--teal-dim);
+  border: 1px solid rgba(20,184,166,0.15);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--teal);
+}
+.mode-badge svg { width: 12px; height: 12px; }
+
+.topbar-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--edge);
+}
+
+.topbar-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.agent-status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 20px;
+  background: var(--elevated);
+  border: 1px solid var(--edge-inner);
+  font-size: 11px;
+  color: var(--t2);
+}
+.agent-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--teal);
+  position: relative;
+}
+.agent-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: rgba(20,184,166,0.2);
+  animation: pulse-ring 2s infinite;
+}
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.agent-status-label { color: var(--t1); font-weight: 500; }
+.agent-status-sub { color: var(--t4); }
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+}
+.topbar-stat-val {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t1);
+  line-height: 1.2;
+}
+.topbar-stat-label {
+  font-size: 9px;
+  color: var(--t4);
+  line-height: 1.2;
+}
+
+.deploy-btn-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent) 0%, #2563EB 100%);
+  color: white;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(59,130,246,0.25);
+}
+.deploy-btn-top:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 12px rgba(59,130,246,0.35);
+  transform: translateY(-1px);
+}
+.deploy-btn-top svg { width: 13px; height: 13px; }
+
+/* ═══════════════════════════════════════════════════════════
+   AGENT PROMPT INPUT — Floating Chat Bar
+   ═══════════════════════════════════════════════════════════ */
+.agent-prompt-bar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 80%);
+  z-index: 50;
+}
+.agent-prompt-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 14px;
+  border-radius: 14px;
+  background: rgba(22,22,25,0.85);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid var(--edge-accent);
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.agent-prompt-inner:focus-within {
+  border-color: rgba(59,130,246,0.3);
+  box-shadow:
+    0 4px 20px rgba(0,0,0,0.4),
+    0 0 0 3px rgba(59,130,246,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.agent-prompt-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: var(--accent-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.agent-prompt-icon svg { width: 12px; height: 12px; color: var(--accent); }
+.agent-prompt-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--t1);
+  padding: 8px 0;
+  caret-color: var(--accent);
+}
+.agent-prompt-input::placeholder { color: var(--t4); }
+.agent-prompt-send {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(59,130,246,0.3);
+}
+.agent-prompt-send:hover {
+  background: #2563EB;
+  transform: scale(1.05);
+}
+.agent-prompt-send svg { width: 14px; height: 14px; color: white; }
+.agent-prompt-hint {
+  text-align: center;
+  font-size: 10px;
+  color: var(--t4);
+  margin-top: 6px;
+}
+.agent-prompt-hint kbd {
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--elevated);
+  border: 1px solid var(--edge-inner);
+  font-family: var(--mono);
+  font-size: 9px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MEMORY UI — Working Memory & Lessons
+   ═══════════════════════════════════════════════════════════ */
+.memory-section {
+  margin-top: 10px;
+}
+.memory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.memory-header:hover { opacity: 0.8; }
+.memory-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.memory-header-left svg { width: 12px; height: 12px; color: var(--t3); }
+.memory-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--t3);
+}
+.memory-count {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--t4);
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--elevated);
+}
+.memory-chevron {
+  width: 10px;
+  height: 10px;
+  color: var(--t4);
+  transition: transform 0.2s ease;
+}
+.memory-section.collapsed .memory-chevron { transform: rotate(-90deg); }
+.memory-section.collapsed .memory-body { display: none; }
+
+.memory-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0;
+}
+.memory-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--panel-inner);
+  border: 1px solid var(--edge-inner);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--t2);
+}
+.memory-item-key {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--accent);
+  flex-shrink: 0;
+  min-width: 60px;
+  padding-top: 1px;
+}
+.memory-item-val {
+  color: var(--t2);
+  word-break: break-word;
+}
+.memory-item-val code {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--elevated);
+  color: var(--t1);
+}
+
+.lesson-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: var(--panel-inner);
+  border: 1px solid var(--edge-inner);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--t2);
+}
+.lesson-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.lesson-icon.success { background: var(--teal-dim); color: var(--teal); }
+.lesson-icon.warning { background: rgba(245,158,11,0.1); color: #F59E0B; }
+.lesson-icon.info { background: var(--accent-dim); color: var(--accent); }
+.lesson-text { color: var(--t2); }
+.lesson-text code {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--elevated);
+  color: var(--t1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MAIN LAYOUT
+   ═══════════════════════════════════════════════════════════ */
+.main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── LEFT PANE — Matte charcoal panel ─── */
+.left-pane {
+  width: 252px;
+  background: var(--panel);
+  border-right: 1px solid var(--edge);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.pane-section-label {
+  padding: 14px 18px 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t3);
+  line-height: 1.6;
+}
+
+.file-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 6px;
+}
+
+.tree-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--t3);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  position: relative;
+  line-height: 1.5;
+}
+.tree-item:hover { background: var(--elevated); color: var(--t2); }
+.tree-item.active {
+  background: var(--accent-glow);
+  color: var(--t1);
+}
+.tree-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  bottom: 5px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent);
+}
+.tree-item.folder { color: var(--t2); font-weight: 500; }
+.tree-item .icon { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.5; }
+.tree-item .label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.indent-1 { padding-left: 18px; }
+.indent-2 { padding-left: 32px; }
+.indent-3 { padding-left: 46px; }
+
+.status-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.online { background: var(--teal); }
+.status-dot.warning { background: var(--yellow); }
+
+.section-divider {
+  height: 1px;
+  background: var(--edge);
+  margin: 4px 12px;
+}
+
+.left-bottom-tabs {
+  display: flex;
+  border-top: 1px solid var(--edge);
+}
+.left-tab {
+  flex: 1;
+  padding: 9px 0;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--t4);
+  transition: all 0.12s ease;
+  position: relative;
+  letter-spacing: 0.02em;
+}
+.left-tab:hover { color: var(--t3); }
+.left-tab.active { color: var(--accent); }
+.left-tab.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24%;
+  right: 24%;
+  height: 1.5px;
+  border-radius: 0 0 1px 1px;
+  background: var(--accent);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CENTER — Infinite Canvas Environment
+   ═══════════════════════════════════════════════════════════ */
+.workspace {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+/* Micro-dot canvas grid */
+.workspace::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, var(--canvas-grid) 0.6px, transparent 0.6px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scanning line — very subtle */
+.workspace::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(59,130,246,0.04) 20%,
+    rgba(59,130,246,0.08) 50%,
+    rgba(59,130,246,0.04) 80%,
+    transparent 100%);
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+@keyframes scanline {
+  0%   { top: -1px; }
+  100% { top: 100%; }
+}
+
+/* ─── FLOATING CODE EDITOR FRAME ─── */
+.code-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: min(720px, calc(100% - 80px));
+  height: min(480px, calc(100% - 80px));
+  border-radius: 12px;
+  border: 1px solid var(--edge-accent);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow:
+    inset 0 1px 0 0 rgba(255,255,255,0.05),
+    0 2px 4px rgba(0,0,0,0.2),
+    0 8px 16px rgba(0,0,0,0.25),
+    0 20px 40px rgba(0,0,0,0.35),
+    0 30px 70px -15px rgba(0,0,0,0.85);
+}
+
+/* Titlebar */
+.frame-titlebar {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  background: #111113;
+  border-bottom: 1px solid var(--edge-inner);
+  flex-shrink: 0;
+}
+.window-dots { display: flex; gap: 6px; }
+.window-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0.85;
+}
+.window-dot.r { background: var(--red); }
+.window-dot.y { background: var(--yellow); }
+.window-dot.g { background: var(--green); }
+
+.frame-filename {
+  flex: 1;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--t3);
+  letter-spacing: -0.01em;
+}
+.frame-actions { display: flex; gap: 2px; }
+.frame-action {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t4);
+  transition: all 0.1s ease;
+}
+.frame-action:hover { background: var(--elevated); color: var(--t3); }
+.frame-action svg { width: 12px; height: 12px; }
+
+#monaco-container { flex: 1; overflow: hidden; }
+
+/* ═══════════════════════════════════════════════════════════
+   FLOATING CAPSULE — Frosted Glass Pill
+   ═══════════════════════════════════════════════════════════ */
+.canvas-controls {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 4px 6px;
+  border-radius: 40px;
+  background: rgba(17, 17, 19, 0.75);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.03) inset;
+}
+
+.capsule-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--t3);
+  transition: all 0.15s ease;
+}
+.capsule-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--t1);
+}
+.capsule-btn.play { color: var(--teal); }
+.capsule-btn.play:hover { background: var(--teal-dim); }
+.capsule-btn svg { width: 13px; height: 13px; }
+
+.capsule-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255,255,255,0.06);
+  margin: 0 4px;
+}
+
+.capsule-zoom {
+  padding: 0 8px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--t3);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: color 0.12s;
+}
+.capsule-zoom:hover { color: var(--t2); }
+
+/* ═══════════════════════════════════════════════════════════
+   RIGHT PANE — Matte charcoal panel
+   ═══════════════════════════════════════════════════════════ */
+.right-pane {
+  width: 288px;
+  background: var(--panel);
+  border-left: 1px solid var(--edge);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.right-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--edge);
+}
+.right-tab {
+  flex: 1;
+  padding: 11px 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--t3);
+  position: relative;
+  transition: color 0.12s ease;
+  line-height: 1.5;
+}
+.right-tab:hover { color: var(--t2); }
+.right-tab.active { color: var(--t1); }
+.right-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 1.5px;
+  border-radius: 1px 1px 0 0;
+  background: var(--accent);
+}
+
+.right-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ─── Profile Card ─── */
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--edge-inner);
+  background: var(--panel-inner);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+.profile-card:hover { border-color: var(--edge); }
+.profile-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent) 0%, #8B5CF6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-avatar svg { width: 16px; height: 16px; fill: white; }
+.profile-info { flex: 1; min-width: 0; }
+.profile-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+}
+.profile-model {
+  font-size: 10.5px;
+  color: var(--t3);
+  line-height: 1.5;
+}
+.profile-chevron {
+  width: 12px;
+  height: 12px;
+  color: var(--t4);
+  flex-shrink: 0;
+}
+
+/* ─── Activity Stream ─── */
+.stream-section-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t4);
+  line-height: 1.6;
+}
+
+.stream-item {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+}
+.stream-dot-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5px;
+  width: 6px;
+  flex-shrink: 0;
+}
+.stream-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.stream-dot.active {
+  background: var(--accent);
+  animation: pulse 2.5s ease-in-out infinite;
+}
+.stream-dot.teal { background: var(--teal); }
+.stream-line {
+  width: 1px;
+  flex: 1;
+  background: var(--edge-inner);
+  margin-top: 4px;
+}
+.stream-body { flex: 1; min-width: 0; }
+.stream-time {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--t4);
+  margin-bottom: 1px;
+  letter-spacing: 0.02em;
+}
+.stream-text {
+  font-size: 11.5px;
+  color: #A3A3A6;
+  line-height: 1.55;
+}
+.stream-text code {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  background: var(--elevated);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--teal);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+/* ─── Modification Blocks ─── */
+.mod-block {
+  border: 1px solid var(--edge-inner);
+  border-radius: 9px;
+  overflow: hidden;
+  background: var(--panel-inner);
+}
+.mod-header {
+  padding: 9px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--edge-inner);
+}
+.mod-file {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--t3);
+  letter-spacing: -0.01em;
+}
+.mod-stats {
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+.mod-stats .add { color: var(--teal); }
+.mod-stats .del { color: var(--red); opacity: 0.6; }
+
+.mod-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+}
+.mod-btn {
+  flex: 1;
+  padding: 5px 0;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 500;
+  text-align: center;
+  transition: all 0.12s ease;
+  line-height: 1.5;
+}
+.mod-btn.primary {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid rgba(59,130,246,0.15);
+}
+.mod-btn.primary:hover { background: rgba(59,130,246,0.16); }
+.mod-btn.secondary {
+  color: var(--t3);
+  border: 1px solid var(--edge-inner);
+}
+.mod-btn.secondary:hover {
+  background: var(--elevated);
+  color: var(--t2);
+}
+
+.mod-block + .mod-block { margin-top: 6px; }
+
+/* ═══════════════════════════════════════════════════════════
+   LEFT PANE — Tab Content Panels
+   ═══════════════════════════════════════════════════════════ */
+.left-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  display: none;
+  padding: 6px;
+}
+.left-panel-content.visible { display: block; }
+
+.route-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  line-height: 1.5;
+}
+.route-item:hover { background: var(--elevated); }
+.route-method {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 4px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+  min-width: 32px;
+  text-align: center;
+}
+.route-method.get { background: rgba(20,184,166,0.12); color: var(--teal); }
+.route-method.post { background: rgba(59,130,246,0.12); color: var(--accent); }
+.route-method.put { background: rgba(245,158,11,0.12); color: #F59E0B; }
+.route-method.del { background: rgba(255,95,87,0.12); color: var(--red); }
+.route-path { color: var(--t2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.route-status { font-size: 9px; color: var(--t4); }
+.route-status.ok { color: var(--teal); }
+
+.env-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 10.5px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+.env-item:hover { background: var(--elevated); }
+.env-key {
+  font-family: var(--mono);
+  color: var(--t2);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.env-val {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--t4);
+  max-width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.env-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.env-dot.set { background: var(--teal); }
+.env-dot.miss { background: var(--red); opacity: 0.6; }
+
+/* ═══════════════════════════════════════════════════════════
+   RIGHT PANE — LLM Connections Tab
+   ═══════════════════════════════════════════════════════════ */
+.right-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: none;
+  flex-direction: column;
+  gap: 14px;
+}
+.right-panel-content.visible { display: flex; }
+
+.llm-card {
+  border: 1px solid var(--edge-inner);
+  border-radius: 9px;
+  background: var(--panel-inner);
+  padding: 10px 12px;
+}
+.llm-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.llm-provider {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.llm-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+.llm-icon.anthropic { background: #D97706; }
+.llm-icon.openai { background: #10A37F; }
+.llm-icon.google { background: #4285F4; }
+.llm-name { font-size: 11.5px; font-weight: 500; color: var(--t1); }
+.llm-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.llm-badge.active { background: var(--teal-dim); color: var(--teal); }
+.llm-badge.standby { background: var(--elevated); color: var(--t3); }
+.llm-detail {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--t4);
+  display: flex;
+  justify-content: space-between;
+  line-height: 1.8;
+}
+.llm-detail span:last-child { color: var(--t3); }
+
+/* ═══════════════════════════════════════════════════════════
+   DEPLOY MODAL
+   ═══════════════════════════════════════════════════════════ */
+.deploy-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.deploy-overlay.visible { display: flex; }
+.deploy-modal {
+  width: 380px;
+  border-radius: 14px;
+  border: 1px solid var(--edge-accent);
+  background: var(--panel);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  overflow: hidden;
+}
+.deploy-modal-header {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--edge-inner);
+}
+.deploy-modal-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--t1);
+  margin-bottom: 4px;
+}
+.deploy-modal-sub {
+  font-size: 11px;
+  color: var(--t3);
+  line-height: 1.5;
+}
+.deploy-modal-body { padding: 14px 18px; }
+.deploy-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 11.5px;
+  color: var(--t3);
+  line-height: 1.5;
+}
+.deploy-step .step-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.deploy-step .step-dot.done { background: var(--teal); }
+.deploy-step .step-dot.running { background: var(--accent); animation: pulse 1.5s infinite; }
+.deploy-step .step-dot.pending { background: var(--t4); }
+.deploy-step.done { color: var(--t2); }
+.deploy-step.running { color: var(--t1); }
+.deploy-modal-footer {
+  padding: 10px 18px 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.deploy-close-btn {
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--edge);
+  color: var(--t2);
+  transition: all 0.12s;
+}
+.deploy-close-btn:hover { background: var(--elevated); color: var(--t1); }
+
+/* ═══════════════════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  font-size: 12px;
+  color: var(--t2);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.toast-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.toast-dot.success { background: var(--teal); }
+.toast-dot.info { background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ═══ TOP BAR ═══ -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="app-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="app-wordmark">
+        <span class="app-name">Wren</span>
+        <span class="app-version">v0.4.2</span>
+      </div>
+      <div class="topbar-sep"></div>
+      <div class="mode-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+        Vibe Code
+      </div>
+    </div>
+
+    <div class="topbar-center">
+      <div class="agent-status-pill">
+        <div class="agent-pulse"></div>
+        <span class="agent-status-label">Agent Active</span>
+        <span class="agent-status-sub">·</span>
+        <span class="agent-status-sub" id="agent-tasks-count">12 tasks</span>
+        <span class="agent-status-sub">·</span>
+        <span class="agent-status-sub" id="agent-elapsed">2m 34s</span>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="topbar-stat">
+        <span class="topbar-stat-val">4</span>
+        <span class="topbar-stat-label">Files</span>
+      </div>
+      <div class="topbar-stat">
+        <span class="topbar-stat-val">142</span>
+        <span class="topbar-stat-label">Requests</span>
+      </div>
+      <div class="topbar-sep"></div>
+      <button class="deploy-btn-top" id="deploy-btn-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Deploy
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+    <!-- ─── LEFT PANE ─── -->
+    <div class="left-pane" id="left-pane">
+      <!-- Top toolbar -->
+      <div class="pane-section-label" style="display:flex;align-items:center;gap:6px;padding:10px 14px 0;">
+        <span style="color:var(--teal);font-size:11px;font-weight:600;">wren-app</span>
+        <span style="font-size:9px;color:var(--t4);">v0.4.2</span>
+      </div>
+
+      <!-- FILE TREE — default visible -->
+      <div class="left-panel-content visible" id="panel-file-tree">
+        <div class="pane-section-label">Repository Explorer</div>
+        <div class="file-tree">
+          <div class="tree-item folder" data-file="src">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <span class="label">src</span>
+          </div>
+          <div class="tree-item folder indent-1" data-file="routes">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <span class="label">routes</span>
+          </div>
+          <div class="tree-item indent-2" data-file="conversation.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">conversation.py</span>
+          </div>
+          <div class="tree-item indent-2 active" data-file="orchestration.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">orchestration.py</span>
+          </div>
+          <div class="tree-item indent-2" data-file="sandbox.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">sandbox.py</span>
+          </div>
+          <div class="tree-item folder indent-1" data-file="components">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <span class="label">components</span>
+          </div>
+          <div class="tree-item indent-2" data-file="AgentPanel.tsx">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">AgentPanel.tsx</span>
+          </div>
+          <div class="tree-item indent-2" data-file="CodeCanvas.tsx">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">CodeCanvas.tsx</span>
+          </div>
+          <div class="tree-item folder indent-1" data-file="config">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <span class="label">config</span>
+          </div>
+          <div class="tree-item indent-2" data-file="settings.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">settings.py</span>
+          </div>
+          <div class="tree-item indent-2" data-file="llm.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">llm.py</span>
+          </div>
+          <div class="tree-item folder" data-file="tests">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            <span class="label">tests</span>
+          </div>
+          <div class="tree-item indent-1" data-file="test_orchestration.py">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
+            <span class="label">test_orchestration.py</span>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+        <div class="pane-section-label">System Infrastructure</div>
+        <div class="file-tree" style="padding-bottom:4px;">
+          <div class="tree-item">
+            <span class="status-dot online"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 7h5M17 17h5"/></svg>
+            <span class="label">Docker Runtime</span>
+          </div>
+          <div class="tree-item">
+            <span class="status-dot online"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            <span class="label">CI/CD Pipeline</span>
+          </div>
+          <div class="tree-item">
+            <span class="status-dot warning"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="label">Secrets Vault</span>
+          </div>
+          <div class="tree-item">
+            <span class="status-dot online"></span>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <span class="label">PostgreSQL</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- API ROUTES — hidden by default -->
+      <div class="left-panel-content" id="panel-api-routes">
+        <div class="pane-section-label">API Routes</div>
+        <div class="route-item"><span class="route-method get">GET</span><span class="route-path">/api/conversations</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method post">POST</span><span class="route-path">/api/conversations</span><span class="route-status ok">201</span></div>
+        <div class="route-item"><span class="route-method get">GET</span><span class="route-path">/api/conversations/:id</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method post">POST</span><span class="route-path">/api/conversations/:id/chat</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method post">POST</span><span class="route-path">/api/conversations/:id/agent</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method put">PUT</span><span class="route-path">/api/conversations/:id/mode</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method del">DEL</span><span class="route-path">/api/conversations/:id</span><span class="route-status">204</span></div>
+        <div class="route-item"><span class="route-method post">POST</span><span class="route-path">/api/conversations/:id/orchestrate</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method get">GET</span><span class="route-path">/api/conversations/:id/orchestrate/status</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method get">GET</span><span class="route-path">/api/settings</span><span class="route-status ok">200</span></div>
+        <div class="route-item"><span class="route-method put">PUT</span><span class="route-path">/api/settings</span><span class="route-status ok">200</span></div>
+      </div>
+
+      <!-- ENV VARS — hidden by default -->
+      <div class="left-panel-content" id="panel-env-vars">
+        <div class="pane-section-label">Environment Variables</div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">OPENAI_API_KEY</span><span class="env-val">sk-••••f8a2</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">ANTHROPIC_API_KEY</span><span class="env-val">sk-ant-••••c91d</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">WREN_API_KEY</span><span class="env-val">wrn-••••3e7b</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">PORT</span><span class="env-val">3000</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">RUNTIME</span><span class="env-val">local</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">DEBUG</span><span class="env-val">false</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">DATABASE_URL</span><span class="env-val">postgres://••••</span></div>
+        <div class="env-item"><div class="env-dot miss"></div><span class="env-key">SLACK_WEBHOOK_URL</span><span class="env-val">—</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">LLM_PROVIDER</span><span class="env-val">anthropic</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">MAX_ITERATIONS</span><span class="env-val">50</span></div>
+        <div class="env-item"><div class="env-dot set"></div><span class="env-key">SESSION_TIMEOUT</span><span class="env-val">3600</span></div>
+      </div>
+
+      <!-- Bottom tabs -->
+      <div class="left-bottom-tabs" id="left-bottom-tabs">
+        <button class="left-tab active" data-panel="panel-file-tree">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:10px;height:10px;flex-shrink:0"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          Files
+        </button>
+        <button class="left-tab" data-panel="panel-api-routes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:10px;height:10px;flex-shrink:0"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          API Routes
+        </button>
+        <button class="left-tab" data-panel="panel-env-vars">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:10px;height:10px;flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Env Vars
+        </button>
+        <button class="left-tab deploy-btn" id="deploy-btn" style="margin-left:auto;gap:4px;color:var(--teal);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:10px;height:10px;flex-shrink:0"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          Deploy
+        </button>
+      </div>
+    </div>
+
+    <!-- ─── CENTER CANVAS ─── -->
+    <div class="workspace">
+      <div class="code-frame">
+        <div class="frame-titlebar">
+          <div class="window-dots">
+            <span class="window-dot r"></span>
+            <span class="window-dot y"></span>
+            <span class="window-dot g"></span>
+          </div>
+          <span class="frame-filename">orchestration.py</span>
+          <div class="frame-actions">
+            <button class="frame-action" title="Split">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/></svg>
+            </button>
+            <button class="frame-action" title="More">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </button>
+          </div>
+        </div>
+        <div id="monaco-container"></div>
+      </div>
+
+      <!-- Frosted Glass Floating Controls -->
+      <div class="canvas-controls">
+        <button class="capsule-btn play" title="Run">
+          <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        </button>
+        <button class="capsule-btn" title="Debug">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22c-4.97 0-9-2.69-9-6v-4c0-3.31 4.03-6 9-6s9 2.69 9 6v4c0 3.31-4.03 6-9 6z"/><path d="M12 6V2M8 4l4-2 4 2"/><path d="M9 14h.01M15 14h.01M9.5 17a3.5 3.5 0 017 0"/></svg>
+        </button>
+        <button class="capsule-btn" title="Branch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 009 9"/></svg>
+        </button>
+        <div class="capsule-divider"></div>
+        <button class="capsule-btn" title="Zoom In">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+        </button>
+        <span class="capsule-zoom">100%</span>
+        <button class="capsule-btn" title="Zoom Out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35M8 11h6"/></svg>
+        </button>
+      </div>
+
+      <!-- Agent Prompt Input -->
+      <div class="agent-prompt-bar">
+        <div class="agent-prompt-inner">
+          <div class="agent-prompt-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <input type="text" class="agent-prompt-input" id="agent-prompt" placeholder="Tell the agent what to build next…" autocomplete="off" spellcheck="false">
+          <button class="agent-prompt-send" id="agent-send-btn" title="Send to agent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </div>
+        <div class="agent-prompt-hint"><kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for newline</div>
+      </div>
+    </div>
+
+    <!-- ─── RIGHT PANE ─── -->
+    <div class="right-pane" id="right-pane">
+      <div class="right-tabs">
+        <button class="right-tab active" data-panel="panel-agent-manager">Agent Manager</button>
+        <button class="right-tab" data-panel="panel-llm-connections">LLM Connections</button>
+      </div>
+
+      <!-- AGENT MANAGER — default visible -->
+      <div class="right-panel-content visible" id="panel-agent-manager">
+        <div class="profile-card">
+          <div class="profile-avatar">
+            <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="profile-info">
+            <div class="profile-name">Lead Architect Agent</div>
+            <div class="profile-model">Claude 3.5 Sonnet</div>
+          </div>
+          <svg class="profile-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+
+        <div class="stream-section-label">Activity Stream</div>
+        <div id="activity-stream">
+          <div class="stream-item">
+            <div class="stream-dot-col">
+              <div class="stream-dot active"></div>
+              <div class="stream-line"></div>
+            </div>
+            <div class="stream-body">
+              <div class="stream-time" id="time-1"></div>
+              <div class="stream-text">Initializing orchestration pipeline…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stream-section-label" style="margin-top:2px;">Recent Modifications</div>
+        <div id="mod-blocks"></div>
+
+        <!-- Working Memory -->
+        <div class="memory-section" id="memory-working">
+          <div class="memory-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <div class="memory-header-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 0110 10 10 10 0 01-10 10A10 10 0 012 12 10 10 0 0112 2z"/><path d="M12 6v6l4 2"/></svg>
+              <span class="memory-title">Working Memory</span>
+              <span class="memory-count">5 items</span>
+            </div>
+            <svg class="memory-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="memory-body">
+            <div class="memory-item">
+              <span class="memory-item-key">goal</span>
+              <span class="memory-item-val">Build REST API for user management with auth, CRUD, and role-based access</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-item-key">scope</span>
+              <span class="memory-item-val"><code>routes/</code> + <code>services/</code> + <code>models/</code></span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-item-key">stack</span>
+              <span class="memory-item-val">FastAPI + SQLAlchemy + PostgreSQL + JWT auth</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-item-key">current</span>
+              <span class="memory-item-val">Implementing <code>POST /api/v1/users</code> endpoint with password hashing</span>
+            </div>
+            <div class="memory-item">
+              <span class="memory-item-key">blocked</span>
+              <span class="memory-item-val">Migration runner needs Alembic config — waiting for env setup</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lessons Learned -->
+        <div class="memory-section" id="memory-lessons">
+          <div class="memory-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <div class="memory-header-left">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+              <span class="memory-title">Lessons Learned</span>
+              <span class="memory-count">4 items</span>
+            </div>
+            <svg class="memory-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+          <div class="memory-body">
+            <div class="lesson-item">
+              <div class="lesson-icon success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:9px;height:9px"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <span class="lesson-text">Always use <code>Body()</code> in FastAPI POST params to prevent 422 validation errors</span>
+            </div>
+            <div class="lesson-item">
+              <div class="lesson-icon warning">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:9px;height:9px"><path d="M12 9v4M12 17h.01"/><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+              </div>
+              <span class="lesson-text">Module-level functions in <code>working_memory.py</code> break class methods — keep <code>_load</code>/<code>_flush</code> inside class</span>
+            </div>
+            <div class="lesson-item">
+              <div class="lesson-icon info">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:9px;height:9px"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+              </div>
+              <span class="lesson-text">React #310 caused by infinite setState — memoize context providers and use standalone word matching in <code>suggestMode</code></span>
+            </div>
+            <div class="lesson-item">
+              <div class="lesson-icon success">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:9px;height:9px"><path d="M20 6L9 17l-5-5"/></svg>
+              </div>
+              <span class="lesson-text">Start server with <code>RUNTIME=local INSTALL_DOCKER=0</code> — no Docker required for local dev</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LLM CONNECTIONS — hidden by default -->
+      <div class="right-panel-content" id="panel-llm-connections">
+        <div class="llm-card">
+          <div class="llm-card-header">
+            <div class="llm-provider">
+              <div class="llm-icon anthropic">A</div>
+              <div class="llm-name">Anthropic Claude</div>
+            </div>
+            <span class="llm-badge active">Active</span>
+          </div>
+          <div class="llm-detail"><span>Model</span><span>claude-3.5-sonnet</span></div>
+          <div class="llm-detail"><span>Max Tokens</span><span>8,192</span></div>
+          <div class="llm-detail"><span>Temperature</span><span>0.7</span></div>
+          <div class="llm-detail"><span>Requests</span><span>142 today</span></div>
+        </div>
+
+        <div class="llm-card">
+          <div class="llm-card-header">
+            <div class="llm-provider">
+              <div class="llm-icon openai">O</div>
+              <div class="llm-name">OpenAI GPT-4</div>
+            </div>
+            <span class="llm-badge standby">Standby</span>
+          </div>
+          <div class="llm-detail"><span>Model</span><span>gpt-4-turbo</span></div>
+          <div class="llm-detail"><span>Max Tokens</span><span>4,096</span></div>
+          <div class="llm-detail"><span>Temperature</span><span>0.5</span></div>
+          <div class="llm-detail"><span>Requests</span><span>38 today</span></div>
+        </div>
+
+        <div class="llm-card">
+          <div class="llm-card-header">
+            <div class="llm-provider">
+              <div class="llm-icon google">G</div>
+              <div class="llm-name">Google Gemini</div>
+            </div>
+            <span class="llm-badge standby">Standby</span>
+          </div>
+          <div class="llm-detail"><span>Model</span><span>gemini-1.5-pro</span></div>
+          <div class="llm-detail"><span>Max Tokens</span><span>8,192</span></div>
+          <div class="llm-detail"><span>Temperature</span><span>0.6</span></div>
+          <div class="llm-detail"><span>Requests</span><span>12 today</span></div>
+        </div>
+
+        <div style="padding:6px 0 0;">
+          <div class="stream-section-label" style="margin-bottom:4px;">Token Usage</div>
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;background:var(--panel-inner);border:1px solid var(--edge-inner);border-radius:7px;padding:8px 10px;text-align:center;">
+              <div style="font-size:16px;font-weight:600;color:var(--t1);">24.8k</div>
+              <div style="font-size:9px;color:var(--t4);margin-top:2px;">Input Tokens</div>
+            </div>
+            <div style="flex:1;background:var(--panel-inner);border:1px solid var(--edge-inner);border-radius:7px;padding:8px 10px;text-align:center;">
+              <div style="font-size:16px;font-weight:600;color:var(--t1);">8.2k</div>
+              <div style="font-size:9px;color:var(--t4);margin-top:2px;">Output Tokens</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;background:var(--elevated);border-radius:3px;height:4px;overflow:hidden;">
+            <div style="width:62%;height:100%;background:var(--accent);border-radius:3px;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--t4);margin-top:4px;">62% of daily quota used · resets 00:00 UTC</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deploy Modal -->
+<div class="deploy-overlay" id="deploy-overlay">
+  <div class="deploy-modal">
+    <div class="deploy-modal-header">
+      <div class="deploy-modal-title">Deploy to Production</div>
+      <div class="deploy-modal-sub">Pushing wren-app to your linked environment</div>
+    </div>
+    <div class="deploy-modal-body" id="deploy-steps">
+      <div class="deploy-step done" id="ds-1"><div class="step-dot done"></div><span>Validating environment variables</span></div>
+      <div class="deploy-step running" id="ds-2"><div class="step-dot running"></div><span>Building project…</span></div>
+      <div class="deploy-step" id="ds-3"><div class="step-dot pending"></div><span>Running test suite</span></div>
+      <div class="deploy-step" id="ds-4"><div class="step-dot pending"></div><span>Deploying containers</span></div>
+      <div class="deploy-step" id="ds-5"><div class="step-dot pending"></div><span>Health check passed</span></div>
+    </div>
+    <div class="deploy-modal-footer">
+      <button class="deploy-close-btn" id="deploy-close-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">
+  <div class="toast-dot success"></div>
+  <span id="toast-msg">File opened in editor</span>
+</div>
+
+<!-- Monaco Editor -->
+<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+<script>
+// ─── FILE CONTENTS ───
+const fileContents = {
+  'conversation.py': `from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+import asyncio
+
+router = APIRouter(prefix="/api/v1")
+
+
+@router.post("/conversations")
+async def create_conversation(
+    goal: str,
+    mode: str = "vibe-code",
+):
+    """Create a new conversation with the AI agent."""
+    conversation = await Conversation.create(
+        goal=goal,
+        mode=mode,
+        user_id=current_user.id,
+    )
+    return {"id": conversation.id, "status": "created"}
+
+
+@router.get("/conversations/{conversation_id}")
+async def get_conversation(conversation_id: str):
+    """Fetch conversation details and current state."""
+    conv = await Conversation.get(conversation_id)
+    if not conv:
+        raise HTTPException(status_code=404)
+    return conv.to_dict()`,
+
+  'orchestration.py': `from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+import asyncio
+
+router = APIRouter(prefix="/api/v1/orchestration")
+
+
+@router.post("/manager/init")
+async def init_manager(
+    goal: str,
+    conversation_id: str,
+    model: str = "claude-3.5-sonnet",
+    max_iterations: int = 50,
+):
+    """Initialize the orchestration agent for a conversation.
+
+    Spawns a new agent session with the given goal, attaches
+    it to the conversation sandbox, and begins autonomous
+    code generation and testing.
+    """
+    sandbox = await get_sandbox(conversation_id)
+
+    agent = OrchestrationAgent(
+        goal=goal,
+        model=model,
+        sandbox=sandbox,
+        max_iterations=max_iterations,
+    )
+
+    # Load existing memory and lessons from prior runs
+    memory = await WorkingMemory.load(conversation_id)
+    lessons = await LessonStore.get_recent(conversation_id, limit=20)
+
+    agent.attach_memory(memory)
+    agent.attach_lessons(lessons)
+
+    # Start the agent loop in background
+    task = asyncio.create_task(
+        agent.run(goal=goal, memory=memory, lessons=lessons)
+    )
+
+    return {
+        "status": "initialized",
+        "agent_id": agent.id,
+        "conversation_id": conversation_id,
+        "goal": goal,
+    }
+
+
+@router.get("/manager/{conversation_id}/status")
+async def get_manager_status(conversation_id: str):
+    """Return current status of the orchestration agent."""
+    agent = await get_active_agent(conversation_id)
+    if not agent:
+        raise HTTPException(status_code=404, detail="No active agent")
+
+    return {
+        "agent_id": agent.id,
+        "status": agent.current_status,
+        "total": len(agent.tasks),
+        "status_counts": {
+            "running": agent.running_count,
+            "completed": agent.completed_count,
+            "failed": agent.failed_count,
+            "pending": agent.pending_count,
+        },
+        "all": [t.to_dict() for t in agent.tasks],
+        "elapsed_seconds": agent.elapsed,
+    }`,
+
+  'sandbox.py': `from typing import Optional
+import asyncio
+import subprocess
+
+
+class Sandbox:
+    """Isolated execution environment for code generation."""
+
+    def __init__(self, conversation_id: str):
+        self.conversation_id = conversation_id
+        self.is_running = False
+        self.process: Optional[asyncio.subprocess.Process] = None
+
+    async def start(self):
+        """Spin up a new sandbox instance."""
+        self.is_running = True
+        self.process = await asyncio.create_subprocess_exec(
+            "docker", "run", "-d", "--rm",
+            f"wren-sandbox:{self.conversation_id}",
+            stdout=asyncio.subprocess.PIPE,
+        )
+
+    async def execute(self, command: str) -> dict:
+        """Run a command inside the sandbox."""
+        if not self.is_running:
+            await self.start()
+
+        proc = await asyncio.create_subprocess_shell(
+            command,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+        )
+        stdout, stderr = await proc.communicate()
+        return {
+            "exit_code": proc.returncode,
+            "stdout": stdout.decode(),
+            "stderr": stderr.decode(),
+        }
+
+    async def stop(self):
+        """Tear down the sandbox."""
+        if self.process:
+            self.process.kill()
+        self.is_running = False`,
+
+  'AgentPanel.tsx': `import React from 'react';
+import { useAgent } from '../hooks/useAgent';
+
+interface AgentPanelProps {
+  conversationId: string;
+}
+
+export function AgentPanel({ conversationId }: AgentPanelProps) {
+  const { status, tasks, elapsed } = useAgent(conversationId);
+
+  return (
+    <div className="agent-panel">
+      <div className="agent-header">
+        <h3>Agent Status</h3>
+        <span className="status-badge">{status}</span>
+      </div>
+      <div className="task-list">
+        {tasks.map((task) => (
+          <div key={task.id} className={\`task-item \${task.status}\`}>
+            <span className="task-name">{task.name}</span>
+            <span className="task-status">{task.status}</span>
+          </div>
+        ))}
+      </div>
+      <div className="agent-footer">
+        Elapsed: {elapsed}s · {tasks.length} tasks
+      </div>
+    </div>
+  );
+}`,
+
+  'CodeCanvas.tsx': `import React, { useEffect, useRef } from 'react';
+import * as monaco from 'monaco-editor';
+
+interface CodeCanvasProps {
+  language: string;
+  value: string;
+  readOnly?: boolean;
+}
+
+export function CodeCanvas({ language, value, readOnly = true }: CodeCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    editorRef.current = monaco.editor.create(containerRef.current, {
+      value,
+      language,
+      theme: 'wren-canvas',
+      readOnly,
+      minimap: { enabled: false },
+      fontSize: 13,
+      fontFamily: "'JetBrains Mono', monospace",
+    });
+
+    return () => editorRef.current?.dispose();
+  }, []);
+
+  useEffect(() => {
+    editorRef.current?.setValue(value);
+  }, [value]);
+
+  return <div ref={containerRef} className="code-canvas" />;
+}`,
+
+  'settings.py': `from pydantic_settings import BaseSettings
+from typing import Optional
+
+
+class Settings(BaseSettings):
+    """Application configuration loaded from environment."""
+
+    # Server
+    PORT: int = 3000
+    HOST: str = "0.0.0.0"
+    DEBUG: bool = False
+
+    # Runtime
+    RUNTIME: str = "local"
+    INSTALL_DOCKER: bool = True
+
+    # LLM Configuration
+    LLM_PROVIDER: str = "anthropic"
+    OPENAI_API_KEY: Optional[str] = None
+    ANTHROPIC_API_KEY: Optional[str] = None
+    MAX_ITERATIONS: int = 50
+
+    # Database
+    DATABASE_URL: str = "sqlite:///./wren.db"
+
+    # Session
+    SESSION_TIMEOUT: int = 3600
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"`,
+
+  'llm.py': `from typing import Optional
+from litellm import completion
+
+
+# Models that support function calling
+FUNCTION_CALLING_SUPPORTED_MODELS = [
+    "claude-3.5-sonnet",
+    "gpt-4-turbo",
+    "gemini-1.5-pro",
+]
+
+# Models with reasoning effort support
+REASONING_EFFORT_SUPPORTED_MODELS = [
+    "o1-preview",
+    "o3-mini",
+]
+
+# Models that support prompt caching
+CACHE_PROMPT_SUPPORTED_MODELS = [
+    "claude-3.5-sonnet",
+    "claude-3-opus",
+]
+
+
+class LLMClient:
+    """Unified LLM client with provider abstraction."""
+
+    def __init__(self, provider: str = "anthropic", model: str = "claude-3.5-sonnet"):
+        self.provider = provider
+        self.model = model
+
+    async def complete(
+        self,
+        messages: list[dict],
+        temperature: float = 0.7,
+        max_tokens: int = 4096,
+        functions: Optional[list[dict]] = None,
+    ) -> str:
+        """Send a completion request to the configured LLM."""
+        kwargs = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }
+        if functions and self.model in FUNCTION_CALLING_SUPPORTED_MODELS:
+            kwargs["functions"] = functions
+
+        response = completion(**kwargs)
+        return response.choices[0].message.content`,
+
+  'test_orchestration.py': `import pytest
+from unittest.mock import AsyncMock, patch
+from wren.app_server.orchestration.working_memory import WorkingMemory
+
+
+@pytest.fixture
+def mock_sandbox():
+    sandbox = AsyncMock()
+    sandbox.execute.return_value = {"exit_code": 0, "stdout": "", "stderr": ""}
+    return sandbox
+
+
+@pytest.mark.asyncio
+async def test_working_memory_load():
+    """Test that working memory loads correctly."""
+    wm = await WorkingMemory.load("test-conv-id")
+    assert wm is not None
+    assert wm.conversation_id == "test-conv-id"
+
+
+@pytest.mark.asyncio
+async def test_orchestration_init(mock_sandbox):
+    """Test agent initialization."""
+    with patch("get_sandbox", return_value=mock_sandbox):
+        from wren.app_server.orchestration.router import init_manager
+        result = await init_manager(
+            goal="Build a REST API",
+            conversation_id="test-id",
+            model="claude-3.5-sonnet",
+        )
+        assert result["status"] == "initialized"
+        assert "agent_id" in result`,
+
+  'conversation.py': `from fastapi import APIRouter, HTTPException
+from typing import Optional
+
+router = APIRouter(prefix="/api/v1")
+
+
+@router.post("/conversations")
+async def create_conversation(goal: str, mode: str = "vibe-code"):
+    """Create a new conversation."""
+    conv = await Conversation.create(goal=goal, mode=mode)
+    return {"id": conv.id, "status": "created"}`,
+
+  'Dockerfile': `FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock ./
+RUN pip install poetry && poetry install --no-dev
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["poetry", "run", "uvicorn", "wren.server.listen:app", "--host", "0.0.0.0", "--port", "3000"]`,
+
+  'docker-compose.yml': `version: "3.8"
+
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - RUNTIME=local
+      - DATABASE_URL=postgres://wren:wren@db:5432/wren
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: wren
+      POSTGRES_PASSWORD: wren
+      POSTGRES_DB: wren
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:`
+};
+
+// ─── Monaco Editor ───
+require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' } });
+let editor;
+let currentFile = 'orchestration.py';
+
+require(['vs/editor/editor.main'], function () {
+  monaco.editor.defineTheme('wren-canvas', {
+    base: 'vs-dark',
+    inherit: true,
+    rules: [
+      { token: 'comment',    foreground: '55555E', fontStyle: 'italic' },
+      { token: 'keyword',    foreground: '3B82F6' },
+      { token: 'string',     foreground: 'A78BFA' },
+      { token: 'number',     foreground: 'F59E0B' },
+      { token: 'type',       foreground: '14B8A6' },
+      { token: 'function',   foreground: '14B8A6' },
+      { token: 'variable',   foreground: 'F2F2F5' },
+      { token: 'parameter',  foreground: 'F2F2F5' },
+      { token: 'operator',   foreground: 'F2F2F5' },
+      { token: 'decorator',  foreground: 'F59E0B' },
+    ],
+    colors: {
+      'editor.background':                      '#161619',
+      'editor.foreground':                      '#F2F2F5',
+      'editor.lineHighlightBackground':         '#1E1E2230',
+      'editor.selectionBackground':             '#3B82F625',
+      'editorCursor.foreground':                '#3B82F6',
+      'editorLineNumber.foreground':            '#3A3A42',
+      'editorLineNumber.activeForeground':      '#55555E',
+      'editor.inactiveSelectionBackground':     '#3B82F610',
+      'editorIndentGuide.background':           '#26262940',
+      'editorIndentGuide.activeBackground':     '#3A3A4260',
+      'editor.selectionHighlightBackground':    '#3B82F610',
+      'editorGutter.background':                '#161619',
+      'minimap.background':                     '#111113',
+    }
+  });
+
+  editor = monaco.editor.create(document.getElementById('monaco-container'), {
+    value: fileContents[currentFile] || '',
+    language: getLang(currentFile),
+    theme: 'wren-canvas',
+    fontSize: 13,
+    fontFamily: "'JetBrains Mono', 'SF Mono', monospace",
+    fontLigatures: true,
+    lineHeight: 22,
+    padding: { top: 16, bottom: 16 },
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    renderLineHighlight: 'line',
+    cursorBlinking: 'smooth',
+    cursorSmoothCaretAnimation: 'on',
+    smoothScrolling: true,
+    readOnly: true,
+    overviewRulerLanes: 0,
+    hideCursorInOverviewRuler: true,
+    overviewRulerBorder: false,
+    scrollbar: {
+      vertical: 'hidden',
+      horizontal: 'auto',
+      verticalScrollbarSize: 0,
+    },
+    folding: false,
+    wordWrap: 'on',
+    lineNumbers: 'on',
+    glyphMargin: false,
+    lineDecorationsWidth: 8,
+    lineNumbersMinChars: 3,
+  });
+
+  // ─── Agent Typing Simulation ───
+  let typeTimer = null;
+  let cur = 0;
+
+  function stopTyping() {
+    if (typeTimer) { clearTimeout(typeTimer); typeTimer = null; }
+  }
+
+  function typeLine(code, onDone) {
+    if (cur >= code.length) { if (onDone) onDone(); return; }
+    const prev = editor.getValue();
+    editor.setValue(prev ? prev + '\n' + code[cur] : code[cur]);
+    editor.revealLine(cur + 1);
+    cur++;
+    const l = code[cur - 1].trim();
+    const ms = l === '' ? 50 : l.startsWith('#') ? 65 : l.startsWith('"""') ? 80 : 55 + Math.random() * 35;
+    typeTimer = setTimeout(() => typeLine(code, onDone), ms);
+  }
+
+  function startTyping(filename) {
+    stopTyping();
+    cur = 0;
+    editor.setValue('');
+    const code = (fileContents[filename] || '').split('\n');
+    typeLine(code, () => {
+      // Loop: clear and retype after delay
+      typeTimer = setTimeout(() => {
+        cur = 0; editor.setValue('');
+        typeLine(code, null);
+      }, 5000);
+    });
+  }
+
+  // Initial load
+  setTimeout(() => startTyping(currentFile), 800);
+
+  window.addEventListener('resize', () => editor.layout());
+});
+
+function getLang(filename) {
+  if (filename.endsWith('.py')) return 'python';
+  if (filename.endsWith('.tsx') || filename.endsWith('.ts')) return 'typescript';
+  if (filename.endsWith('.yml') || filename.endsWith('.yaml')) return 'yaml';
+  if (filename.endsWith('.json')) return 'json';
+  if (filename === 'Dockerfile') return 'dockerfile';
+  return 'plaintext';
+}
+
+function openFile(filename) {
+  if (!fileContents[filename]) {
+    showToast('No preview available for ' + filename, 'info');
+    return;
+  }
+  currentFile = filename;
+  const lang = getLang(filename);
+  const model = editor.getModel();
+  monaco.editor.setModelLanguage(model, lang);
+  startTyping(filename);
+
+  // Update titlebar
+  document.querySelector('.frame-filename').textContent = filename;
+
+  // Highlight active tree item
+  document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('active'));
+  const match = document.querySelector(`.tree-item[data-file="${filename}"]`);
+  if (match) match.classList.add('active');
+
+  showToast('Opened ' + filename, 'success');
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.querySelector('.toast-dot').className = 'toast-dot ' + (type || 'success');
+  t.classList.add('visible');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('visible'), 2200);
+}
+
+// ─── Left Pane Tab Switching ───
+document.querySelectorAll('#left-bottom-tabs .left-tab[data-panel]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.id === 'deploy-btn') return; // handled separately
+    document.querySelectorAll('#left-bottom-tabs .left-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#left-pane .left-panel-content').forEach(p => p.classList.remove('visible'));
+    document.getElementById(btn.dataset.panel).classList.add('visible');
+  });
+});
+
+// ─── Right Pane Tab Switching ───
+document.querySelectorAll('.right-tab[data-panel]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.right-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('#right-pane .right-panel-content').forEach(p => p.classList.remove('visible'));
+    document.getElementById(btn.dataset.panel).classList.add('visible');
+  });
+});
+
+// ─── File Tree Click ───
+document.querySelectorAll('.tree-item[data-file]').forEach(item => {
+  item.addEventListener('click', () => {
+    const filename = item.dataset.file;
+    if (item.classList.contains('folder')) {
+      // Toggle folder expand visual
+      item.classList.toggle('expanded');
+      return;
+    }
+    openFile(filename);
+  });
+});
+
+// ─── Deploy Modal ───
+const deploySteps = ['ds-1','ds-2','ds-3','ds-4','ds-5'];
+let deployTimer;
+
+document.getElementById('deploy-btn').addEventListener('click', () => {
+  document.getElementById('deploy-overlay').classList.add('visible');
+  // Simulate deploy progress
+  let step = 0;
+  clearInterval(deployTimer);
+  deployTimer = setInterval(() => {
+    if (step >= deploySteps.length) { clearInterval(deployTimer); return; }
+    const el = document.getElementById(deploySteps[step]);
+    el.classList.add('done');
+    el.classList.remove('running');
+    el.querySelector('.step-dot').className = 'step-dot done';
+    step++;
+    if (step < deploySteps.length) {
+      const next = document.getElementById(deploySteps[step]);
+      next.classList.add('running');
+      next.querySelector('.step-dot').className = 'step-dot running';
+    }
+  }, 1200);
+  // Reset steps on open
+  deploySteps.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = i === 0 ? 'deploy-step done' : i === 1 ? 'deploy-step running' : 'deploy-step';
+    el.querySelector('.step-dot').className = i === 0 ? 'step-dot done' : i === 1 ? 'step-dot running' : 'step-dot pending';
+  });
+});
+
+document.getElementById('deploy-close-btn').addEventListener('click', () => {
+  document.getElementById('deploy-overlay').classList.remove('visible');
+  clearInterval(deployTimer);
+});
+
+document.getElementById('deploy-overlay').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('visible');
+    clearInterval(deployTimer);
+  }
+});
+
+// ─── Topbar Deploy Button ───
+document.getElementById('deploy-btn-top').addEventListener('click', () => {
+  document.getElementById('deploy-btn').click();
+});
+
+// ─── Agent Prompt Input ───
+const agentPrompt = document.getElementById('agent-prompt');
+const agentSendBtn = document.getElementById('agent-send-btn');
+
+function sendAgentMessage() {
+  const msg = agentPrompt.value.trim();
+  if (!msg) return;
+  showToast('Agent received: "' + msg + '"', 'info');
+  agentPrompt.value = '';
+
+  // Add to activity stream
+  const s = document.getElementById('activity-stream');
+  const el = document.createElement('div');
+  el.className = 'stream-item';
+  el.style.cssText = 'opacity:0;transform:translateY(4px);transition:all 0.3s ease';
+  el.innerHTML = `
+    <div class="stream-dot-col">
+      <div class="stream-dot teal"></div>
+      <div class="stream-line"></div>
+    </div>
+    <div class="stream-body">
+      <div class="stream-time">${ts()}</div>
+      <div class="stream-text" style="color:var(--t1)">${msg}</div>
+    </div>`;
+  s.appendChild(el);
+  requestAnimationFrame(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; });
+}
+
+agentSendBtn.addEventListener('click', sendAgentMessage);
+agentPrompt.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAgentMessage();
+  }
+});
+
+// ─── Elapsed Time Counter ───
+let elapsedSecs = 154; // start at 2m 34s
+function updateElapsed() {
+  elapsedSecs++;
+  const m = Math.floor(elapsedSecs / 60);
+  const s = elapsedSecs % 60;
+  const el = document.getElementById('agent-elapsed');
+  if (el) el.textContent = m + 'm ' + (s < 10 ? '0' : '') + s + 's';
+}
+setInterval(updateElapsed, 1000);
+
+// ─── Activity Stream ───
+const acts = [
+  { t: 'Analyzing repository system dependencies…',                    d: 'active' },
+  { t: 'Reading <code>config/settings.py</code> for env vars',         d: 'teal' },
+  { t: 'Injecting code updates into <code>components/</code>',         d: 'active' },
+  { t: 'Running type checks on <code>orchestration.py</code>',         d: 'teal' },
+  { t: 'Generating tests for new endpoints',                           d: 'active' },
+  { t: 'Evaluating function signatures against schema',                d: 'teal' },
+  { t: 'Applying memory context from prior sessions',                  d: 'active' },
+  { t: 'Optimizing import structure in <code>routes/</code>',          d: 'teal' },
+  { t: 'Validating async handler patterns',                            d: 'active' },
+  { t: 'Syncing lesson learned from <code>test_orchestration.py</code>', d: 'teal' },
+];
+const mods = [
+  { f: 'orchestration.py',  a: '+42', d: '-8' },
+  { f: 'conversation.py',   a: '+18', d: '-3' },
+  { f: 'AgentPanel.tsx',    a: '+67', d: '-22' },
+  { f: 'settings.py',       a: '+5',  d: '-1' },
+];
+let ai = 0, mi = 0;
+
+function ts() {
+  return new Date().toLocaleTimeString('en-US', { hour12:false, hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+document.getElementById('time-1').textContent = ts();
+
+function addAct() {
+  const s = document.getElementById('activity-stream');
+  const a = acts[ai % acts.length]; ai++;
+  const el = document.createElement('div');
+  el.className = 'stream-item';
+  el.style.cssText = 'opacity:0;transform:translateY(4px);transition:all 0.3s ease';
+  el.innerHTML = `
+    <div class="stream-dot-col">
+      <div class="stream-dot ${a.d}"></div>
+      <div class="stream-line"></div>
+    </div>
+    <div class="stream-body">
+      <div class="stream-time">${ts()}</div>
+      <div class="stream-text">${a.t}</div>
+    </div>`;
+  s.appendChild(el);
+  requestAnimationFrame(() => { el.style.opacity='1'; el.style.transform='translateY(0)'; });
+  const items = s.querySelectorAll('.stream-item');
+  if (items.length > 8) { const o = items[0]; o.style.opacity='0'; setTimeout(()=>o.remove(),300); }
+}
+
+function addMod() {
+  const c = document.getElementById('mod-blocks');
+  const m = mods[mi % mods.length]; mi++;
+  const b = document.createElement('div');
+  b.className = 'mod-block';
+  b.style.cssText = 'opacity:0;transform:translateY(5px);transition:all 0.3s ease';
+  b.innerHTML = `
+    <div class="mod-header">
+      <span class="mod-file">${m.f}</span>
+      <span class="mod-stats"><span class="add">${m.a}</span> <span class="del">${m.d}</span></span>
+    </div>
+    <div class="mod-actions">
+      <button class="mod-btn primary" onclick="showToast('Changes committed','success')">Commit Changes</button>
+      <button class="mod-btn secondary" onclick="showToast('Changes undone','info')">Undo</button>
+    </div>`;
+  c.prepend(b);
+  requestAnimationFrame(() => { b.style.opacity='1'; b.style.transform='translateY(0)'; });
+  const bs = c.querySelectorAll('.mod-block');
+  if (bs.length > 3) { const o = bs[bs.length-1]; o.style.opacity='0'; setTimeout(()=>o.remove(),300); }
+}
+
+setInterval(addAct, 3500);
+setInterval(addMod, 8000);
+setTimeout(addMod, 5000);
+</script>
+</body>
+</html>

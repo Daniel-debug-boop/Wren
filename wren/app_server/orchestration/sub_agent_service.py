@@ -7,10 +7,8 @@ by reading the sub-conversation's events.
 """
 
 import asyncio
-import json
 import logging
 import time
-import uuid
 from typing import Any
 
 import httpx

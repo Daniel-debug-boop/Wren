@@ -107,9 +107,6 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks(id: string) {
-            // Separate vendor chunks for better caching
-            if (id.includes('node_modules/react-dom')) return 'vendor-react';
-            if (id.includes('node_modules/react')) return 'vendor-react';
             if (id.includes('node_modules/@tanstack')) return 'vendor-query';
             if (id.includes('node_modules/monaco-editor') || id.includes('node_modules/@monaco-editor')) return 'vendor-monaco';
             if (id.includes('node_modules/framer-motion')) return 'vendor-motion';
@@ -118,7 +115,6 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      // Warn about bundle size
       chunkSizeWarningLimit: 400,
     },
     clearScreen: false,

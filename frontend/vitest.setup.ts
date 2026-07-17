@@ -7,6 +7,39 @@ HTMLCanvasElement.prototype.getContext = vi.fn();
 HTMLElement.prototype.scrollTo = vi.fn();
 window.scrollTo = vi.fn();
 
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+const localStorageStore: Record<string, string> = {};
+
+vi.stubGlobal("localStorage", {
+  getItem: (key: string) => localStorageStore[key] ?? null,
+  setItem: (key: string, value: string) => {
+    localStorageStore[key] = value;
+  },
+  removeItem: (key: string) => {
+    delete localStorageStore[key];
+  },
+  clear: () => {
+    Object.keys(localStorageStore).forEach((k) => delete localStorageStore[k]);
+  },
+  get length() {
+    return Object.keys(localStorageStore).length;
+  },
+  key: (index: number) => Object.keys(localStorageStore)[index] ?? null,
+});
+
 // Mock ResizeObserver for test environment
 class MockResizeObserver {
   observe = vi.fn();

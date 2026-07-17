@@ -1,18 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi, beforeEach } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoutesStub } from "react-router";
-import ProviderSetup from "#/routes/login";
+import ApiKeySetup from "#/routes/login";
 
-const { useConfigMock } = vi.hoisted(() => ({
-  useConfigMock: vi.fn(() => ({
-    data: undefined,
-    isLoading: false,
-  })),
-}));
-
-vi.mock("#/hooks/query/use-config", () => ({
-  useConfig: () => useConfigMock(),
+const { getAllMock, saveMock } = vi.hoisted(() => ({
+  getAllMock: vi.fn(),
+  saveMock: vi.fn(),
 }));
 
 vi.mock("#/components/ui/Nav", () => ({
@@ -23,9 +18,34 @@ vi.mock("#/components/ui/Footer", () => ({
   Footer: () => <footer data-testid="footer" />,
 }));
 
-describe("ProviderSetup", () => {
+vi.mock("#/api/api-keys-service/api-keys-service.api", () => ({
+  default: {
+    getAll: getAllMock,
+    save: saveMock,
+  },
+  PROVIDER_METADATA: {
+    openai: {
+      name: "OpenAI",
+      description: "GPT-4o, GPT-4 Turbo, GPT-4o-mini",
+      url: "https://platform.openai.com/api-keys",
+      color: "#10A37F",
+      models: ["gpt-4o"],
+    },
+    anthropic: {
+      name: "Anthropic",
+      description: "Claude 3.5 Sonnet, Claude 3 Haiku",
+      url: "https://console.anthropic.com/settings/keys",
+      color: "#D97757",
+      models: ["claude-3-5-sonnet-20241022"],
+    },
+  },
+}));
+
+describe("ApiKeySetup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getAllMock.mockReturnValue([]);
+    saveMock.mockImplementation(() => []);
     localStorage.clear();
   });
 
@@ -35,7 +55,7 @@ describe("ProviderSetup", () => {
     });
     const RouterStub = createRoutesStub([
       {
-        Component: ProviderSetup,
+        Component: ApiKeySetup,
         path: "/login",
       },
     ]);
@@ -47,23 +67,77 @@ describe("ProviderSetup", () => {
     });
   };
 
-  it("renders connect your LLM heading", () => {
+  it("renders heading and subtitle", () => {
     renderPage();
-    expect(screen.getByText("Connect your LLM")).toBeInTheDocument();
+    expect(screen.getByText("Bring Your Own API Key")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Paste your LLM provider API key below/),
+    ).toBeInTheDocument();
   });
 
-  it("renders provider cards for known providers", () => {
-    renderPage();
-    expect(screen.getByText("OpenAI")).toBeInTheDocument();
-    expect(screen.getByText("Anthropic")).toBeInTheDocument();
-    expect(screen.getByText("Ollama")).toBeInTheDocument();
-    expect(screen.getByText("Groq")).toBeInTheDocument();
-  });
-
-  it("renders subtitle text", () => {
+  it("renders API key input and disabled Get Started button", () => {
     renderPage();
     expect(
-      screen.getByText(/Choose a provider, pick a model/),
+      screen.getByPlaceholderText("Paste your API key here..."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /get started/i })).toBeDisabled();
+  });
+
+  it("enables button when key is 8+ characters", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByPlaceholderText("Paste your API key here...");
+    await user.type(input, "sk-test12345678");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /get started/i }),
+      ).toBeEnabled();
+    });
+  });
+
+  it("detects provider from API key prefix", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByPlaceholderText("Paste your API key here...");
+    await user.type(input, "sk-ant-test12345");
+
+    await waitFor(() => {
+      expect(screen.getByText(/Detected: Anthropic/)).toBeInTheDocument();
+    });
+  });
+
+  it("shows success state after saving", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const input = screen.getByPlaceholderText("Paste your API key here...");
+    await user.type(input, "sk-test12345678");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: /get started/i }),
+      ).toBeEnabled();
+    });
+
+    await user.click(screen.getByRole("button", { name: /get started/i }));
+
+    await waitFor(() => {
+      expect(screen.getByText("API Key saved!")).toBeInTheDocument();
+    });
+  });
+
+  it("shows existing providers notice when providers exist", () => {
+    getAllMock.mockReturnValue([
+      { provider: "openai", model: "gpt-4o", apiKey: "sk-xxx" },
+    ]);
+
+    renderPage();
+
+    expect(
+      screen.getByText(/1 provider already configured/),
     ).toBeInTheDocument();
   });
 });

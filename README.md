@@ -1,6 +1,6 @@
 <div align="center">
   <br/>
-  <img src="https://assets.wren.dev/logo-whitebackground.png" alt="Wren" width="320"/>
+  <img src="./logo.png" alt="Wren" width="320"/>
   <br/>
   <br/>
   
@@ -19,7 +19,7 @@
   
   <br/>
   
-  [🌐 Website](#) · [📖 Docs](#) · [💬 Discord](#) · [🐛 Issues](https://github.com/Daniel-debug-boop/Wren/issues)
+  [🌐 Website](#) · [📖 Docs](./GETTING_STARTED.md) · [💬 Discord](#) · [🐛 Issues](https://github.com/Daniel-debug-boop/Wren/issues)
   
   <br/>
 </div>
@@ -102,6 +102,8 @@ make run
 
 Open **[http://localhost:3001](http://localhost:3001)** in your browser and start coding! 🎉
 
+> **Need detailed setup instructions?** Check out [GETTING_STARTED.md](./GETTING_STARTED.md)
+
 ### 🐳 Run with Docker
 
 ```bash
@@ -183,7 +185,7 @@ Specialized scaffolding for game projects. Asset wiring, scene management, and p
 ### Component Stack
 
 | Layer | Technology | Purpose |
-|-------|-----------|---------|
+|-------|-----------|----------|
 | **Frontend** | React 19, TypeScript, TailwindCSS, Monaco Editor | User interface & IDE workspace |
 | **API Server** | FastAPI, WebSockets, Python 3.12 | REST + real-time communication |
 | **Orchestration** | Python Harness, Task Graph | Agent lifecycle & execution |
@@ -336,7 +338,8 @@ Wren/
 
 ## 🎓 Learn More
 
-- **[📖 Full Documentation](./Development.md)** — Setup, configuration, and advanced topics
+- **[🚀 Getting Started Guide](./GETTING_STARTED.md)** — Step-by-step setup and first run
+- **[📖 Full Documentation](./Development.md)** — Advanced configuration and development
 - **[🤖 Agent Architecture](./AGENTS.md)** — Deep dive into agent systems
 - **[🛠️ Contributing Guide](./CONTRIBUTING.md)** — How to contribute to Wren
 - **[📋 Issue Triage](./ISSUE_TRIAGE.md)** — How we manage issues

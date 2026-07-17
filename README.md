@@ -1,46 +1,108 @@
 <div align="center">
-  <img src="https://assets.wren.dev/logo-whitebackground.png" alt="Wren" width="280"/>
-  <h1 align="center">Wren — AI Engineering Platform</h1>
-  <p align="center">
-    Self-host your AI coding agents. Chat, code, review, debug — all in one workspace.
-    <br/>
-    Bring your own LLM. Own your data. Own the workflow.
-  </p>
-  <p>
-    <a href="#quickstart"><img src="https://img.shields.io/badge/Quickstart-000?style=for-the-badge" alt="Quickstart"/></a>
-    <a href="#features"><img src="https://img.shields.io/badge/Features-000?style=for-the-badge" alt="Features"/></a>
-    <a href="#architecture"><img src="https://img.shields.io/badge/Architecture-000?style=for-the-badge" alt="Architecture"/></a>
-  </p>
+  <br/>
+  <img src="https://assets.wren.dev/logo-whitebackground.png" alt="Wren" width="320"/>
+  <br/>
+  <br/>
+  
+  # 🚀 Wren — AI Engineering Platform
+  
+  [![Python 3.12+](https://img.shields.io/badge/Python-3.12%2B-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![React 19](https://img.shields.io/badge/React-19-61dafb?style=flat-square&logo=react&logoColor=white)](https://react.dev/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![MIT License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+  <br/>
+  <br/>
+  
+  **Self-host your AI coding agents.** Chat, code, review, debug — all in one unified workspace.  
+  _Bring your own LLM · Own your data · Own the workflow_
+  
+  <br/>
+  
+  [🌐 Website](#) · [📖 Docs](#) · [💬 Discord](#) · [🐛 Issues](https://github.com/Daniel-debug-boop/Wren/issues)
+  
   <br/>
 </div>
 
 ---
 
-## Quickstart
+## ✨ Key Features
+
+<table>
+  <tr>
+    <td width="50%">
+      <h3>🤖 Agentic AI Engineering</h3>
+      <ul>
+        <li>Multi-mode chat interface (Vibe Code, Autonomous, Game)</li>
+        <li>Real-time WebSocket streaming</li>
+        <li>Intelligent mode auto-selection</li>
+        <li>Working Memory & Lessons Learned</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>💻 Built-in IDE Workspace</h3>
+      <ul>
+        <li>Monaco Editor with full syntax highlighting</li>
+        <li>Live file tree with real-time updates</li>
+        <li>Terminal emulator with bidirectional WebSocket</li>
+        <li>Resizable panes & customizable layout</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <h3>🔧 Flexible LLM Support</h3>
+      <ul>
+        <li>OpenAI (GPT-4o, o1, o3)</li>
+        <li>Anthropic (Claude 3.5 Sonnet, Opus)</li>
+        <li>Mistral, Groq, Custom Endpoints</li>
+        <li>Full model configuration control</li>
+      </ul>
+    </td>
+    <td width="50%">
+      <h3>🛡️ Privacy & Control</h3>
+      <ul>
+        <li>100% self-hosted on your infrastructure</li>
+        <li>Zero vendor lock-in</li>
+        <li>Docker-based sandboxing</li>
+        <li>Optional, transparent analytics</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<br/>
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Node.js** 22.12.x or later
-- **Python** 3.12+ with `uv` or `poetry`
-- **Docker** (optional, for sandboxed agent execution)
+```bash
+✅ Node.js 22.12.x or later
+✅ Python 3.12+ with uv or poetry  
+✅ Docker (optional, for sandboxed execution)
+✅ Git
+```
 
-### Launch
+### Launch Wren (3 steps)
 
 ```bash
+# 1️⃣ Clone the repository
 git clone https://github.com/Daniel-debug-boop/Wren.git
 cd Wren
-make build && make run
+
+# 2️⃣ Install dependencies & build
+make build
+
+# 3️⃣ Start the application
+make run
 ```
 
-Open **[http://localhost:3001](http://localhost:3001)**.
+Open **[http://localhost:3001](http://localhost:3001)** in your browser and start coding! 🎉
 
-### CLI
-
-```bash
-make run FRONTEND_PORT=3001 BACKEND_HOST=0.0.0.0
-```
-
-### Docker Sandbox
+### 🐳 Run with Docker
 
 ```bash
 export PROJECTS_PATH="$HOME/projects"
@@ -53,207 +115,297 @@ docker run -it --rm \
   ghcr.io/wren/agent-canvas:latest
 ```
 
-### Environment Variables
+### ⚙️ Configuration
+
+Set environment variables to customize Wren:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `LLM_API_KEY` | — | Your LLM provider API key |
-| `LLM_MODEL` | `gpt-4o` | Default model |
+| `LLM_MODEL` | `gpt-4o` | Default model to use |
 | `WORKSPACE_DIR` | `./workspace` | Project workspace path |
-| `ENABLE_V1` | `true` | Enable V1 application server |
-| `FRONTEND_PORT` | `3001` | Frontend dev server port |
+| `FRONTEND_PORT` | `3001` | Frontend development port |
+| `BACKEND_HOST` | `127.0.0.1` | Backend server hostname |
+| `BACKEND_PORT` | `3000` | Backend server port |
+
+<br/>
 
 ---
 
-## Features
+## 📋 Core Operating Modes
 
-### Three Core Modes
+Wren offers three powerful modes to fit your workflow:
 
-| Mode | Purpose |
-|------|---------|
-| **Vibe Code** | Full agentic coding — chat, edit, run, repeat. Best for building apps from scratch. |
-| **Autonomous** | Self-driving execution — agent plans, codes, and iterates with Working Memory + Lessons Learned, no hand-holding. |
-| **Game** | Specialized mode for game development — scaffolding, asset wiring, and playable previews. |
+### 🎯 **Vibe Code** — Interactive Development
+Full agentic coding with real-time feedback. Chat, edit, run, and iterate. Perfect for building applications from scratch with continuous human guidance.
 
-Legacy modes (Plan, Code, Review, Debug, Ask) remain available for power users.
+### ⚡ **Autonomous** — Self-Driving Execution  
+Agent plans, codes, and debugs independently using Working Memory and Lessons Learned. Minimal hand-holding required. Ideal for complex, multi-step tasks.
 
-### Conversational Interface
-
-- Chat with AI agents in natural language
-- Real-time streaming responses via WebSocket
-- Automatic mode suggestion based on your input
-- Rich message bubbles with mode badges and action tags
-
-### Built-in IDE Workspace
-
-- **TopBar** — Wren logo, version badge, active mode badge, live agent status, and deploy button
-- **FileTree** — real file explorer with tree/list views, edit & delete actions, live updates
-- **Monaco Editor** — syntax highlighting, bracket matching, multi-cursor support, inline completions
-- **Terminal** — live terminal with command history and bidirectional WebSocket communication
-- **Resizable panes** — file tree, editor, terminal, and agent timeline
-
-### Plan → Code → Review → Debug Pipeline
-
-1. **Plan** — Agent analyses your request and presents a structured plan
-2. **Code** — Agent implements the plan with file-by-file changes
-3. **Review** — Review diffs, add comments, approve or reject changes
-4. **Debug** — If errors occur, agent diagnoses and suggests fixes
-
-### Bring Your Own LLM
-
-- **OpenAI** (GPT-4o, o1, o3, etc.)
-- **Anthropic** (Claude 3.5 Sonnet, Claude 3 Opus, etc.)
-- **Mistral**, **Groq**, and custom endpoints
-- Full control over model, temperature, max tokens, and reasoning effort
-
-### Skills & Automation
-
-- **44+ Skills** — Domain-specific prompts for tasks (React, Python, Docker, Godot, etc.)
-- **Auto-triggering** — Skills activate based on context keywords
-- **MCP Support** — Model Context Protocol for external tool integration
-- **Working Memory** — Long-term context retention across sessions
-
-### Privacy & Control
-
-- **Self-hosted** — All data stays on your infrastructure
-- **No telemetry** — Optional, transparent analytics
-- **Your API keys** — No vendor lock-in to a single model provider
-- **Sandboxed execution** — Docker isolation for agent runs
+### 🎮 **Game** — Game Development Focus
+Specialized scaffolding for game projects. Asset wiring, scene management, and playable previews built-in.
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                    Frontend (React)                          │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌───────────┐  │
-│  │   Chat   │  │  Monaco  │  │  Review  │  │  Terminal  │  │
-│  │ Interface│  │  Editor  │  │  Worksp. │  │  Emulator  │  │
-│  └──────────┘  └──────────┘  └──────────┘  └───────────┘  │
-│                       ↕ WebSocket / REST                    │
-├─────────────────────────────────────────────────────────────┤
-│                 Application Server (FastAPI)                 │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │  Intent  │  │ Session  │  │   LLM    │  │  Skills  │   │
-│  │  Router  │  │  Manager │  │  Router  │  │  Engine  │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
-│                       ↕ Internal IPC                         │
-├─────────────────────────────────────────────────────────────┤
-│              Agent Orchestrator (Harness)                    │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │   Meta   │  │   Task   │  │  Working │  │  Vector  │   │
-│  │Orchestr. │  │   Graph  │  │  Memory  │  │  Store   │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
-├─────────────────────────────────────────────────────────────┤
-│              Agent Backends (Sandbox/Docker/VM)              │
+┌──────────────────────────────────────────────────────────────┐
+│                   🎨 Frontend (React 19)                     │
+│  ┌─────────────┐  ┌──────────┐  ┌─────────┐  ┌───────────┐  │
+│  │ Chat Panel  │  │ Monaco   │  │ Review  │  │ Terminal  │  │
+│  │ Interface   │  │ Editor   │  │ Console │  │ Emulator  │  │
+│  └─────────────┘  └──────────┘  └─────────┘  └───────────┘  │
+│                    ↕ WebSocket / REST APIs                   │
+├──────────────────────────────────────────────────────────────┤
+│              🔌 Application Server (FastAPI)                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │ Intent   │  │ Session  │  │   LLM    │  │ Skills   │    │
+│  │ Router   │  │ Manager  │  │ Router   │  │ Engine   │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+│                    ↕ Internal IPC                            │
+├──────────────────────────────────────────────────────────────┤
+│           🎭 Agent Orchestrator (Harness Layer)              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐    │
+│  │  Meta    │  │ Task     │  │Working   │  │ Vector   │    │
+│  │Orchestr. │  │ Graph    │  │ Memory   │  │ Store    │    │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘    │
+│                                                              │
+├──────────────────────────────────────────────────────────────┤
+│        🔒 Agent Execution Backends (Isolated)               │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐                   │
-│  │  Docker  │  │   VM     │  │  Cloud   │                   │
+│  │ Docker   │  │   VM     │  │  Cloud   │                   │
 │  │ Sandbox  │  │ Backend  │  │ Backend  │                   │
 │  └──────────┘  └──────────┘  └──────────┘                   │
-└─────────────────────────────────────────────────────────────┘
+└──────────────────────────────────────────────────────────────┘
 ```
 
-### Core Components
+### Component Stack
 
-| Component | Stack | Purpose |
-|-----------|-------|---------|
-| **Frontend** | React 19, TypeScript, Tailwind CSS, Monaco Editor | User interface — chat, IDE, review, debug |
-| **App Server** | FastAPI (Python) | REST + WebSocket API, session management, LLM routing |
-| **Orchestrator** | Python (Harness) | Agent lifecycle, task graph execution, working memory |
-| **Intent System** | Python | NLP-based intent analysis, mode selection, skill synthesis |
-| **Agent Backend** | Docker/VM/Cloud | Isolated execution environment for agents |
+| Layer | Technology | Purpose |
+|-------|-----------|---------|
+| **Frontend** | React 19, TypeScript, TailwindCSS, Monaco Editor | User interface & IDE workspace |
+| **API Server** | FastAPI, WebSockets, Python 3.12 | REST + real-time communication |
+| **Orchestration** | Python Harness, Task Graph | Agent lifecycle & execution |
+| **Intent System** | NLP-based analysis | Mode selection & skill synthesis |
+| **Execution** | Docker / VM / Cloud | Isolated, secure agent runtime |
 
----
-
-## Tech Stack
-
-**Frontend**
-
-React 19.2 · TypeScript · React Router 7 · TanStack Query 5 · Tailwind CSS 4 · Framer Motion 12 · Monaco Editor 0.55 · Zustand · Socket.IO · i18next · Lucide
-
-**Backend**
-
-Python 3.12 · FastAPI · WebSockets · LiteLLM · Poetry · Ruff · Mypy · Pytest
-
-**Infrastructure**
-
-Docker · Docker Compose · Kubernetes (optional) · PostgreSQL (optional)
+<br/>
 
 ---
 
-## Development
+## 🛠️ Development
+
+### Setup Development Environment
 
 ```bash
-git clone https://github.com/Daniel-debug-boop/Wren.git
-cd Wren
+# Install all dependencies (backend + frontend)
+make build
 
-make build          # Install all dependencies
-make run            # Start development servers
-
-cd frontend && npm run dev      # Frontend only
-make start-backend              # Backend only
-
-cd frontend && npm run test     # Frontend tests
-poetry run pytest tests/unit/   # Backend tests
-
-cd frontend && npm run lint:fix && npm run build   # Lint & build
-pre-commit run --all-files                         # Pre-commit checks
+# Install pre-commit hooks (required before committing)
+make install-pre-commit-hooks
 ```
 
-See [Development.md](./Development.md) for detailed documentation.
+### Development Commands
+
+```bash
+# Start full development stack
+make run
+
+# Frontend only (on port 3001)
+cd frontend && npm run dev
+
+# Backend only (on port 3000)
+make start-backend
+
+# Run tests
+cd frontend && npm run test       # Frontend tests
+poetry run pytest tests/unit/     # Backend tests
+
+# Linting & formatting
+cd frontend && npm run lint:fix && npm run build
+pre-commit run --all-files --config ./dev_config/python/.pre-commit-config.yaml
+```
+
+### Before Submitting a PR
+
+```bash
+# 1. Install pre-commit hooks
+make install-pre-commit-hooks
+
+# 2. Make your changes
+# ... edit files ...
+
+# 3. Lint & format (auto-fixes most issues)
+cd frontend && npm run lint:fix && npm run build    # Frontend
+pre-commit run --config ./dev_config/python/.pre-commit-config.yaml  # Backend
+
+# 4. Verify TypeScript compilation
+cd frontend && npx tsc --noEmit
+
+# 5. Run tests
+cd frontend && npm run test
+poetry run pytest tests/unit/
+
+# 6. Commit & push
+git add <specific-files>  # Avoid git add .
+git commit -m "Your message"
+git push
+```
+
+All pre-commit checks **MUST** pass before merging. See [Development.md](./Development.md) for detailed setup.
+
+<br/>
 
 ---
 
-## Project Structure
+## 📦 Project Structure
 
 ```
-wren/
-├── frontend/              # React SPA (TypeScript)
+Wren/
+├── 🎨 frontend/                    # React SPA (TypeScript)
 │   ├── src/
-│   │   ├── api/          # API client layer
-│   │   ├── components/   # UI components
-│   │   ├── hooks/        # Custom React hooks
-│   │   ├── routes/       # Page components
-│   │   ├── types/        # Type definitions
-│   │   └── utils/        # Utilities & verified models
-│   └── __tests__/        # Vitest test suite
-├── wren/                  # Python backend
-│   ├── app_server/       # FastAPI application server
-│   ├── server/           # Core server & orchestrator
-│   ├── harness/          # Agent orchestrator
-│   ├── intent/           # NLP intent analysis
-│   └── agent_server/     # Agent server
-├── skills/              # Reusable agent skill prompts
+│   │   ├── api/                   # API client layer & data fetching
+│   │   ├── components/            # Reusable UI components
+│   │   ├── hooks/                 # Custom React hooks
+│   │   ├── routes/                # Page components & routing
+│   │   ├── types/                 # TypeScript type definitions
+│   │   └── utils/                 # Utilities & verified models
+│   ├── __tests__/                 # Vitest test suite
+│   └── package.json               # Dependencies & scripts
+│
+├── 🐍 wren/                        # Python backend
+│   ├── app_server/                # FastAPI application server
+│   ├── server/                    # Core server & orchestrator
+│   ├── harness/                   # Agent orchestrator (task graph, working memory)
+│   ├── intent/                    # NLP intent analysis & mode selection
+│   ├── agent_server/              # Agent runtime server
+│   └── cli/                       # Command-line interface
+│
+├── 🎯 skills/                     # Reusable agent skill prompts (44+)
+│   ├── react/                     # React skill prompts
+│   ├── python/                    # Python development skills
+│   ├── docker/                    # Docker/containers skills
+│   ├── godot/                     # Game development (Godot)
+│   └── ...                        # Domain-specific skills
+│
+├── 📚 docs/                       # Documentation & guides
+├── 🧪 tests/                      # Pytest test suite
+├── 🐳 containers/                 # Docker configuration
+├── Makefile                       # Build & development commands
+└── pyproject.toml                 # Python project configuration
 ```
 
----
-
-## Contributing
-
-We welcome contributions! Please see:
-
-- [Contributing Guidelines](./CONTRIBUTING.md)
-- [Code of Conduct](./CODE_OF_CONDUCT.md)
-- [Issue Triage Guide](./ISSUE_TRIAGE.md)
-
-Before submitting a PR:
-- Pre-commit hooks pass (`make install-pre-commit-hooks`)
-- TypeScript compiles (`cd frontend && npx tsc --noEmit`)
-- Frontend builds (`cd frontend && npm run build`)
-- Tests pass (`cd frontend && npm run test`)
+<br/>
 
 ---
 
-## License
+## 🔌 Technology Stack
+
+### Frontend (34.7% TypeScript + HTML + CSS)
+- **React** 19.2 — Modern UI framework  
+- **TypeScript** 5.9 — Type-safe development  
+- **React Router** 7 — Client-side routing  
+- **TanStack Query** 5 — Data fetching & caching  
+- **TailwindCSS** 4 — Utility-first styling  
+- **Monaco Editor** 0.55 — Code editor  
+- **Framer Motion** 12 — Animations  
+- **Zustand** — State management  
+- **Socket.IO** — Real-time communication  
+- **i18next** — Internationalization  
+
+### Backend (62.1% Python)
+- **Python** 3.12+ — Core language  
+- **FastAPI** — High-performance web framework  
+- **WebSockets** — Real-time bidirectional communication  
+- **LiteLLM** 1.84.1 — Multi-LLM provider abstraction  
+- **SQLAlchemy** 2.0+ — ORM & database  
+- **Pydantic** — Data validation  
+- **Poetry** 2.3 — Dependency management  
+- **Pytest** 9.0 — Testing framework  
+
+### Infrastructure
+- **Docker** — Containerization & sandboxing  
+- **PostgreSQL** — Optional persistent storage  
+- **Redis** — Caching & sessions  
+- **Kubernetes** — Optional orchestration  
+
+<br/>
+
+---
+
+## 🎓 Learn More
+
+- **[📖 Full Documentation](./Development.md)** — Setup, configuration, and advanced topics
+- **[🤖 Agent Architecture](./AGENTS.md)** — Deep dive into agent systems
+- **[🛠️ Contributing Guide](./CONTRIBUTING.md)** — How to contribute to Wren
+- **[📋 Issue Triage](./ISSUE_TRIAGE.md)** — How we manage issues
+- **[👥 Credits](./CREDITS.md)** — Team & contributors
+- **[📜 Code of Conduct](./CODE_OF_CONDUCT.md)** — Community guidelines
+
+<br/>
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions of all sizes! Whether it's bug reports, feature requests, or code contributions, your help makes Wren better.
+
+### Getting Started
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/your-feature`)
+3. **Install** pre-commit hooks (`make install-pre-commit-hooks`)
+4. **Make** your changes
+5. **Test** thoroughly (`make test`)
+6. **Lint** your code (`make lint`)
+7. **Commit** with a clear message
+8. **Push** and open a Pull Request
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed guidelines.
+
+<br/>
+
+---
+
+## 📊 Language Composition
+
+- **Python** 62.1% — Core backend logic
+- **TypeScript** 34.7% — Frontend & tooling  
+- **HTML** 1.2% — Structure  
+- **Shell** 0.4% — Build scripts  
+- **CSS** 0.4% — Styles  
+- **Jinja** 0.4% — Templates  
+- **Other** 0.8% — Configuration
+
+<br/>
+
+---
+
+## 📜 License
+
+**Wren** is open source and released under the **[MIT License](LICENSE)**.
+
+Built with ❤️ by [Daniel](https://github.com/Daniel-debug-boop) and [contributors](./CREDITS.md).
+
+<br/>
+
+---
+
+## 🔗 Community & Support
+
+- 💬 **Questions?** [Open a discussion](https://github.com/Daniel-debug-boop/Wren/discussions)
+- 🐛 **Found a bug?** [Report an issue](https://github.com/Daniel-debug-boop/Wren/issues)
+- 💡 **Have an idea?** [Request a feature](https://github.com/Daniel-debug-boop/Wren/issues)
+- 🌐 **Website:** [wren.dev](https://assets.wren.dev)
+
+<br/>
 
 <div align="center">
-  <p><strong>Wren</strong> — MIT License</p>
-  <p>Built by Daniel and contributors.</p>
-</div>
-
----
-
-<div align="center">
-  <a href="#readme-top">⬆ Back to Top</a>
+  <p>
+    Made with 🚀 by AI engineers, for AI engineers
+  </p>
+  <p>
+    <a href="#readme-top">⬆️ Back to Top</a>
+  </p>
 </div>

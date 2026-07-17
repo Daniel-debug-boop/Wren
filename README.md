@@ -178,7 +178,7 @@ Python 3.12 · FastAPI · WebSockets · LiteLLM · Poetry · Ruff · Mypy · Pyt
 
 **Infrastructure**
 
-Docker · Docker Compose · Kubernetes (optional) · PostgreSQL (optional, enterprise)
+Docker · Docker Compose · Kubernetes (optional) · PostgreSQL (optional)
 
 ---
 
@@ -224,8 +224,7 @@ wren/
 │   ├── harness/          # Agent orchestrator
 │   ├── intent/           # NLP intent analysis
 │   └── agent_server/     # Agent server
-├── enterprise/           # Enterprise features
-└── skills/              # Reusable agent skill prompts
+├── skills/              # Reusable agent skill prompts
 ```
 
 ---
@@ -250,8 +249,7 @@ Before submitting a PR:
 
 <div align="center">
   <p><strong>Wren</strong> — MIT License</p>
-  <p>Built by the Wren team and contributors.</p>
-  <p><sub>Enterprise features licensed separately under the Polyform Free Trial License.</sub></p>
+  <p>Built by Daniel and contributors.</p>
 </div>
 
 ---

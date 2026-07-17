@@ -66,7 +66,7 @@ describe("deriveProfileNameFromModel", () => {
     for (const model of [
       "openai/gpt-4o",
       "anthropic/claude-3-5-sonnet",
-      "openhands/claude-sonnet-4-20250514",
+      "wren/claude-sonnet-4-20250514",
       "azure/standard/1024-x-1024/dall-e-2",
       "openai/gpt-4o:custom",
     ]) {

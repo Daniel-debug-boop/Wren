@@ -179,7 +179,7 @@ describe("SdkSectionPage", () => {
               section: "llm",
               section_label: "LLM",
               value_type: "string",
-              default: "openhands/claude-opus-4-5-20251101",
+              default: "wren/claude-opus-4-5-20251101",
               choices: [],
               depends_on: [],
               prominence: "critical",
@@ -208,7 +208,7 @@ describe("SdkSectionPage", () => {
       buildSettings({
         agent_settings_schema: schema,
         agent_settings: {
-          "llm.model": "openhands/claude-opus-4-5-20251101",
+          "llm.model": "wren/claude-opus-4-5-20251101",
         },
       }),
     );
@@ -773,7 +773,7 @@ describe("SdkSectionPage", () => {
 
   it("drops duplicate union sections that don't match the source variant", async () => {
     // SDK agent-settings is a discriminated union: the "llm" key exists under
-    // both the "openhands" and "acp" variants (#14892). A variant-targeted
+    // both the "wren" and "acp" variants (#14892). A variant-targeted
     // source must render only its variant's section, not the duplicate.
     const llmField = (key: string, label: string) => ({
       key,
@@ -795,7 +795,7 @@ describe("SdkSectionPage", () => {
         {
           key: "llm",
           label: "LLM",
-          variant: "openhands",
+          variant: "wren",
           fields: [
             llmField("llm.model", "Model"),
             llmField("llm.auth_type", "Authentication"),
@@ -822,7 +822,7 @@ describe("SdkSectionPage", () => {
         {
           settingsSource: "agent_settings",
           sectionKeys: ["llm"],
-          variant: "openhands",
+          variant: "wren",
         },
       ],
     });
@@ -830,7 +830,7 @@ describe("SdkSectionPage", () => {
     expect(
       await screen.findByTestId("sdk-settings-llm.auth_type"),
     ).toBeInTheDocument();
-    // openhands fields render exactly once; the acp duplicate is dropped.
+    // wren fields render exactly once; the acp duplicate is dropped.
     expect(screen.getAllByTestId("sdk-settings-llm.model")).toHaveLength(1);
     expect(
       screen.queryByTestId("sdk-settings-llm.acp_only"),

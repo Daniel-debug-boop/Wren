@@ -5,8 +5,8 @@ from wren.app_server.config import (
     resolve_provider_llm_base_url,
 )
 
-SDK_DEFAULT = _SDK_DEFAULT_PROXY  # 'https://llm-proxy.app.all-hands.dev/'
-STAGING_URL = 'https://llm-proxy.staging.all-hands.dev/'
+SDK_DEFAULT = _SDK_DEFAULT_PROXY  # 'https://llm-proxy.app.wren.dev/'
+STAGING_URL = 'https://llm-proxy.staging.wren.dev/'
 CUSTOM_URL = 'https://my-own-proxy.example.com/v1'
 
 
@@ -62,7 +62,7 @@ class TestOpenHandsPrefixNoProviderUrl:
         assert result == SDK_DEFAULT
 
     def test_sdk_default_returned_when_provider_none_and_env_unset(self, monkeypatch):
-        monkeypatch.delenv('OPENHANDS_PROVIDER_BASE_URL', raising=False)
+        monkeypatch.delenv('WREN_PROVIDER_BASE_URL', raising=False)
         monkeypatch.delenv('LLM_BASE_URL', raising=False)
         result = resolve_provider_llm_base_url(
             model='wren/gpt-4',
@@ -156,7 +156,7 @@ class TestEdgeCases:
         assert result == STAGING_URL
 
     def test_none_base_url_with_wren_model_no_provider(self, monkeypatch):
-        monkeypatch.delenv('OPENHANDS_PROVIDER_BASE_URL', raising=False)
+        monkeypatch.delenv('WREN_PROVIDER_BASE_URL', raising=False)
         monkeypatch.delenv('LLM_BASE_URL', raising=False)
         result = resolve_provider_llm_base_url(
             model='wren/gpt-4',
@@ -175,7 +175,7 @@ class TestEdgeCases:
             assert result == STAGING_URL, f'Failed for base_url={url!r}'
 
     def test_env_fallback_when_provider_base_url_is_none(self, monkeypatch):
-        monkeypatch.setenv('OPENHANDS_PROVIDER_BASE_URL', STAGING_URL)
+        monkeypatch.setenv('WREN_PROVIDER_BASE_URL', STAGING_URL)
         result = resolve_provider_llm_base_url(
             model='wren/gpt-4',
             base_url=SDK_DEFAULT,
@@ -184,7 +184,7 @@ class TestEdgeCases:
         assert result == STAGING_URL
 
     def test_llm_base_url_env_fallback(self, monkeypatch):
-        monkeypatch.delenv('OPENHANDS_PROVIDER_BASE_URL', raising=False)
+        monkeypatch.delenv('WREN_PROVIDER_BASE_URL', raising=False)
         monkeypatch.setenv('LLM_BASE_URL', STAGING_URL)
         result = resolve_provider_llm_base_url(
             model='wren/gpt-4',

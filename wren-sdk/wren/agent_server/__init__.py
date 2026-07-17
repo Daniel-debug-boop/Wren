@@ -1,6 +1,6 @@
 """Agent server compatibility shim.
 
-Temporary re-exports from openhands.agent_server for migration.
+Temporary re-exports from wren.agent_server for migration.
 Will be replaced with full wren-server implementation.
 """
 
@@ -16,8 +16,8 @@ warnings.warn(
 
 # Re-export from openhands for backward compatibility
 try:
-    from openhands.agent_server.env_parser import ABC, DiscriminatedUnionMixin, from_env  # noqa: F401
-    from openhands.agent_server.models import (  # noqa: F401
+    from wren.agent_server.env_parser import ABC, DiscriminatedUnionMixin, from_env  # noqa: F401
+    from wren.agent_server.models import (  # noqa: F401
         ConversationInfo,
         EventPage,
         EventSortOrder,
@@ -25,6 +25,6 @@ try:
         Success,
         TextContent,
     )
-    from openhands.agent_server.utils import OpenHandsUUID, utc_now  # noqa: F401
+    from wren.agent_server.utils import OpenHandsUUID, utc_now  # noqa: F401
 except ImportError:
     pass

@@ -125,7 +125,7 @@ class AuthUserContext(UserContext):
     async def get_secrets(self) -> dict[str, SecretSource]:
         results: dict[str, SecretSource] = {}
 
-        # Include custom secrets (includes OPENHANDS_API_KEY in SaaS mode)
+        # Include custom secrets (includes WREN_API_KEY in SaaS mode)
         secrets = await self.user_auth.get_secrets()
         if secrets:
             for name, custom_secret in secrets.custom_secrets.items():

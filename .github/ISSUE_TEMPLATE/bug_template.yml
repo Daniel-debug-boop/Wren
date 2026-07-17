@@ -71,7 +71,7 @@ body:
         - CLI (executable binary)
         - CLI (Docker)
         - Local GUI (Docker web interface)
-        - Wren Cloud (app.all-hands.dev)
+        - Wren Cloud (app.wren.dev)
         - SDK (Python library)
         - Development workflow
         - Other

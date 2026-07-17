@@ -399,7 +399,7 @@ describe("MainApp", () => {
 
       vi.stubGlobal("localStorage", {
         getItem: vi.fn((key: string) => {
-          if (key === "openhands_login_method") {
+          if (key === "wren_login_method") {
             return "github";
           }
           return null;
@@ -460,7 +460,7 @@ describe("MainApp", () => {
 
       vi.stubGlobal("localStorage", {
         getItem: vi.fn((key: string) => {
-          if (key === "openhands_login_method") {
+          if (key === "wren_login_method") {
             return "github";
           }
           return null;
@@ -490,7 +490,7 @@ describe("MainApp", () => {
 
       vi.stubGlobal("localStorage", {
         getItem: vi.fn((key: string) => {
-          if (key === "openhands_login_method") {
+          if (key === "wren_login_method") {
             return "github";
           }
           return null;

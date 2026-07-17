@@ -48,7 +48,7 @@ async def test_get_conversation_link_non_saas_mode():
 
     # Test with non-SAAS mode
     with patch('wren.app_server.mcp.mcp_router.get_global_config') as mock_config:
-        mock_config.return_value.app_mode = AppMode.OPENHANDS
+        mock_config.return_value.app_mode = AppMode.WREN
 
         # Call the function
         result = await get_conversation_link(

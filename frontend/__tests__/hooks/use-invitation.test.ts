@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const INVITATION_TOKEN_KEY = "openhands_invitation_token";
+const INVITATION_TOKEN_KEY = "wren_invitation_token";
 
 // Mock setSearchParams function
 const mockSetSearchParams = vi.fn();

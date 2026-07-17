@@ -7,7 +7,7 @@ from openhands.sdk.utils.models import (  # noqa: F401
     clear_subclass_cache,
 )
 
-from openhands.agent_server.utils import utc_now  # noqa: F401
+from wren.agent_server.utils import utc_now  # noqa: F401
 
 # WrenModel alias for wren-sdk compatibility
 WrenModel = OpenHandsModel  # noqa: F841

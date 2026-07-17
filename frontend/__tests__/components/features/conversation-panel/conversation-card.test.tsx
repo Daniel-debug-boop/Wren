@@ -443,7 +443,7 @@ describe("ConversationCard", () => {
         selectedRepository={null}
         lastUpdatedAt="2021-10-01T12:00:00Z"
         agentChip={{
-          kind: "openhands",
+          kind: "wren",
           text: "Claude Sonnet 4",
           tooltip: "anthropic/claude-sonnet-4-20250514",
         }}

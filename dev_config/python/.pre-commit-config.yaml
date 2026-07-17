@@ -14,9 +14,9 @@ repos:
   - repo: local
     hooks:
       - id: warn-appmode-oss
-        name: "Warn on AppMode.OSS in backend (use AppMode.OPENHANDS)"
+        name: "Warn on AppMode.OSS in backend (use AppMode.WREN)"
         language: system
-        entry: bash -lc 'if rg -n "\\bAppMode\\.OSS\\b" wren tests/unit; then echo "Found AppMode.OSS usage. Prefer AppMode.OPENHANDS."; exit 1; fi'
+        entry: bash -lc 'if rg -n "\\bAppMode\\.OSS\\b" wren tests/unit; then echo "Found AppMode.OSS usage. Prefer AppMode.WREN."; exit 1; fi'
         pass_filenames: false
 
   - repo: https://github.com/tox-dev/pyproject-fmt

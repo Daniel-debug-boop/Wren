@@ -17,7 +17,7 @@ class AzureDevOpsReposMixin(AzureDevOpsMixinBase):
         sort: str = 'updated',
         order: str = 'desc',
         public: bool = False,
-        app_mode: AppMode = AppMode.OPENHANDS,
+        app_mode: AppMode = AppMode.WREN,
     ) -> list[Repository]:
         """Search for repositories in Azure DevOps."""
         # Get all repositories across all projects in the organization

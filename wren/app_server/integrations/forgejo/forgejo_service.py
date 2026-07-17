@@ -50,7 +50,7 @@ class ForgejoService(
 
 
 forgejo_service_cls = os.environ.get(
-    'OPENHANDS_FORGEJO_SERVICE_CLS',
+    'WREN_FORGEJO_SERVICE_CLS',
     'wren.app_server.integrations.forgejo.forgejo_service.ForgejoService',
 )
 ForgejoServiceImpl = get_impl(ForgejoService, forgejo_service_cls)

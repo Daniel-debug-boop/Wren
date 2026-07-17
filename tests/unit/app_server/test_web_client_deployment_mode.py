@@ -22,9 +22,9 @@ class TestGetDeploymentMode:
         'web_host,expected',
         [
             # All-Hands managed domains should return 'cloud'
-            ('app.all-hands.dev', 'cloud'),
-            ('staging.all-hands.dev', 'cloud'),
-            ('feature-123.staging.all-hands.dev', 'cloud'),
+            ('app.wren.dev', 'cloud'),
+            ('staging.wren.dev', 'cloud'),
+            ('feature-123.staging.wren.dev', 'cloud'),
             ('app.wren.ai', 'cloud'),
             ('subdomain.wren.ai', 'cloud'),
             # Customer domains should return 'self_hosted'
@@ -32,11 +32,11 @@ class TestGetDeploymentMode:
             ('internal.company.io', 'self_hosted'),
             ('dev.mycompany.net', 'self_hosted'),
             # Edge cases - not subdomains
-            ('all-hands.dev', 'self_hosted'),
+            ('wren.dev', 'self_hosted'),
             ('wren.ai', 'self_hosted'),
             # Malicious domains
-            ('fake-all-hands.dev', 'self_hosted'),
-            ('app.all-hands.dev.evil.com', 'self_hosted'),
+            ('fake-wren.dev', 'self_hosted'),
+            ('app.wren.dev.evil.com', 'self_hosted'),
         ],
     )
     def test_deployment_mode_detection(self, web_host: str, expected: str):
@@ -67,7 +67,7 @@ class TestGetDeploymentMode:
         """Test that OH_WEB_HOST takes precedence over WEB_HOST."""
         with patch.dict(
             'os.environ',
-            {'OH_WEB_HOST': 'app.all-hands.dev', 'WEB_HOST': 'customer.example.com'},
+            {'OH_WEB_HOST': 'app.wren.dev', 'WEB_HOST': 'customer.example.com'},
             clear=False,
         ):
             result = get_deployment_mode()
@@ -90,12 +90,12 @@ class TestGetDeploymentMode:
         'flag,web_host,expected',
         [
             # Explicit flag wins over the host heuristic
-            ('self_hosted', 'app.all-hands.dev', 'self_hosted'),
+            ('self_hosted', 'app.wren.dev', 'self_hosted'),
             ('cloud', 'customer.example.com', 'cloud'),
             # Case/whitespace tolerant
             (' Cloud ', 'customer.example.com', 'cloud'),
             # Invalid value falls back to the host chain
-            ('bogus', 'app.all-hands.dev', 'cloud'),
+            ('bogus', 'app.wren.dev', 'cloud'),
         ],
     )
     def test_explicit_deployment_mode_overrides_host(

@@ -38,7 +38,7 @@ class TestIsOpenhandsModel:
         """Test that similar prefixes don't incorrectly match."""
         assert is_wren_model('wren') is False  # Missing slash
         assert is_wren_model('wrenx/model') is False  # Extra char
-        assert is_wren_model('OPENHANDS/model') is False  # Wrong case
+        assert is_wren_model('WREN/model') is False  # Wrong case
 
 
 class TestAssignProvider:

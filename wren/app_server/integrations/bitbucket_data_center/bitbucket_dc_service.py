@@ -79,7 +79,7 @@ class BitbucketDCService(
 
 
 bitbucket_dc_service_cls = os.environ.get(
-    'OPENHANDS_BITBUCKET_DATA_CENTER_SERVICE_CLS',
+    'WREN_BITBUCKET_DATA_CENTER_SERVICE_CLS',
     'wren.app_server.integrations.bitbucket_data_center.bitbucket_dc_service.BitbucketDCService',
 )
 

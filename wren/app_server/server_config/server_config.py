@@ -6,8 +6,8 @@ from wren.app_server.utils.logger import wren_logger as logger
 
 
 class ServerConfig(ServerConfigInterface):
-    config_cls = os.environ.get('OPENHANDS_CONFIG_CLS', None)
-    app_mode = AppMode.OPENHANDS
+    config_cls = os.environ.get('WREN_CONFIG_CLS', None)
+    app_mode = AppMode.WREN
     posthog_client_key = 'phc_3ESMmY9SgqEAGBB6sMGK5ayYHkeUuknH2vP6FmWH9RA'
     github_client_id = os.environ.get('GITHUB_APP_CLIENT_ID', '')
     enable_billing = os.environ.get('ENABLE_BILLING', 'false') == 'true'
@@ -43,7 +43,7 @@ class ServerConfig(ServerConfigInterface):
 
 
 def load_server_config() -> ServerConfig:
-    config_cls = os.environ.get('OPENHANDS_CONFIG_CLS', None)
+    config_cls = os.environ.get('WREN_CONFIG_CLS', None)
     logger.info(f'Using config class {config_cls}')
 
     server_config_cls = get_impl(ServerConfig, config_cls)

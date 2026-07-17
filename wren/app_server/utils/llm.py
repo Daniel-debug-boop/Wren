@@ -14,7 +14,7 @@ from wren.app_server.utils.logger import wren_logger as logger
 # models are verified and how bare LiteLLM names map to providers.
 #
 # Self-hosted mode builds the ``wren/…`` model list from the SDK's
-# ``VERIFIED_OPENHANDS_MODELS``.  SaaS mode overrides it with the database
+# ``VERIFIED_WREN_MODELS``.  SaaS mode overrides it with the database
 # (via ``get_wren_models``).
 # ---------------------------------------------------------------------------
 from openhands.sdk.llm.utils.verified_models import (  # noqa: E402
@@ -30,11 +30,11 @@ from openhands.sdk.llm.utils.verified_models import (
     VERIFIED_OPENAI_MODELS as _SDK_OPENAI,
 )
 from openhands.sdk.llm.utils.verified_models import (
-    VERIFIED_OPENHANDS_MODELS as _SDK_OPENHANDS,
+    VERIFIED_WREN_MODELS as _SDK_WREN_PROVIDER,
 )
 
 # Build the ``wren/…`` model list from the SDK.
-OPENHANDS_MODELS: list[str] = [f'wren/{m}' for m in _SDK_OPENHANDS]
+WREN_MODELS: list[str] = [f'wren/{m}' for m in _SDK_WREN_PROVIDER]
 
 CLARIFAI_MODELS = [
     'clarifai/openai.chat-completion.gpt-oss-120b',
@@ -65,7 +65,7 @@ _BARE_OPENAI_MODELS: set[str] = set(_SDK_OPENAI)
 _BARE_ANTHROPIC_MODELS: set[str] = set(_SDK_ANTHROPIC)
 _BARE_MISTRAL_MODELS: set[str] = set(_SDK_MISTRAL)
 
-DEFAULT_OPENHANDS_MODEL = 'wren/minimax-m2.7'
+DEFAULT_WREN_MODEL = 'wren/minimax-m2.7'
 
 
 # ---------------------------------------------------------------------------
@@ -208,7 +208,7 @@ def get_wren_models(
     """Return the list of OpenHands-provider model strings.
 
     In self-hosted mode *verified_models* is ``None`` (or empty) and the
-    hardcoded ``OPENHANDS_MODELS`` list is used.  In SaaS mode the caller
+    hardcoded ``WREN_MODELS`` list is used.  In SaaS mode the caller
     passes the database-backed list which takes precedence.
 
     Args:
@@ -218,7 +218,7 @@ def get_wren_models(
     Returns:
         A list such as ``["wren/claude-opus-4-6", ...]``.
     """
-    return verified_models if verified_models else OPENHANDS_MODELS
+    return verified_models if verified_models else WREN_MODELS
 
 
 def _assign_provider(model: str) -> str:
@@ -275,7 +275,7 @@ def get_supported_llm_models(
     Args:
         verified_models: Optional list of ``"wren/<name>"`` strings
             from the database (SaaS mode).  When provided these replace the
-            hardcoded ``OPENHANDS_MODELS``.
+            hardcoded ``WREN_MODELS``.
         extra_models: Optional list of additional model names to include
             (e.g. from Bedrock or Ollama discovery).
     """
@@ -297,7 +297,7 @@ def get_supported_llm_models(
         models=unique_models,
         verified_models=_derive_verified_models(wren_models),
         verified_providers=VERIFIED_PROVIDERS,
-        default_model=DEFAULT_OPENHANDS_MODEL,
+        default_model=DEFAULT_WREN_MODEL,
     )
 
 

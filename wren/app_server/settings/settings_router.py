@@ -58,7 +58,7 @@ from openhands.sdk.settings import (
 )
 
 LITE_LLM_API_URL = os.environ.get(
-    'LITE_LLM_API_URL', 'https://llm-proxy.app.all-hands.dev'
+    'LITE_LLM_API_URL', 'https://llm-proxy.app.wren.dev'
 )
 
 

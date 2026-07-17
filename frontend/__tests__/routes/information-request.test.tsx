@@ -44,13 +44,13 @@ describe("InformationRequest", () => {
   it("should render the page title", () => {
     renderWithRouter();
 
-    expect(screen.getByText("ENTERPRISE$GET_OPENHANDS_TITLE")).toBeInTheDocument();
+    expect(screen.getByText("ENTERPRISE$GET_WREN_TITLE")).toBeInTheDocument();
   });
 
   it("should render the page subtitle", () => {
     renderWithRouter();
 
-    expect(screen.getByText("ENTERPRISE$GET_OPENHANDS_SUBTITLE")).toBeInTheDocument();
+    expect(screen.getByText("ENTERPRISE$GET_WREN_SUBTITLE")).toBeInTheDocument();
   });
 
   it("should render SaaS card", () => {
@@ -148,7 +148,7 @@ describe("InformationRequest", () => {
 
     // Should return to card selection view
     expect(screen.queryByTestId("information-request-form")).not.toBeInTheDocument();
-    expect(screen.getByText("ENTERPRISE$GET_OPENHANDS_TITLE")).toBeInTheDocument();
+    expect(screen.getByText("ENTERPRISE$GET_WREN_TITLE")).toBeInTheDocument();
   });
 
   it("should have accessible Learn More links with aria-label", () => {

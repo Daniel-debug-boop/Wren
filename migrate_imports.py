@@ -150,12 +150,12 @@ SDK_MAPPINGS = {
     'from openhands.sdk.testing': 'from wren.testing',
 }
 
-# Agent server imports: openhands.agent_server.* -> wren.agent_server.*
+# Agent server imports: wren.agent_server.* -> wren.agent_server.*
 # These need stubs since we're not building wren-server yet
 AGENT_SERVER_MAPPINGS = {
-    'from openhands.agent_server.env_parser import': 'from wren.agent_server.env_parser import',
-    'from openhands.agent_server.models import': 'from wren.agent_server.models import',
-    'from openhands.agent_server.utils import': 'from wren.agent_server.utils import',
+    'from wren.agent_server.env_parser import': 'from wren.agent_server.env_parser import',
+    'from wren.agent_server.models import': 'from wren.agent_server.models import',
+    'from wren.agent_server.utils import': 'from wren.agent_server.utils import',
 }
 
 # Tools imports: openhands.tools.* -> wren.tools.*

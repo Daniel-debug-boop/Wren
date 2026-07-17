@@ -77,7 +77,7 @@ def oss_service(mock_posthog):
     service = DirectService(
         api_key='test-key',
         host='https://posthog.example.com',
-        app_mode=AppMode.OPENHANDS,
+        app_mode=AppMode.WREN,
         is_feature_env=False,
     )
     return service, mock_client
@@ -103,7 +103,7 @@ def feature_env_service(mock_posthog):
     service = DirectService(
         api_key='test-key',
         host='https://posthog.example.com',
-        app_mode=AppMode.OPENHANDS,
+        app_mode=AppMode.WREN,
         is_feature_env=True,
     )
     return service, mock_client

@@ -20,9 +20,9 @@ def get_deployment_mode() -> DeploymentMode | None:
     if not web_host:
         return None
     if (
-        web_host == 'app.all-hands.dev'
+        web_host == 'app.wren.dev'
         or web_host == 'app.wren.ai'
-        or web_host.endswith('.all-hands.dev')
+        or web_host.endswith('.wren.dev')
         or web_host.endswith('.wren.ai')
     ):
         return 'cloud'

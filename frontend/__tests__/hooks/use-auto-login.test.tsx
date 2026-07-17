@@ -34,9 +34,9 @@ import { useAutoLogin } from "#/hooks/use-auto-login";
 
 describe("useAutoLogin", () => {
   const acceptTosUrl =
-    "https://ohpr-13306-497.staging.all-hands.dev/accept-tos?redirect_url=" +
+    "https://ohpr-13306-497.staging.wren.dev/accept-tos?redirect_url=" +
     encodeURIComponent(
-      "https://ohpr-13306-497.auth.staging.all-hands.dev/realms/allhands/protocol/openid-connect/auth?client_id=allhands&response_type=code",
+      "https://ohpr-13306-497.auth.staging.wren.dev/realms/wren/protocol/openid-connect/auth?client_id=wren&response_type=code",
     );
 
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe("useAutoLogin", () => {
     mockUseConfig.mockReturnValue({
       data: {
         app_mode: "saas",
-        auth_url: "ohpr-13306-497.auth.staging.all-hands.dev",
+        auth_url: "ohpr-13306-497.auth.staging.wren.dev",
       },
       isLoading: false,
     });

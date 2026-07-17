@@ -119,7 +119,7 @@ def get_wren_provider_base_url() -> str | None:
 
     Falls back to LLM_BASE_URL for backward compatibility.
     """
-    return os.getenv('OPENHANDS_PROVIDER_BASE_URL') or os.getenv('LLM_BASE_URL') or None
+    return os.getenv('WREN_PROVIDER_BASE_URL') or os.getenv('LLM_BASE_URL') or None
 
 
 def get_default_tavily_api_key() -> str | None:
@@ -132,8 +132,8 @@ def get_default_tavily_api_key() -> str | None:
 
 # OpenHands provider models use this proxy at the SDK transport boundary.
 # Deployments (e.g. staging) may use a different LLM proxy, configured via
-# OPENHANDS_PROVIDER_BASE_URL.
-_SDK_DEFAULT_PROXY = 'https://llm-proxy.app.all-hands.dev/'
+# WREN_PROVIDER_BASE_URL.
+_SDK_DEFAULT_PROXY = 'https://llm-proxy.app.wren.dev/'
 
 
 def resolve_provider_llm_base_url(
@@ -175,7 +175,7 @@ def resolve_provider_llm_base_url(
 def _get_default_lifespan():
     # Check legacy parameters for saas mode. If we are in SAAS mode use
     # SaasAppLifespanService to initialize PostHog analytics
-    if 'saas' in (os.getenv('OPENHANDS_CONFIG_CLS') or '').lower():
+    if 'saas' in (os.getenv('WREN_CONFIG_CLS') or '').lower():
         from server.app_lifespan.saas_app_lifespan_service import (
             SaasAppLifespanService,
         )
@@ -232,7 +232,7 @@ class AppServerConfig(OpenHandsModel):
     )
     # Services
     lifespan: AppLifespanService | None = Field(default_factory=_get_default_lifespan)
-    app_mode: AppMode = AppMode.OPENHANDS
+    app_mode: AppMode = AppMode.WREN
     web_client: WebClientConfigInjector = Field(
         default_factory=DefaultWebClientConfigInjector
     )

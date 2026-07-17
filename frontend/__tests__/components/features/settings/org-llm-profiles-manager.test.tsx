@@ -42,13 +42,13 @@ const sampleProfiles: ProfilesList = {
   profiles: [
     {
       name: "sonnet",
-      model: "openhands/claude-sonnet-4-5-20250929",
+      model: "wren/claude-sonnet-4-5-20250929",
       base_url: null,
       api_key_set: true,
     },
     {
       name: "opus",
-      model: "openhands/claude-opus-4-7",
+      model: "wren/claude-opus-4-7",
       base_url: null,
       api_key_set: true,
     },

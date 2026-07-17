@@ -65,7 +65,7 @@ describe("formatLlmModel", () => {
 
   describe("o-series", () => {
     it.each([
-      ["openhands/o3", "o3"],
+      ["wren/o3", "o3"],
       ["openai/o3-mini", "o3-mini"],
       ["openai/o4-mini", "o4-mini"],
     ])("formats %s", (raw, expected) => {

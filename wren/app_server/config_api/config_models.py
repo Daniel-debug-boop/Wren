@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class AppMode(Enum):
-    OPENHANDS = 'oss'
+    WREN = 'oss'
     SAAS = 'saas'
 
 

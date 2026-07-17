@@ -269,7 +269,7 @@ describe("UserContextMenu", () => {
     renderUserContextMenu({ type: "member", onClose: vi.fn, onOpenInviteModal: vi.fn });
 
     const docsLink = screen.getByText("SIDEBAR$DOCS").closest("a");
-    expect(docsLink).toHaveAttribute("href", "https://docs.openhands.dev");
+    expect(docsLink).toHaveAttribute("href", "https://docs.wren.dev");
     expect(docsLink).toHaveAttribute("target", "_blank");
   });
 

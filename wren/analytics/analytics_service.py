@@ -43,7 +43,7 @@ class AnalyticsService:
     Args:
         api_key: PostHog project API key. Pass an empty string to disable.
         host: PostHog ingest host URL.
-        app_mode: AppMode.OPENHANDS (OSS) or AppMode.SAAS.
+        app_mode: AppMode.WREN (OSS) or AppMode.SAAS.
         is_feature_env: True when running in a feature/staging environment.
     """
 

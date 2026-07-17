@@ -73,13 +73,13 @@ describe("useOrganizations", () => {
   });
 
   it("sorts personal workspace first, then non-personal alphabetically by name", async () => {
-    // API returns unsorted: Beta, Personal, Acme, All Hands
+    // API returns unsorted: Beta, Personal, Acme, Wren
     mockGetOrganizations.mockResolvedValue({
       items: [
         createMinimalOrg("3", "Beta LLC", false),
         createMinimalOrg("1", "Personal Workspace", true),
         createMinimalOrg("2", "Acme Corp", false),
-        createMinimalOrg("4", "All Hands AI", false),
+        createMinimalOrg("4", "Wren", false),
       ],
       currentOrgId: "1",
     });
@@ -96,7 +96,7 @@ describe("useOrganizations", () => {
     expect(organizations[0].is_personal).toBe(true);
     expect(organizations[0].name).toBe("Personal Workspace");
     expect(organizations[1].name).toBe("Acme Corp");
-    expect(organizations[2].name).toBe("All Hands AI");
+    expect(organizations[2].name).toBe("Wren");
     expect(organizations[3].name).toBe("Beta LLC");
   });
 

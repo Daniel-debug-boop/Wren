@@ -135,7 +135,7 @@ describe("AgentSettingsScreen — minimal generic ACP UX", () => {
     const dropdown = screen.getByTestId("agent-type-selector");
     await userEvent.click(dropdown);
     const ohOption = await screen.findByRole("option", {
-      name: "SETTINGS$AGENT_TYPE_OPENHANDS",
+      name: "SETTINGS$AGENT_TYPE_WREN",
     });
     await userEvent.click(ohOption);
 
@@ -149,7 +149,7 @@ describe("AgentSettingsScreen — minimal generic ACP UX", () => {
     // ``Settings.update()`` starts a fresh base when the kind flips and
     // discards any incoming ``acp_*`` fields anyway.
     expect(saveSpy.mock.calls[0][0]).toEqual({
-      agent_settings_diff: { agent_kind: "openhands" },
+      agent_settings_diff: { agent_kind: "wren" },
     });
   });
 
@@ -277,7 +277,7 @@ describe("AgentSettingsScreen — minimal generic ACP UX", () => {
     ...MOCK_DEFAULT_USER_SETTINGS,
     agent_settings: {
       ...MOCK_DEFAULT_USER_SETTINGS.agent_settings,
-      agent_kind: "openhands",
+      agent_kind: "wren",
       enable_sub_agents: false,
       tool_concurrency_limit: toolConcurrencyLimit,
     },

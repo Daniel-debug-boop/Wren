@@ -9,7 +9,7 @@ describe("WrenApiKeyHelp", () => {
     expect(screen.getByTestId("wren-api-key-help")).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "SETTINGS$NAV_API_KEYS" }),
-    ).toHaveAttribute("href", "https://app.all-hands.dev/settings/api-keys");
+    ).toHaveAttribute("href", "https://app.wren.dev/settings/api-keys");
   });
 
   it("renders the billing info paragraph with the pricing-details link", () => {
@@ -20,7 +20,7 @@ describe("WrenApiKeyHelp", () => {
       screen.getByRole("link", { name: "SETTINGS$SEE_PRICING_DETAILS" }),
     ).toHaveAttribute(
       "href",
-      "https://docs.openhands.dev/usage/llms/openhands-llms",
+      "https://docs.wren.dev/usage/llms/wren-llms",
     );
   });
 });

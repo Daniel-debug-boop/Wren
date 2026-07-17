@@ -21,7 +21,7 @@ All notable changes to Wren will be documented in this file.
 ## [0.1.0] - 2025-07-04
 
 ### Added
-- Wren branding (renamed from OpenHands)
+- Wren branding (renamed from Wren)
 - AI-generated wren bird logo (amber on dark charcoal)
 - 6 native MCP servers: fetch, filesystem, chrome-devtools, scrapling, ponytail, nano-banana
 - 12 knowledge skills: chrome-devtools, scrapling, penpot, vibesec, ponytail, nano-banana, skill-triggering, copyright-compliance, file-creation, refusal-handling, tone-formatting, product-guardrails
@@ -36,9 +36,9 @@ All notable changes to Wren will be documented in this file.
 ### Changed
 - Frontend title: "Wren"
 - CLI description: "Wren — AI software engineer"
-- All user-facing text: OpenHands → Wren
+- All user-facing text: Wren → Wren
 - Translation strings: 1136 occurrences replaced
 
 ### Removed
 - Tauri desktop app (wrong approach)
-- Old OpenHands placeholder logos
+- Old Wren placeholder logos

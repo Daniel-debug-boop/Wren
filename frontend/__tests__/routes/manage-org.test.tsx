@@ -287,7 +287,7 @@ describe("Manage Org Route", () => {
     renderManageOrg();
     await screen.findByTestId("manage-org-screen");
 
-    await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (All Hands AI)
+    await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (Wren)
 
     // Verify credits are shown
     await waitFor(() => {
@@ -362,7 +362,7 @@ describe("Manage Org Route", () => {
       renderManageOrg();
       await screen.findByTestId("manage-org-screen");
 
-      await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (All Hands AI)
+      await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (Wren)
 
       const orgName = screen.getByTestId("org-name");
       const changeOrgNameButton = within(orgName).queryByRole("button", {
@@ -384,7 +384,7 @@ describe("Manage Org Route", () => {
       renderManageOrg();
       await screen.findByTestId("manage-org-screen");
 
-      await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (All Hands AI)
+      await selectOrganization({ orgIndex: 3 }); // user is admin in org 4 (Wren)
 
       const deleteOrgButton = screen.queryByRole("button", {
         name: /ORG\$DELETE_ORGANIZATION/i,

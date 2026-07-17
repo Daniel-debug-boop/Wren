@@ -21,7 +21,7 @@ test("avatar context menu stays open when moving cursor diagonally to menu", asy
         status: 200,
         contentType: "application/json",
         body: JSON.stringify({
-          llm_model: "openhands/claude-opus-4-5-20251101",
+          llm_model: "wren/claude-opus-4-5-20251101",
           llm_base_url: "",
           agent: "CodeActAgent",
           language: "en",

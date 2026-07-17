@@ -78,7 +78,7 @@ describe("useGitConversationRouting", () => {
           id: "claim-1",
           org_id: "org-1",
           provider: "github",
-          git_organization: "openhands",
+          git_organization: "wren",
           claimed_by: "user-1",
           claimed_at: "2026-01-01T00:00:00",
         },
@@ -91,7 +91,7 @@ describe("useGitConversationRouting", () => {
 
     const claimedOrg = result.current.orgs.find((o) => o.name === "OpenHands");
     expect(claimedOrg).toMatchObject({
-      id: "github:openhands",
+      id: "github:wren",
       claimId: "claim-1",
       provider: "github",
       status: "claimed",
@@ -117,7 +117,7 @@ describe("useGitConversationRouting", () => {
           id: "claim-1",
           org_id: "org-1",
           provider: "github",
-          git_organization: "all-hands-ai",
+          git_organization: "wren-ai",
           claimed_by: "user-1",
           claimed_at: "2026-01-01T00:00:00",
         },
@@ -199,7 +199,7 @@ describe("useGitConversationRouting", () => {
           id: "claim-1",
           org_id: "org-1",
           provider: "github",
-          git_organization: "openhands",
+          git_organization: "wren",
           claimed_by: "user-1",
           claimed_at: "2026-01-01T00:00:00",
         },
@@ -209,7 +209,7 @@ describe("useGitConversationRouting", () => {
     const { result } = renderHook(() => useGitConversationRouting());
 
     act(() => {
-      result.current.disconnectOrg("github:openhands");
+      result.current.disconnectOrg("github:wren");
     });
 
     expect(mockDisconnectMutate).toHaveBeenCalledWith(
@@ -217,7 +217,7 @@ describe("useGitConversationRouting", () => {
       expect.objectContaining({ onSettled: expect.any(Function) }),
     );
 
-    const org = result.current.orgs.find((o) => o.id === "github:openhands");
+    const org = result.current.orgs.find((o) => o.id === "github:wren");
     expect(org?.status).toBe("disconnecting");
   });
 
@@ -247,7 +247,7 @@ describe("useGitConversationRouting", () => {
           id: "claim-1",
           org_id: "org-1",
           provider: "github",
-          git_organization: "openhands",
+          git_organization: "wren",
           claimed_by: "user-1",
           claimed_at: "2026-01-01T00:00:00",
         },
@@ -257,7 +257,7 @@ describe("useGitConversationRouting", () => {
     const { result } = renderHook(() => useGitConversationRouting());
 
     act(() => {
-      result.current.claimOrg("github:openhands");
+      result.current.claimOrg("github:wren");
     });
 
     expect(mockClaimMutate).not.toHaveBeenCalled();

@@ -357,7 +357,7 @@ class _Database:
 # Path from env var, fallback to file in temp, then :memory:
 import os as _os
 
-_DB_PATH = _os.environ.get('OPENHANDS_HARNESS_DB_PATH', '/tmp/wren/harness.db')
+_DB_PATH = _os.environ.get('WREN_HARNESS_DB_PATH', '/tmp/wren/harness.db')
 if _DB_PATH:
     _os.makedirs(_os.path.dirname(_DB_PATH), exist_ok=True)
 DB = _Database(_DB_PATH)

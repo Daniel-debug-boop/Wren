@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Find all PRs that went in between two commits in the OpenHands/OpenHands repository.
+Find all PRs that went in between two commits in the Wren/Wren repository.
 Handles cherry-picks and different merge strategies.
 
-This script is designed to run from within the OpenHands repository under .github/scripts:
+This script is designed to run from within the Wren repository under .github/scripts:
     .github/scripts/find_prs_between_commits.py
 
 Usage: find_prs_between_commits <older_commit> <newer_commit> [--repo <path>]
@@ -21,13 +21,13 @@ from typing import Optional
 
 def find_wren_repo() -> Optional[Path]:
     """
-    Find the OpenHands repository.
+    Find the Wren repository.
     Since this script is designed to live in .github/scripts/, it assumes
     the repository root is two levels up from the script location.
     Tries:
     1. Repository root (../../ from script location)
     2. Current directory
-    3. Environment variable OPENHANDS_REPO
+    3. Environment variable WREN_REPO
     """
     # Check repository root (assuming script is in .github/scripts/)
     script_dir = Path(__file__).parent.absolute()
@@ -42,8 +42,8 @@ def find_wren_repo() -> Optional[Path]:
         return Path.cwd()
 
     # Check environment variable
-    if 'OPENHANDS_REPO' in os.environ:
-        repo_path = Path(os.environ['OPENHANDS_REPO'])
+    if 'WREN_REPO' in os.environ:
+        repo_path = Path(os.environ['WREN_REPO'])
         if (repo_path / '.git').exists():
             return repo_path
 
@@ -255,7 +255,7 @@ def main():
         print()
         print('Options:')
         print('  --json          Output results in JSON format')
-        print('  --repo <path>   Path to OpenHands repository (default: auto-detect)')
+        print('  --repo <path>   Path to Wren repository (default: auto-detect)')
         print()
         print('Example:')
         print(
@@ -263,17 +263,17 @@ def main():
         )
         print()
         print('Repository Detection:')
-        print('  The script will try to find the OpenHands repository in this order:')
+        print('  The script will try to find the Wren repository in this order:')
         print('  1. --repo argument')
         print('  2. Repository root (../../ from script location)')
         print('  3. Current directory')
-        print('  4. OPENHANDS_REPO environment variable')
+        print('  4. WREN_REPO environment variable')
         print()
         print('Environment variables:')
         print(
             '  GITHUB_TOKEN    Optional. If set, will fetch additional PR info from GitHub API'
         )
-        print('  OPENHANDS_REPO  Optional. Path to OpenHands repository')
+        print('  WREN_REPO  Optional. Path to Wren repository')
         sys.exit(1)
 
     older_commit = sys.argv[1]
@@ -294,18 +294,18 @@ def main():
     if repo_path is None:
         repo_path = find_wren_repo()
         if repo_path is None:
-            print('Error: Could not find OpenHands repository', file=sys.stderr)
+            print('Error: Could not find Wren repository', file=sys.stderr)
             print('Please either:', file=sys.stderr)
             print(
-                '  1. Place this script in .github/scripts/ within the OpenHands repository',
+                '  1. Place this script in .github/scripts/ within the Wren repository',
                 file=sys.stderr,
             )
-            print('  2. Run from the OpenHands repository directory', file=sys.stderr)
+            print('  2. Run from the Wren repository directory', file=sys.stderr)
             print(
                 '  3. Use --repo <path> to specify the repository location',
                 file=sys.stderr,
             )
-            print('  4. Set OPENHANDS_REPO environment variable', file=sys.stderr)
+            print('  4. Set WREN_REPO environment variable', file=sys.stderr)
             sys.exit(1)
 
     # Find PRs

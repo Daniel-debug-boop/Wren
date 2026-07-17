@@ -54,7 +54,7 @@ describe("GitConversationRouting", () => {
   it("should render organizations from API data", () => {
     renderWithProviders(<GitConversationRouting />);
 
-    expect(screen.getByTestId("org-row-github:openhands")).toHaveTextContent(
+    expect(screen.getByTestId("org-row-github:wren")).toHaveTextContent(
       "GitHub/OpenHands",
     );
     expect(screen.getByTestId("org-row-github:acmeco")).toHaveTextContent(
@@ -65,7 +65,7 @@ describe("GitConversationRouting", () => {
   it("should show claimed org with 'Claimed' label", () => {
     renderWithProviders(<GitConversationRouting />);
 
-    const claimedButton = screen.getByTestId("claim-button-github:openhands");
+    const claimedButton = screen.getByTestId("claim-button-github:wren");
     expect(claimedButton).toHaveTextContent("ORG$CLAIMED");
   });
 
@@ -93,7 +93,7 @@ describe("GitConversationRouting", () => {
     renderWithProviders(<GitConversationRouting />);
     const user = userEvent.setup();
 
-    await user.click(screen.getByTestId("claim-button-github:openhands"));
+    await user.click(screen.getByTestId("claim-button-github:wren"));
 
     expect(mockDisconnectMutate).toHaveBeenCalledWith(
       { claimId: "claim-1" },

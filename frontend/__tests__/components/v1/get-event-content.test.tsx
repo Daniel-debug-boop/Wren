@@ -48,7 +48,7 @@ const terminalObservationEvent: ObservationEvent = {
     metadata: {
       exit_code: 0,
       pid: 1,
-      username: "openhands",
+      username: "wren",
       hostname: "sandbox",
       prefix: "",
       suffix: "",

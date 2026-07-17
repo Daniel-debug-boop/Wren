@@ -80,7 +80,7 @@ class GitLabReposMixin(GitLabMixinBase):
         sort: str = 'updated',
         order: str = 'desc',
         public: bool = False,
-        app_mode: AppMode = AppMode.OPENHANDS,
+        app_mode: AppMode = AppMode.WREN,
     ) -> list[Repository]:
         if public:
             # When public=True, query is a GitLab URL that we need to parse

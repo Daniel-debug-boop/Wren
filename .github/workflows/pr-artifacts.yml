@@ -38,15 +38,15 @@ jobs:
               if: steps.check-fork.outputs.is_fork == 'false'
               with:
                   ref: ${{ github.event.pull_request.head.ref }}
-                  token: ${{ secrets.OPENHANDS_BOT_GITHUB_PAT_PUBLIC }}
+                  token: ${{ secrets.WREN_BOT_GITHUB_PAT_PUBLIC }}
 
             - name: Remove .pr/ directory
               id: remove
               if: steps.check-fork.outputs.is_fork == 'false'
               run: |
                   if [ -d ".pr" ]; then
-                    git config user.name "allhands-bot"
-                    git config user.email "allhands-bot@users.noreply.github.com"
+                    git config user.name "wren-bot"
+                    git config user.email "wren-bot@users.noreply.github.com"
                     git rm -rf .pr/
                     git commit -m "chore: Remove PR-only artifacts [automated]"
                     git push || {

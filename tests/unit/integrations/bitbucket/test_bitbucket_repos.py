@@ -47,7 +47,7 @@ async def test_search_repositories_url_parsing_standard_url(bitbucket_service):
             sort='updated',
             order='desc',
             public=True,
-            app_mode=AppMode.OPENHANDS,
+            app_mode=AppMode.WREN,
         )
 
         # Verify the correct workspace/repo combination was extracted and passed
@@ -85,7 +85,7 @@ async def test_search_repositories_url_parsing_with_extra_path_segments(
             sort='updated',
             order='desc',
             public=True,
-            app_mode=AppMode.OPENHANDS,
+            app_mode=AppMode.WREN,
         )
 
         # Verify the correct workspace/repo combination was extracted from complex URL
@@ -107,7 +107,7 @@ async def test_search_repositories_url_parsing_invalid_url(bitbucket_service):
             sort='updated',
             order='desc',
             public=True,
-            app_mode=AppMode.OPENHANDS,
+            app_mode=AppMode.WREN,
         )
 
         # Should return empty list for invalid URL and not call API
@@ -130,7 +130,7 @@ async def test_search_repositories_url_parsing_insufficient_path_segments(
             sort='updated',
             order='desc',
             public=True,
-            app_mode=AppMode.OPENHANDS,
+            app_mode=AppMode.WREN,
         )
 
         # Should return empty list for insufficient path segments and not call API

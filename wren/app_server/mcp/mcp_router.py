@@ -42,7 +42,7 @@ from wren.app_server.utils.logger import wren_logger as logger
 
 mcp_server = FastMCP('mcp', mask_error_details=True)
 
-HOST = f'https://{os.getenv("WEB_HOST", "app.all-hands.dev").strip()}'
+HOST = f'https://{os.getenv("WEB_HOST", "app.wren.dev").strip()}'
 CONVERSATION_URL = HOST + '/conversations/{}'
 
 

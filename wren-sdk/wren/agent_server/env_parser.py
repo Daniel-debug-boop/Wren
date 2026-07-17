@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 try:
-    from openhands.agent_server.env_parser import (
+    from wren.agent_server.env_parser import (
         ABC,
         DiscriminatedUnionMixin,
         from_env,

@@ -117,9 +117,9 @@ Go to `Wren/deploy` → Actions → "Create Wren preview PR" → enter the Wren 
 cd deploy
 git checkout ohpr-<PR>-<random>
 # In .github/workflows/deploy.yaml, update BOTH:
-#   OPENHANDS_SHA: "<full-40-char-commit>"
-#   OPENHANDS_RUNTIME_IMAGE_TAG: "<same-commit>-nikolaik"
-git commit -am "Update OPENHANDS_SHA to <commit>" && git push
+#   WREN_SHA: "<full-40-char-commit>"
+#   WREN_RUNTIME_IMAGE_TAG: "<same-commit>-nikolaik"
+git commit -am "Update WREN_SHA to <commit>" && git push
 ```
 
 **Before updating the SHA**, verify the enterprise Docker image exists:
@@ -132,21 +132,21 @@ gh api repos/Wren/Wren/actions/runs \
 
 The deploy CI auto-triggers and creates the environment at:
 ```
-https://ohpr-<PR>-<random>.staging.all-hands.dev
+https://ohpr-<PR>-<random>.staging.wren.dev
 ```
 
 **Wait for it to be live:**
 ```bash
-curl -s -o /dev/null -w "%{http_code}" https://ohpr-<PR>-<random>.staging.all-hands.dev/api/v1/health
+curl -s -o /dev/null -w "%{http_code}" https://ohpr-<PR>-<random>.staging.wren.dev/api/v1/health
 # 401 = server is up (auth required). DNS may take 1-2 min on first deploy.
 ```
 
 ## Running E2E Tests Against Staging
 
-**Critical: Feature deployments have their own Keycloak instance.** API keys from `app.all-hands.dev` or `$OPENHANDS_API_KEY` will NOT work. You need a test API key issued by the specific feature deployment's Keycloak.
+**Critical: Feature deployments have their own Keycloak instance.** API keys from `app.wren.dev` or `$WREN_API_KEY` will NOT work. You need a test API key issued by the specific feature deployment's Keycloak.
 
 **You (the agent) cannot obtain this key yourself** — the feature environment requires interactive browser login with credentials you do not have. You must **ask the user** to:
-1. Log in to the feature deployment at `https://ohpr-<PR>-<random>.staging.all-hands.dev` in their browser
+1. Log in to the feature deployment at `https://ohpr-<PR>-<random>.staging.wren.dev` in their browser
 2. Generate a test API key from the UI
 3. Provide the key to you so you can proceed with e2e testing
 
@@ -155,7 +155,7 @@ Do **not** attempt to log in via the browser or guess credentials. Wait for the 
 ```python
 from wren.workspace import WrenCloudWorkspace
 
-STAGING = "https://ohpr-<PR>-<random>.staging.all-hands.dev"
+STAGING = "https://ohpr-<PR>-<random>.staging.wren.dev"
 
 with WrenCloudWorkspace(
     cloud_api_url=STAGING,
@@ -169,8 +169,8 @@ with WrenCloudWorkspace(
 
 Or run an example script:
 ```bash
-OPENHANDS_CLOUD_API_KEY="<key>" \
-OPENHANDS_CLOUD_API_URL="https://ohpr-<PR>-<random>.staging.all-hands.dev" \
+WREN_CLOUD_API_KEY="<key>" \
+WREN_CLOUD_API_URL="https://ohpr-<PR>-<random>.staging.wren.dev" \
 python examples/02_remote_agent_server/10_cloud_workspace_saas_credentials.py
 ```
 
@@ -193,7 +193,7 @@ Comment on **both PRs** with pass/fail summary and link to logs.
 | Gotcha | Details |
 |--------|---------|
 | **Feature env auth is isolated** | Each `ohpr-*` deployment has its own Keycloak. Production API keys don't work. Agents cannot log in — you must ask the user to provide a test API key from the feature deployment's UI. |
-| **Two SHAs in deploy.yaml** | `OPENHANDS_SHA` and `OPENHANDS_RUNTIME_IMAGE_TAG` must both be updated. The runtime tag is `<sha>-nikolaik`. |
+| **Two SHAs in deploy.yaml** | `WREN_SHA` and `WREN_RUNTIME_IMAGE_TAG` must both be updated. The runtime tag is `<sha>-nikolaik`. |
 | **Enterprise image must exist** | The Docker CI job on the Wren PR must succeed before you can deploy. If it hasn't run, push an empty commit to trigger it. |
 | **DNS propagation** | First deployment of a new branch takes 1-2 min for DNS. Subsequent deploys are instant. |
 | **Merge-commit SHA ≠ head SHA** | SDK CI tags Docker images with GitHub Actions' merge-commit SHA, not the PR head SHA. Check the SDK PR description or CI logs for the correct tag. |

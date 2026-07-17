@@ -252,7 +252,7 @@ def test_is_non_bot_comment_filters_github_bots():
     )
     assert (
         module.is_non_bot_comment(
-            {'user': {'id': 3, 'type': 'User', 'login': 'all-hands-bot'}}
+            {'user': {'id': 3, 'type': 'User', 'login': 'wren-bot'}}
         )
         is False
     )
@@ -823,7 +823,7 @@ def test_auto_close_main_ignores_newer_bot_comments(monkeypatch, capsys):
             'id': 12,
             'body': 'status update',
             'created_at': newer_timestamp,
-            'user': {'id': 8, 'type': 'User', 'login': 'all-hands-bot'},
+            'user': {'id': 8, 'type': 'User', 'login': 'wren-bot'},
         },
     ]
     closed: list[tuple[str, int, int, bool]] = []
@@ -1222,10 +1222,10 @@ def test_build_prompt_handles_missing_fields():
 def test_wren_headers_requires_api_key(monkeypatch):
     module = load_module('issue_duplicate_check_wren.py')
 
-    monkeypatch.delenv('OPENHANDS_API_KEY', raising=False)
+    monkeypatch.delenv('WREN_API_KEY', raising=False)
 
     with pytest.raises(
-        RuntimeError, match='OPENHANDS_API_KEY environment variable is required'
+        RuntimeError, match='WREN_API_KEY environment variable is required'
     ):
         module.wren_headers()
 
@@ -1404,7 +1404,7 @@ def test_extract_agent_server_url_returns_runtime_prefix():
     )
     assert (
         module.extract_agent_server_url(
-            'https://app.all-hands.dev/conversations/conv-123'
+            'https://app.wren.dev/conversations/conv-123'
         )
         is None
     )
@@ -1675,7 +1675,7 @@ def test_issue_duplicate_main_waits_for_start_task_and_writes_output(
         module,
         'poll_conversation',
         lambda app_conversation_id, poll_interval_seconds, max_wait_seconds: {
-            'conversation_url': 'https://app.all-hands.dev/conversations/conv-123'
+            'conversation_url': 'https://app.wren.dev/conversations/conv-123'
         },
     )
     monkeypatch.setattr(
@@ -1742,7 +1742,7 @@ def test_issue_duplicate_main_reports_output_write_failures(monkeypatch, tmp_pat
         module,
         'poll_conversation',
         lambda app_conversation_id, poll_interval_seconds, max_wait_seconds: {
-            'conversation_url': 'https://app.all-hands.dev/conversations/conv-123'
+            'conversation_url': 'https://app.wren.dev/conversations/conv-123'
         },
     )
     monkeypatch.setattr(
@@ -1810,7 +1810,7 @@ def test_issue_duplicate_main_rejects_non_string_session_api_key(monkeypatch, tm
         module,
         'poll_conversation',
         lambda app_conversation_id, poll_interval_seconds, max_wait_seconds: {
-            'conversation_url': 'https://app.all-hands.dev/conversations/conv-123',
+            'conversation_url': 'https://app.wren.dev/conversations/conv-123',
             'session_api_key': {'bad': True},
         },
     )

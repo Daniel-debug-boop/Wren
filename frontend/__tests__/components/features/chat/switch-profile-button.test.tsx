@@ -79,7 +79,7 @@ const setupHooks = (
     profiles?: LlmProfileSummary[];
     activeProfile?: string | null;
     conversationModel?: string | null;
-    agentKind?: "openhands" | "acp";
+    agentKind?: "wren" | "acp";
     switchedProfile?: string;
   } = {},
 ) => {
@@ -92,7 +92,7 @@ const setupHooks = (
   mockUseActiveConversation.mockReturnValue({
     data: {
       llm_model: options.conversationModel ?? null,
-      agent_kind: options.agentKind ?? "openhands",
+      agent_kind: options.agentKind ?? "wren",
     },
   });
   mockModelStore.activeProfileByConversation = options.switchedProfile

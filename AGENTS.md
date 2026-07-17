@@ -491,7 +491,7 @@ never through the SDK client.
 - `GET /api/v1/users/me` → Full user settings (secrets masked, Bearer only)
 
 Auth requirements for `expose_secrets=true`:
-- Bearer token (proves user identity via `OPENHANDS_API_KEY`)
+- Bearer token (proves user identity via `WREN_API_KEY`)
 - `X-Session-API-Key` header (proves caller has an active sandbox owned by the authenticated user)
 
 Called by `workspace.get_llm()` in the SDK to retrieve LLM config with the API key.

@@ -1,7 +1,7 @@
 """Configuration loader — YAML file + environment variable overrides.
 
 Uses stdlib json/tomllib if available; falls back to environment
-variables only. The canonical path is OPENHANDS_HARNESS_CONFIG or
+variables only. The canonical path is WREN_HARNESS_CONFIG or
 ./harness.yaml.
 """
 
@@ -40,14 +40,14 @@ class HarnessConfig:
         """Load config from file, fallback to env vars, then defaults.
 
         Tries:
-          1. Path from OPENHANDS_HARNESS_CONFIG env var
+          1. Path from WREN_HARNESS_CONFIG env var
           2. Path argument
           3. ./harness.yaml
           4. ./config/harness.yaml
           5. Pure env vars
         """
         paths = [
-            os.environ.get('OPENHANDS_HARNESS_CONFIG', ''),
+            os.environ.get('WREN_HARNESS_CONFIG', ''),
             path,
             './harness.yaml',
             './harness.json',
@@ -74,13 +74,13 @@ class HarnessConfig:
 
         # Env var overrides
         env_overrides = {
-            'db_path': 'OPENHANDS_HARNESS_DB_PATH',
-            'auth_secret': 'OPENHANDS_HARNESS_AUTH_SECRET',
-            'log_level': 'OPENHANDS_HARNESS_LOG_LEVEL',
-            'api_host': 'OPENHANDS_HARNESS_API_HOST',
-            'api_port': 'OPENHANDS_HARNESS_API_PORT',
-            'api_rate_limit': 'OPENHANDS_HARNESS_API_RATE_LIMIT',
-            'api_rate_window_s': 'OPENHANDS_HARNESS_API_RATE_WINDOW_S',
+            'db_path': 'WREN_HARNESS_DB_PATH',
+            'auth_secret': 'WREN_HARNESS_AUTH_SECRET',
+            'log_level': 'WREN_HARNESS_LOG_LEVEL',
+            'api_host': 'WREN_HARNESS_API_HOST',
+            'api_port': 'WREN_HARNESS_API_PORT',
+            'api_rate_limit': 'WREN_HARNESS_API_RATE_LIMIT',
+            'api_rate_window_s': 'WREN_HARNESS_API_RATE_WINDOW_S',
         }
         for key, env_key in env_overrides.items():
             val = os.environ.get(env_key)

@@ -22,7 +22,7 @@ def get_default_sandbox_specs():
     return [
         SandboxSpecInfo(
             id=get_agent_server_image(),
-            command=['python', '-m', 'openhands.agent_server'],
+            command=['python', '-m', 'wren.agent_server'],
             initial_env={
                 # Keep tmux sockets on a short path; macOS default temp dirs can
                 # exceed Unix socket path limits once libtmux appends tmux-UID.

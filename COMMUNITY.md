@@ -36,20 +36,20 @@ and love building new things.
 
 Coding, development practices, and communities are changing rapidly. We won’t hesitate to change direction and make big bets.
 
-## Relationship to All Hands
+## Relationship to Wren Community
 
-Wren is supported by the for-profit organization [All Hands AI, Inc](https://www.wren.dev/).
+Wren is supported by the for-profit organization [Wren Community AI, Inc](https://www.wren.dev/).
 
-All Hands was founded by three of the first major contributors to Wren:
+Wren Community was founded by three of the first major contributors to Wren:
 
 - Xingyao Wang, a UIUC PhD candidate who got Wren to the top of the SWE-bench leaderboards
 - Graham Neubig, a CMU Professor who rallied the academic community around Wren
 - Robert Brennan, a software engineer who architected the user-facing features of Wren
 
-All Hands is an important part of the Wren ecosystem. We’ve raised over $20M--mainly to hire developers and
-researchers who can work on Wren full-time, and to provide them with expensive infrastructure. ([Join us!](https://allhandsai.applytojob.com/apply/))
+Wren Community is an important part of the Wren ecosystem. We’ve raised over funding--mainly to hire developers and
+researchers who can work on Wren full-time, and to provide them with expensive infrastructure. ([Join us!](https://wren.dev/apply/))
 
-But we see Wren as much larger, and ultimately more important, than All Hands. When our financial responsibility
+But we see Wren as much larger, and ultimately more important, than Wren Community. When our financial responsibility
 to investors is at odds with our social responsibility to the community—as it inevitably will be, from time to time—we
 promise to navigate that conflict thoughtfully and transparently.
 

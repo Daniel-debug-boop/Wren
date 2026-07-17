@@ -35,13 +35,13 @@ const PROVIDERS: ACPProviderConfig[] = [
 
 describe("resolveAgentChip", () => {
   describe("OpenHands branch", () => {
-    it("returns kind=openhands with prettified text and raw tooltip", () => {
+    it("returns kind=wren with prettified text and raw tooltip", () => {
       const chip = resolveAgentChip(
-        "openhands",
+        "wren",
         "anthropic/claude-sonnet-4-5-20250929",
       );
       expect(chip).toEqual({
-        kind: "openhands",
+        kind: "wren",
         text: "Claude Sonnet 4.5",
         tooltip: "anthropic/claude-sonnet-4-5-20250929",
       });
@@ -49,13 +49,13 @@ describe("resolveAgentChip", () => {
 
     it("treats undefined agent_kind as the OpenHands branch", () => {
       const chip = resolveAgentChip(undefined, "openai/gpt-4o");
-      expect(chip?.kind).toBe("openhands");
+      expect(chip?.kind).toBe("wren");
       expect(chip?.text).toBe("GPT-4o");
     });
 
     it("returns null when no llm_model is set", () => {
-      expect(resolveAgentChip("openhands", null)).toBeNull();
-      expect(resolveAgentChip("openhands", undefined)).toBeNull();
+      expect(resolveAgentChip("wren", null)).toBeNull();
+      expect(resolveAgentChip("wren", undefined)).toBeNull();
       expect(resolveAgentChip(undefined, null)).toBeNull();
     });
   });

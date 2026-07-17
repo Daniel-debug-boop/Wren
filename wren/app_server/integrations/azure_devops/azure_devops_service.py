@@ -63,7 +63,7 @@ class AzureDevOpsService(
     integration behavior. Applications can substitute their own implementation by:
     1. Creating a class that inherits from GitService
     2. Implementing all required methods
-    3. Setting OPENHANDS_AZURE_DEVOPS_SERVICE_CLS environment variable
+    3. Setting WREN_AZURE_DEVOPS_SERVICE_CLS environment variable
 
     The class is instantiated via get_impl() at module load time.
     """
@@ -235,7 +235,7 @@ class AzureDevOpsService(
 
 # Dynamic class loading to support custom implementations (e.g., SaaS)
 azure_devops_service_cls = os.environ.get(
-    'OPENHANDS_AZURE_DEVOPS_SERVICE_CLS',
+    'WREN_AZURE_DEVOPS_SERVICE_CLS',
     'wren.app_server.integrations.azure_devops.azure_devops_service.AzureDevOpsService',
 )
 

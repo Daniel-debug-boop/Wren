@@ -180,7 +180,7 @@ describe("RepoConnector", () => {
     // @ts-expect-error - only return the app_mode and github_app_slug
     getConfiSpy.mockResolvedValue({
       app_mode: "saas",
-      github_app_slug: "openhands",
+      github_app_slug: "wren",
     });
 
     const getSettingsSpy = vi.spyOn(SettingsService, "getSettings");
@@ -227,7 +227,7 @@ describe("RepoConnector", () => {
     // @ts-expect-error - only return the app_mode and github_app_slug for this test
     getConfiSpy.mockResolvedValue({
       app_mode: "saas",
-      github_app_slug: "openhands",
+      github_app_slug: "wren",
     });
 
     const getSettingsSpy = vi.spyOn(SettingsService, "getSettings");

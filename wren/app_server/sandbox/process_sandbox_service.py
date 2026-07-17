@@ -440,7 +440,7 @@ class ProcessSandboxServiceInjector(SandboxServiceInjector):
         description='Python executable to use for agent processes',
     )
     agent_server_module: str = Field(
-        default='openhands.agent_server',
+        default='wren.agent_server',
         description='Python module for the agent server',
     )
     health_check_path: str = Field(

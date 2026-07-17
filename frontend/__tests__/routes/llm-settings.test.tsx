@@ -169,10 +169,10 @@ function buildOrganization(
       overrides.enable_proactive_conversation_starters ?? false,
     sandbox_base_container_image:
       overrides.sandbox_base_container_image ??
-      "ghcr.io/all-hands-ai/runtime:latest",
+      "ghcr.io/wren-ai/runtime:latest",
     sandbox_runtime_container_image:
       overrides.sandbox_runtime_container_image ??
-      "ghcr.io/all-hands-ai/runtime:latest",
+      "ghcr.io/wren-ai/runtime:latest",
     org_version: overrides.org_version ?? 1,
     search_api_key: overrides.search_api_key ?? null,
     sandbox_api_key: overrides.sandbox_api_key ?? null,
@@ -431,11 +431,11 @@ describe("LlmSettingsScreen", () => {
   it("defaults to basic view when an OpenHands managed model has no base URL", async () => {
     vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
       buildSettingsWithAdvancedToggle({
-        llm_model: "openhands/claude-opus-4-5-20251101",
+        llm_model: "wren/claude-opus-4-5-20251101",
         llm_base_url: "",
         agent_settings: {
           llm: {
-            model: "openhands/claude-opus-4-5-20251101",
+            model: "wren/claude-opus-4-5-20251101",
           },
         },
       }),
@@ -450,17 +450,17 @@ describe("LlmSettingsScreen", () => {
   });
 
   it("opens basic view when an OpenHands managed model has a server-filled base URL", async () => {
-    // Managed openhands/* profiles always come back with a base_url — the
+    // Managed wren/* profiles always come back with a base_url — the
     // backend fills it with the managed LiteLLM endpoint on save. That must
     // not be mistaken for a user customization that opens advanced/all.
     vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
       buildSettingsWithAdvancedToggle({
-        llm_model: "openhands/claude-opus-4-5-20251101",
-        llm_base_url: "http://openhands-litellm:4000",
+        llm_model: "wren/claude-opus-4-5-20251101",
+        llm_base_url: "http://wren-litellm:4000",
         agent_settings: {
           llm: {
-            model: "openhands/claude-opus-4-5-20251101",
-            base_url: "http://openhands-litellm:4000",
+            model: "wren/claude-opus-4-5-20251101",
+            base_url: "http://wren-litellm:4000",
           },
         },
       }),
@@ -479,12 +479,12 @@ describe("LlmSettingsScreen", () => {
     // so this exercises the base-URL inference path directly.
     vi.spyOn(organizationService, "getOrganizationSettings").mockResolvedValue(
       buildSettingsWithAdvancedToggle({
-        llm_model: "openhands/claude-opus-4-5-20251101",
-        llm_base_url: "http://openhands-litellm:4000",
+        llm_model: "wren/claude-opus-4-5-20251101",
+        llm_base_url: "http://wren-litellm:4000",
         agent_settings: {
           llm: {
-            model: "openhands/claude-opus-4-5-20251101",
-            base_url: "http://openhands-litellm:4000",
+            model: "wren/claude-opus-4-5-20251101",
+            base_url: "http://wren-litellm:4000",
           },
         },
       }),
@@ -499,17 +499,17 @@ describe("LlmSettingsScreen", () => {
   });
 
   it("opens basic view even when an OpenHands model has a non-managed base URL", async () => {
-    // Accepted edge case: the server owns base_url for openhands/* models,
+    // Accepted edge case: the server owns base_url for wren/* models,
     // so editing always starts on basic — even if the stored URL was set
     // deliberately in advanced mode. The value is preserved and the
     // advanced view remains one click away.
     vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
       buildSettingsWithAdvancedToggle({
-        llm_model: "openhands/claude-opus-4-5-20251101",
+        llm_model: "wren/claude-opus-4-5-20251101",
         llm_base_url: "https://custom.example/v1",
         agent_settings: {
           llm: {
-            model: "openhands/claude-opus-4-5-20251101",
+            model: "wren/claude-opus-4-5-20251101",
             base_url: "https://custom.example/v1",
           },
         },
@@ -528,11 +528,11 @@ describe("LlmSettingsScreen", () => {
     vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
       buildSettingsWithAdvancedToggle({
         llm_model: "litellm_proxy/claude-opus-4-5-20251101",
-        llm_base_url: "https://llm-proxy.app.all-hands.dev",
+        llm_base_url: "https://llm-proxy.app.wren.dev",
         agent_settings: {
           llm: {
             model: "litellm_proxy/claude-opus-4-5-20251101",
-            base_url: "https://llm-proxy.app.all-hands.dev",
+            base_url: "https://llm-proxy.app.wren.dev",
           },
         },
       }),
@@ -545,7 +545,7 @@ describe("LlmSettingsScreen", () => {
       "litellm_proxy/claude-opus-4-5-20251101",
     );
     expect(
-      screen.queryByTestId("openhands-api-key-help-2"),
+      screen.queryByTestId("wren-api-key-help-2"),
     ).not.toBeInTheDocument();
   });
 
@@ -688,7 +688,7 @@ describe("LlmSettingsScreen", () => {
     expect(screen.queryByTestId("agent-input")).not.toBeInTheDocument();
   });
 
-  it("uses the docs.openhands.dev domain for the API key help link", async () => {
+  it("uses the docs.wren.dev domain for the API key help link", async () => {
     vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
       buildSettings({
         llm_model: "openai/gpt-4o",
@@ -710,7 +710,7 @@ describe("LlmSettingsScreen", () => {
 
     expect(helpLink.querySelector("a")).toHaveAttribute(
       "href",
-      "https://docs.openhands.dev/usage/local-setup#getting-an-api-key",
+      "https://docs.wren.dev/usage/local-setup#getting-an-api-key",
     );
   });
 
@@ -845,7 +845,7 @@ describe("LlmSettingsScreen", () => {
 
     await screen.findByTestId("llm-settings-screen");
     expect(screen.queryByTestId("llm-api-key-input")).not.toBeInTheDocument();
-    expect(screen.getByTestId("openhands-api-key-help")).toBeInTheDocument();
+    expect(screen.getByTestId("wren-api-key-help")).toBeInTheDocument();
   });
 
   it("hides the OpenHands API key help on self-hosted OHE", async () => {
@@ -858,7 +858,7 @@ describe("LlmSettingsScreen", () => {
 
     await screen.findByTestId("llm-settings-screen");
     expect(
-      screen.queryByTestId("openhands-api-key-help"),
+      screen.queryByTestId("wren-api-key-help"),
     ).not.toBeInTheDocument();
   });
 
@@ -1487,7 +1487,7 @@ describe("LlmSettingsScreen", () => {
   });
 
   it("keeps an existing custom base URL when saving basic view without a model change", async () => {
-    // Use a non-managed model: openhands/* models treat any base_url as
+    // Use a non-managed model: wren/* models treat any base_url as
     // server-owned, which would keep this scenario from opening advanced.
     let persistedSettings = buildSettingsWithAdvancedToggle({
       llm_model: "openai/gpt-4o",
@@ -1755,7 +1755,7 @@ describe("LlmSettingsScreen", () => {
       search_api_key_set: false,
       agent_settings: {
         llm: {
-          model: "openhands/claude-opus-4-5-20251101",
+          model: "wren/claude-opus-4-5-20251101",
         },
       },
     });
@@ -1771,7 +1771,7 @@ describe("LlmSettingsScreen", () => {
           search_api_key_set: true,
           agent_settings: {
             llm: {
-              model: "openhands/claude-opus-4-5-20251101",
+              model: "wren/claude-opus-4-5-20251101",
             },
           },
         });
@@ -1830,7 +1830,7 @@ describe("LlmSettingsScreen", () => {
       agent_settings_schema: schema,
       agent_settings: {
         llm: {
-          model: "openhands/claude-opus-4-5-20251101",
+          model: "wren/claude-opus-4-5-20251101",
         },
       },
     });
@@ -1843,7 +1843,7 @@ describe("LlmSettingsScreen", () => {
         agent_settings_schema: schema,
         agent_settings: {
           llm: {
-            model: "openhands/claude-opus-4-5-20251101",
+            model: "wren/claude-opus-4-5-20251101",
           },
         },
       });
@@ -2074,7 +2074,7 @@ describe("LlmSettingsScreen", () => {
           profiles: [
             {
               name: "sonnet",
-              model: "openhands/claude-sonnet-4-5-20250929",
+              model: "wren/claude-sonnet-4-5-20250929",
               base_url: null,
               api_key_set: true,
             },
@@ -2100,7 +2100,7 @@ describe("LlmSettingsScreen", () => {
           profiles: [
             {
               name: "sonnet",
-              model: "openhands/claude-sonnet-4-5-20250929",
+              model: "wren/claude-sonnet-4-5-20250929",
               base_url: null,
               api_key_set: true,
             },
@@ -2852,9 +2852,9 @@ describe("LlmSettingsScreen", () => {
     it("saves and activates a profile built from the blank create form", async () => {
       vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
         buildSettings({
-          llm_model: "openhands/claude-opus-4-5-20251101",
+          llm_model: "wren/claude-opus-4-5-20251101",
           agent_settings: {
-            llm: { model: "openhands/claude-opus-4-5-20251101" },
+            llm: { model: "wren/claude-opus-4-5-20251101" },
           },
         }),
       );
@@ -2926,9 +2926,9 @@ describe("LlmSettingsScreen", () => {
     it("hydrates the edit form from a non-active profile instead of the active settings", async () => {
       vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
         buildSettings({
-          llm_model: "openhands/claude-opus-4-5-20251101",
+          llm_model: "wren/claude-opus-4-5-20251101",
           agent_settings: {
-            llm: { model: "openhands/claude-opus-4-5-20251101" },
+            llm: { model: "wren/claude-opus-4-5-20251101" },
           },
         }),
       );
@@ -2939,7 +2939,7 @@ describe("LlmSettingsScreen", () => {
         profiles: [
           {
             name: "active-profile",
-            model: "openhands/claude-opus-4-5-20251101",
+            model: "wren/claude-opus-4-5-20251101",
             base_url: null,
             api_key_set: false,
           },
@@ -2990,19 +2990,19 @@ describe("LlmSettingsScreen", () => {
     });
 
     it("hydrates the edit form with the canonical model when the profile stores a hidden alias", async () => {
-      // Legacy profile model "openhands/custom-llm" is a hidden alias that
+      // Legacy profile model "wren/custom-llm" is a hidden alias that
       // the catalog maps to the visible claude-sonnet model.
       server.use(
         http.get("/api/v1/config/models/search", () =>
           HttpResponse.json({
             items: [
               {
-                provider: "openhands",
+                provider: "wren",
                 name: "claude-sonnet-4-5-20250929",
                 verified: true,
               },
               {
-                provider: "openhands",
+                provider: "wren",
                 name: "custom-llm",
                 verified: false,
                 hidden: true,
@@ -3021,7 +3021,7 @@ describe("LlmSettingsScreen", () => {
         appMode: "oss",
         profile: {
           name: "legacy-profile",
-          model: "openhands/custom-llm",
+          model: "wren/custom-llm",
           base_url: null,
         },
       });
@@ -3047,7 +3047,7 @@ describe("LlmSettingsScreen", () => {
           expect.objectContaining({
             agent_settings_diff: expect.objectContaining({
               llm: expect.objectContaining({
-                model: "openhands/claude-sonnet-4-5-20250929",
+                model: "wren/claude-sonnet-4-5-20250929",
               }),
             }),
           }),
@@ -3061,13 +3061,13 @@ describe("LlmSettingsScreen", () => {
           HttpResponse.json({
             items: [
               {
-                provider: "openhands",
+                provider: "wren",
                 name: "claude-sonnet-4-5-20250929",
                 verified: true,
               },
               // Hidden but with no canonical mapping — nothing to translate.
               {
-                provider: "openhands",
+                provider: "wren",
                 name: "orphan-alias",
                 verified: false,
                 hidden: true,
@@ -3082,7 +3082,7 @@ describe("LlmSettingsScreen", () => {
         appMode: "oss",
         profile: {
           name: "orphan-profile",
-          model: "openhands/orphan-alias",
+          model: "wren/orphan-alias",
           base_url: null,
         },
       });
@@ -3105,9 +3105,9 @@ describe("LlmSettingsScreen", () => {
     it("opens edit on advanced with the profile's custom base URL while the active settings are plain", async () => {
       vi.spyOn(SettingsService, "getSettings").mockResolvedValue(
         buildSettings({
-          llm_model: "openhands/claude-opus-4-5-20251101",
+          llm_model: "wren/claude-opus-4-5-20251101",
           agent_settings: {
-            llm: { model: "openhands/claude-opus-4-5-20251101" },
+            llm: { model: "wren/claude-opus-4-5-20251101" },
           },
         }),
       );
@@ -3167,9 +3167,9 @@ describe("LlmSettingsScreen", () => {
         "getOrganizationSettings",
       ).mockResolvedValue(
         buildSettings({
-          llm_model: "openhands/claude-opus-4-5-20251101",
+          llm_model: "wren/claude-opus-4-5-20251101",
           agent_settings: {
-            llm: { model: "openhands/claude-opus-4-5-20251101" },
+            llm: { model: "wren/claude-opus-4-5-20251101" },
           },
         }),
       );
@@ -3177,7 +3177,7 @@ describe("LlmSettingsScreen", () => {
         profiles: [
           {
             name: "org-active",
-            model: "openhands/claude-opus-4-5-20251101",
+            model: "wren/claude-opus-4-5-20251101",
             base_url: null,
             api_key_set: false,
           },

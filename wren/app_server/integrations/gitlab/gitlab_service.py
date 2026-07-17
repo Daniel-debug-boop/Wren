@@ -77,7 +77,7 @@ class GitLabService(
 
 
 gitlab_service_cls = os.environ.get(
-    'OPENHANDS_GITLAB_SERVICE_CLS',
+    'WREN_GITLAB_SERVICE_CLS',
     'wren.app_server.integrations.gitlab.gitlab_service.GitLabService',
 )
 

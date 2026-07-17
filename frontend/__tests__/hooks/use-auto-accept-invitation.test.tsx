@@ -8,7 +8,7 @@ import { organizationService } from "#/api/organization-service/organization-ser
 import * as ToastHandlers from "#/utils/custom-toast-handlers";
 import { useAutoAcceptInvitation } from "#/hooks/use-auto-accept-invitation";
 
-const INVITATION_TOKEN_KEY = "openhands_invitation_token";
+const INVITATION_TOKEN_KEY = "wren_invitation_token";
 
 // Mock react-router (useInvitation reads search params)
 vi.mock("react-router", () => ({

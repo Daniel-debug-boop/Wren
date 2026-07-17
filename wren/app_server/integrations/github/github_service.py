@@ -72,7 +72,7 @@ class GitHubService(
 
 
 github_service_cls = os.environ.get(
-    'OPENHANDS_GITHUB_SERVICE_CLS',
+    'WREN_GITHUB_SERVICE_CLS',
     'wren.app_server.integrations.github.github_service.GitHubService',
 )
 

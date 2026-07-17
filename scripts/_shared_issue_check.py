@@ -19,9 +19,9 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-OPENHANDS_BASE_URL = os.environ.get(
-    'OPENHANDS_BASE_URL',
-    'https://app.all-hands.dev',
+WREN_BASE_URL = os.environ.get(
+    'WREN_BASE_URL',
+    'https://app.wren.dev',
 )
 REPOSITORY_PATTERN = re.compile(
     r'^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$'
@@ -69,10 +69,10 @@ def github_headers() -> dict[str, str]:
 
 def wren_headers() -> dict[str, str]:
     """Build OpenHands API headers with auth."""
-    api_key = os.environ.get('OPENHANDS_API_KEY')
+    api_key = os.environ.get('WREN_API_KEY')
     if not api_key:
         raise RuntimeError(
-            'OPENHANDS_API_KEY env var is required'
+            'WREN_API_KEY env var is required'
         )
     return {
         'Authorization': f'Bearer {api_key}',
@@ -170,7 +170,7 @@ def start_conversation(
         },
     }
     return request_json(
-        OPENHANDS_BASE_URL,
+        WREN_BASE_URL,
         '/api/v1/app-conversations',
         method='POST',
         headers=wren_headers(),
@@ -216,7 +216,7 @@ def poll_start_task(
     deadline = time.time() + max_wait_seconds
     while time.time() < deadline:
         payload = request_json(
-            OPENHANDS_BASE_URL,
+            WREN_BASE_URL,
             '/api/v1/app-conversations/'
             'start-tasks?ids='
             f'{urllib.parse.quote(start_task_id)}',
@@ -256,7 +256,7 @@ def poll_conversation(
     deadline = time.time() + max_wait_seconds
     while time.time() < deadline:
         payload = request_json(
-            OPENHANDS_BASE_URL,
+            WREN_BASE_URL,
             '/api/v1/app-conversations?ids='
             f'{urllib.parse.quote(app_conversation_id)},',
             headers={
@@ -307,7 +307,7 @@ def fetch_app_server_events(
 ) -> list[dict[str, Any]]:
     """Fetch events from the app server."""
     payload = request_json(
-        OPENHANDS_BASE_URL,
+        WREN_BASE_URL,
         '/api/v1/conversation/'
         f'{urllib.parse.quote(app_conversation_id)}'
         f'/events/search?limit='
@@ -683,7 +683,7 @@ def _extract_session_info(
     session_api_key = session_key_val or ''
     conversation_url = (
         conversation.get('conversation_url')
-        or f'{OPENHANDS_BASE_URL}/conversations/'
+        or f'{WREN_BASE_URL}/conversations/'
         f'{app_conversation_id}'
     )
     agent_server_url = (

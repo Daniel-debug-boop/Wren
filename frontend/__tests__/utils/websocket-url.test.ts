@@ -35,9 +35,9 @@ describe("websocket-url utilities", () => {
 
     it("should extract host from proxy deployment URL", () => {
       const result = extractBaseHost(
-        "https://openhands.example.com/runtime/55313/api/conversations/abc123",
+        "https://wren.example.com/runtime/55313/api/conversations/abc123",
       );
-      expect(result).toBe("openhands.example.com");
+      expect(result).toBe("wren.example.com");
     });
 
     it("should return window.location.host for relative URLs", () => {
@@ -62,7 +62,7 @@ describe("websocket-url utilities", () => {
 
     it("should extract path prefix from proxy deployment URL", () => {
       const result = extractPathPrefix(
-        "https://openhands.example.com/runtime/55313/api/conversations/abc123",
+        "https://wren.example.com/runtime/55313/api/conversations/abc123",
       );
       expect(result).toBe("/runtime/55313");
     });
@@ -100,9 +100,9 @@ describe("websocket-url utilities", () => {
 
     it("should build HTTP URL with path prefix for proxy deployment", () => {
       const result = buildHttpBaseUrl(
-        "https://openhands.example.com/runtime/55313/api/conversations/abc123",
+        "https://wren.example.com/runtime/55313/api/conversations/abc123",
       );
-      expect(result).toBe("https://openhands.example.com/runtime/55313");
+      expect(result).toBe("https://wren.example.com/runtime/55313");
     });
 
     it("should use http protocol when window.location.protocol is http:", () => {
@@ -147,10 +147,10 @@ describe("websocket-url utilities", () => {
     it("should build WebSocket URL with path prefix for proxy deployment", () => {
       const result = buildWebSocketUrl(
         "abc123",
-        "https://openhands.example.com/runtime/55313/api/conversations/abc123",
+        "https://wren.example.com/runtime/55313/api/conversations/abc123",
       );
       expect(result).toBe(
-        "wss://openhands.example.com/runtime/55313/sockets/events/abc123",
+        "wss://wren.example.com/runtime/55313/sockets/events/abc123",
       );
     });
 

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 try:
-    from openhands.agent_server.models import (
+    from wren.agent_server.models import (
         ConversationInfo,
         EventPage,
         EventSortOrder,

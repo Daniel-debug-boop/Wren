@@ -33,7 +33,7 @@ class BusAuth:
     def __init__(self, secret: str | None = None) -> None:
         self._secret = (
             secret
-            or _os.environ.get('OPENHANDS_HARNESS_AUTH_SECRET')
+            or _os.environ.get('WREN_HARNESS_AUTH_SECRET')
             or secrets.token_hex(32)
         )
         self._valid_tokens: dict[str, dict[str, Any]] = {}

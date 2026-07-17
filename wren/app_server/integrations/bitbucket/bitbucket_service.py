@@ -61,7 +61,7 @@ class BitBucketService(
 
 
 bitbucket_service_cls = os.environ.get(
-    'OPENHANDS_BITBUCKET_SERVICE_CLS',
+    'WREN_BITBUCKET_SERVICE_CLS',
     'wren.app_server.integrations.bitbucket.bitbucket_service.BitBucketService',
 )
 

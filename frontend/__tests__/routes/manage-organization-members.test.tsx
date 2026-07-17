@@ -910,7 +910,7 @@ describe("Manage Organization Members Route", () => {
         {
           org_id: "3",
           user_id: "7", // Ray is admin in org 3
-          email: "ray@all-hands.dev",
+          email: "ray@wren.dev",
           role: "admin",
           llm_api_key: "**********",
           max_iterations: 20,
@@ -918,7 +918,7 @@ describe("Manage Organization Members Route", () => {
           llm_base_url: "https://api.openai.com",
           status: "active",
         },
-        3, // All Hands AI (org "4")
+        3, // Wren (org "4")
       );
 
       const memberListItems = await screen.findAllByTestId("member-item");
@@ -931,7 +931,7 @@ describe("Manage Organization Members Route", () => {
 
       // Check another user member dropdown (stephan is at index 3)
       if (memberListItems.length > 3) {
-        const anotherUserMember = memberListItems[3]; // stephan@all-hands.dev
+        const anotherUserMember = memberListItems[3]; // stephan@wren.dev
         const anotherUserDropdown = await openRoleDropdown(
           anotherUserMember,
           "member",
@@ -986,7 +986,7 @@ describe("Manage Organization Members Route", () => {
         {
           org_id: "4",
           user_id: "7", // Ray is admin in org 4
-          email: "ray@all-hands.dev",
+          email: "ray@wren.dev",
           role: "admin" as const,
           llm_api_key: "**********",
           max_iterations: 20,
@@ -994,12 +994,12 @@ describe("Manage Organization Members Route", () => {
           llm_base_url: "https://api.openai.com",
           status: "active" as const,
         },
-        3, // All Hands AI (org "4")
+        3, // Wren (org "4")
       );
 
       const updateMemberRoleSpy = createUpdateMemberRoleSpy();
 
-      const member = await findMemberByEmail("stephan@all-hands.dev");
+      const member = await findMemberByEmail("stephan@wren.dev");
 
       await changeMemberRole(member, "member", "admin");
 

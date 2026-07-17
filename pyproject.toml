@@ -146,7 +146,7 @@ runtime = [
 
 [tool.poetry]
 name = "wren-dev"
-version = "0.1.0-alpha"
+version = "0.1.0"
 description = "Wren — AI software engineer"
 authors = [ "Daniel" ]
 license = "MIT"

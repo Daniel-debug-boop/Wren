@@ -14,14 +14,14 @@ export default defineConfig({
     globals: true,
     environment: "jsdom",
     setupFiles: [path.join(__dirname, "vitest.setup.ts")],
-    include: ["src/**/*.test.{ts,tsx}"],
+    include: ["src/**/*.test.{ts,tsx}", "__tests__/**/*.test.{ts,tsx}"],
     exclude: ["node_modules", "build"],
     css: false,
     coverage: {
       provider: "v8",
       reporter: ["text", "html"],
       include: ["src/**/*.{ts,tsx}"],
-      exclude: ["src/**/*.test.*", "src/**/__tests__/**"],
+      exclude: ["src/**/*.test.*", "src/**/__tests__/**", "__tests__/**"],
     },
   },
 });

@@ -2,10 +2,12 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { FileTree } from "../ide/FileTree";
 import { SkillsBrowser } from "./SkillsBrowser";
+import type { FileNode } from "../ide/FileTree";
 import { cn } from "../../lib/utils";
 
 export function LeftSidebar() {
   const [tab, setTab] = useState<"files" | "skills">("files");
+  const [files] = useState<FileNode[]>([]);
 
   return (
     <div className="flex h-full w-full flex-col bg-[#0d1117]">
@@ -30,7 +32,7 @@ export function LeftSidebar() {
         ))}
       </div>
       <div className="flex-1 overflow-hidden">
-        {tab === "files" ? <FileTree /> : <SkillsBrowser />}
+        {tab === "files" ? <FileTree files={files} /> : <SkillsBrowser />}
       </div>
     </div>
   );

@@ -1,4 +1,3 @@
-# TODO: Merge this module with wren.app_server.config
 import os
 
 from wren.app_server.types import AppMode, ServerConfigInterface
@@ -20,9 +19,7 @@ class ServerConfig(ServerConfigInterface):
     secret_store_class: str = (
         'wren.app_server.secrets.file_secrets_store.FileSecretsStore'
     )
-    user_auth_class: str = (
-        'wren.app_server.user_auth.default_user_auth.DefaultUserAuth'
-    )
+    user_auth_class: str = 'wren.app_server.user_auth.default_user_auth.DefaultUserAuth'
     conversation_secret_enricher_class: str | None = None
     analytics_user_provider_class: str | None = None
     enable_v1: bool = os.getenv('ENABLE_V1') != '0'

@@ -171,10 +171,6 @@ async def search_repositories(
         )
     else:
         if sort_order:
-            # TODO: This is a temporary state until we refactor the underlying API.
-            # The get_repositories method does not support sorting in the same way as
-            # the search method - those should be merged into a single paginated
-            # method
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail='sort_order is not supported when listing user repositories. It will be supported after API refactoring.',

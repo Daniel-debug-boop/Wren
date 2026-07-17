@@ -418,8 +418,8 @@ To add a new LLM model to Wren, you need to update multiple files across both fr
    - Add the model to the appropriate `VERIFIED_*_MODELS` arrays
    - This ensures the model appears in CLI model selection
 
-3. **Backend Model List** (`wren/utils/llm.py`):
-   - **CRITICAL**: Add the model to the `wren_models` list (lines 57-66) if using Wren provider
+3. **Backend Model List** (`wren/app_server/utils/llm.py`):
+   - **CRITICAL**: Add the model to the `get_wren_models` return list if using Wren provider
    - This is required for the model to appear in the frontend model selector
    - Format: `'wren/model-name'` (e.g., `'wren/o3'`)
 

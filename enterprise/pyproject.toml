@@ -6,7 +6,7 @@ requires = [
 
 [tool.poetry]
 name = "enterprise_server"
-version = "0.0.1"
+version = "0.1.0"
 description = "Deploy OpenHands"
 authors = [ "OpenHands" ]
 license = "POLYFORM"

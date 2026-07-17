@@ -5,7 +5,7 @@ export function SkillsBrowser() {
   const [skills, setSkills] = useState<string[]>([]);
   useEffect(() => {
     SkillsApi.searchSkills(50)
-      .then((r) => setSkills(r.skills?.map((s: any) => s.name) ?? []))
+      .then((r) => setSkills(r.items?.map((s) => s.name) ?? []))
       .catch(() =>
         setSkills([
           "github",

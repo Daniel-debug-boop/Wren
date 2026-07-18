@@ -51,7 +51,7 @@ class AwsEventService(EventServiceBase):
             _logger.exception(f'Error reading event from {path}')
             return None
 
-    def _store_event(self, path: Path, event: Event):
+    def _store_event(self, path: Path, event: Event) -> None:
         """Store the event given at the path given."""
         data = event.model_dump(mode='json')
         json_str = json.dumps(data, indent=2)

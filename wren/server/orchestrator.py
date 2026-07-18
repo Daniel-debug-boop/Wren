@@ -38,9 +38,7 @@ from typing import (
     Iterable,
     Iterator,
     List,
-    Mapping,
-    Optional,
-    Sequence,
+    Mapping, Sequence,
     Set,
     Tuple,
     Union,
@@ -125,7 +123,7 @@ class TaskEvent:
 class TaskSpec:
     prompt: str
     repo_path: str
-    api_key: Optional[str] = None
+    api_key: str | None = None
     model_name: str = 'claude-sonnet-4.5'
     runtime_cls: str = 'docker'
     runtime_opts: Dict[str, Any] = field(default_factory=dict)
@@ -138,11 +136,11 @@ class TaskSpec:
     tags: List[str] = field(default_factory=list)
     depends_on: List[str] = field(default_factory=list)
     env: Dict[str, str] = field(default_factory=dict)
-    secrets_scope: Optional[str] = None
+    secrets_scope: str | None = None
     network_egress: str = 'open'  # open | restricted | none
-    seed: Optional[int] = None
-    verify_fn: Optional[Callable[[Any], Awaitable[bool]]] = None
-    max_cost_usd: Optional[float] = None
+    seed: int | None = None
+    verify_fn:, [Callable[[Any], Awaitable[bool]]] = None
+    max_cost_usd: float | None = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -153,14 +151,14 @@ class TaskHandle:
     status: TaskStatus = TaskStatus.QUEUED
     attempts: int = 0
     result: Any = None
-    error: Optional[str] = None
+    error: str | None = None
     created_at: float = field(default_factory=time.time)
-    started_at: Optional[float] = None
-    ended_at: Optional[float] = None
-    last_heartbeat: Optional[float] = None
+    started_at: float | None = None
+    ended_at: float | None = None
+    last_heartbeat: float | None = None
     cost_usd: float = 0.0
     events: deque = field(default_factory=lambda: deque(maxlen=2000))
-    fut: Optional[asyncio.Future] = None
+    fut: asyncio.Future | None = None
     cancel_token: asyncio.Event = field(default_factory=asyncio.Event)
 
     def to_public_dict(self) -> Dict[str, Any]:
@@ -274,13 +272,13 @@ class _InMemoryRuntime:
         self.opts = kw
         self.started = False
 
-    async def start(self):
+    async def start(self) -> None:
         self.started = True
 
-    async def stop(self):
+    async def stop(self) -> None:
         self.started = False
 
-    async def execute(self, cmd: str):
+    async def execute(self, cmd: str) -> Any:
         return (0, '', '')
 
     async def heartbeat(self) -> float:
@@ -314,7 +312,7 @@ class TaskStore:
     """Swappable persistence layer."""
 
     async def save(self, h: TaskHandle) -> None: ...
-    async def load(self, task_id: str) -> Optional[TaskHandle]: ...
+    async def load(self, task_id: str) -> TaskHandle | None: ...
     async def list(self) -> List[TaskHandle]: ...
     async def delete(self, task_id: str) -> None: ...
 
@@ -324,19 +322,19 @@ class InMemoryTaskStore(TaskStore):
         self._db: Dict[str, TaskHandle] = {}
         self._lock = asyncio.Lock()
 
-    async def save(self, h):
+    async def save(self, h) -> None:
         async with self._lock:
             self._db[h.task_id] = h
 
-    async def load(self, tid):
+    async def load(self, tid) -> Any:
         async with self._lock:
             return self._db.get(tid)
 
-    async def list(self):
+    async def list(self) -> Any:
         async with self._lock:
             return list(self._db.values())
 
-    async def delete(self, tid):
+    async def delete(self, tid) -> None:
         async with self._lock:
             self._db.pop(tid, None)
 
@@ -350,13 +348,13 @@ class Metrics:
         self.gauges: Dict[str, float] = {}
         self.histograms: Dict[str, List[float]] = defaultdict(list)
 
-    def inc(self, name, n=1):
+    def inc(self, name, n=1) -> None:
         self.counters[name] += n
 
-    def set(self, name, v):
+    def set(self, name, v) -> None:
         self.gauges[name] = v
 
-    def observe(self, name, v):
+    def observe(self, name, v) -> None:
         self.histograms[name].append(v)
 
     def snapshot(self) -> Dict[str, Any]:
@@ -399,7 +397,7 @@ class TenantQuota:
         self._last = time.monotonic()
         self._lock = asyncio.Lock()
 
-    async def acquire(self):
+    async def acquire(self) -> None:
         await self.sem.acquire()
         # simple token bucket
         async with self._lock:
@@ -414,7 +412,7 @@ class TenantQuota:
                 self._tokens -= 1
             self._last = time.monotonic()
 
-    def release(self):
+    def release(self) -> None:
         self.sem.release()
 
 
@@ -443,8 +441,8 @@ class ParallelAgentOrchestrator:
         self,
         max_concurrent: int = 8,
         global_rps: float = 50.0,
-        store: Optional[TaskStore] = None,
-        hooks: Optional[LifecycleHooks] = None,
+        store: TaskStore | None = None,
+        hooks: LifecycleHooks | None = None,
         watchdog_interval_s: float = 15.0,
         heartbeat_timeout_s: float = 180.0,
         default_tenant_quota: Tuple[int, float] = (4, 10.0),
@@ -479,8 +477,8 @@ class ParallelAgentOrchestrator:
         self._global_subs: Set[asyncio.Queue] = set()
         self._persist = persist
 
-        self._scheduler_task: Optional[asyncio.Task] = None
-        self._watchdog_task: Optional[asyncio.Task] = None
+        self._scheduler_task: asyncio.Task | None = None
+        self._watchdog_task: asyncio.Task | None = None
         self._shutdown = False
         self._drain_event = asyncio.Event()
         self._started = False
@@ -624,7 +622,7 @@ class ParallelAgentOrchestrator:
         return h.to_public_dict()
 
     async def list_tasks(
-        self, tenant: Optional[str] = None, status: Optional[TaskStatus] = None
+        self, tenant: str | None = None, status: TaskStatus | None = None
     ) -> List[Dict[str, Any]]:
         out = []
         for h in self.tasks.values():
@@ -636,7 +634,7 @@ class ParallelAgentOrchestrator:
         return out
 
     async def wait(
-        self, task_id: str, timeout_s: Optional[float] = None
+        self, task_id: str, timeout_s: float | None = None
     ) -> Dict[str, Any]:
         h = self.tasks.get(task_id)
         if not h:
@@ -871,7 +869,7 @@ class ParallelAgentOrchestrator:
                 await self._run_hook('on_finalized', h, {})
 
     @asynccontextmanager
-    async def _timeout_or_cancel(self, h: TaskHandle, timeout_s: float):
+    async def _timeout_or_cancel(self, h: TaskHandle, timeout_s: float) -> None:
         """Yields control, raising CancelledError if token sets, or letting timeout hit."""
         waiter = None
         try:

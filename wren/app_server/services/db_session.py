@@ -64,7 +64,7 @@ async def _yield_db_session(request: Request) -> AsyncGenerator[AsyncSession, No
         yield db_session
 
 
-def depends_db_session():
+def depends_db_session() -> Any:
     """FastAPI ``Depends(...)`` factory for the request-scoped ``AsyncSession``.
 
     Returns a stable ``Depends`` object that defers the ``get_global_config()``

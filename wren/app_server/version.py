@@ -4,7 +4,7 @@ from pathlib import Path
 __package_name__ = 'wren_ai'
 
 
-def get_version():
+def get_version() -> Any:
     # Try getting the version from pyproject.toml
     try:
         root_dir = Path(os.path.abspath(__file__)).parents[2]

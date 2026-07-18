@@ -55,7 +55,7 @@ USER_CONTEXT_ATTR = 'user_context'
 ADMIN = SpecifyUserContext(user_id=None)
 
 
-def as_admin(request: Request):
+def as_admin(request: Request) -> Any:
     """Service the request as an admin user without restrictions. The endpoint should
     handle security."""
     user_context = getattr(request.state, USER_CONTEXT_ATTR, None)

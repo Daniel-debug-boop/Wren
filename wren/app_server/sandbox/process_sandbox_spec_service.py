@@ -18,7 +18,7 @@ from wren.app_server.sandbox.sandbox_spec_service import (
 from wren.app_server.services.injector import InjectorState
 
 
-def get_default_sandbox_specs():
+def get_default_sandbox_specs() -> Any:
     return [
         SandboxSpecInfo(
             id=get_agent_server_image(),

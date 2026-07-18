@@ -88,7 +88,7 @@ class ProcessSandboxService(SandboxService):
     httpx_client: httpx.AsyncClient
     default_sandbox_spec_id: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """Initialize the service after dataclass creation."""
         # Ensure base working directory exists
         os.makedirs(self.base_working_dir, exist_ok=True)

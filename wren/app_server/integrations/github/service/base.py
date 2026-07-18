@@ -137,7 +137,7 @@ class GitHubMixinBase(BaseGitService, HTTPClient):
         await self._make_request(url)
         return True
 
-    async def get_user(self):
+    async def get_user(self) -> Any:
         url = f'{self.BASE_URL}/user'
         response, _ = await self._make_request(url)
 

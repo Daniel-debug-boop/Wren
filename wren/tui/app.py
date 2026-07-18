@@ -307,7 +307,7 @@ class WrenTUI(App):
         )
 
 
-def main():
+def main() -> None:
     """Entry point for the TUI."""
     import argparse
 

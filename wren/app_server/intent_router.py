@@ -8,7 +8,7 @@ POST /api/v1/intent/full — Full pipeline: analyze → clarify → plan
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
@@ -87,15 +87,15 @@ class ClarifyResponse(BaseModel):
 
 class FullPipelineRequest(BaseModel):
     prompt: str = Field(description='User prompt for full pipeline')
-    answers: Optional[dict[str, str]] = Field(
-        default=None, description='Optional answers to clarification questions'
+    answers: dict[str, str] | None = Field(
+        default=None, description=', answers to clarification questions'
     )
 
 
 class FullPipelineResponse(BaseModel):
     intent: AnalyzeResponse
-    clarification: Optional[ClarifyResponse] = None
-    plan: Optional[PlanResponse] = None
+    clarification: ClarifyResponse | None = None
+    plan: PlanResponse | None = None
     ready_to_build: bool
     next_step: str
 

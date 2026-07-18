@@ -15,20 +15,20 @@ _logger = logging.getLogger(__name__)
 class OssAppLifespanService(AppLifespanService):
     run_alembic_on_startup: bool = True
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> Any:
         _logger.info('lifespan.startup.begin')
         if self.run_alembic_on_startup:
             self.run_alembic()
         _logger.info('lifespan.startup.complete')
         return self
 
-    async def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
         _logger.info('lifespan.shutdown.begin')
         # Flush any pending analytics, close DB pools, release locks, etc.
         # Subclasses or callers should override to add specific cleanup.
         _logger.info('lifespan.shutdown.complete')
 
-    def run_alembic(self):
+    def run_alembic(self) -> None:
         # Run alembic upgrade head to ensure database is up to date
         alembic_dir = Path(__file__).parent / 'alembic'
         alembic_ini = alembic_dir / 'alembic.ini'

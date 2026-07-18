@@ -83,7 +83,7 @@ class WrenAPIClient:
         self.conversation_url: str | None = None
         self._last_event_id: int = 0
 
-    async def close(self):
+    async def close(self) -> None:
         await self.client.aclose()
 
     async def health_check(self) -> bool:

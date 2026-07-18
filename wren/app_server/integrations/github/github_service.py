@@ -80,7 +80,7 @@ github_service_cls = os.environ.get(
 _github_service_impl = None
 
 
-def get_github_service_impl():
+def get_github_service_impl() -> Any:
     """Get the GitHub service implementation with lazy loading."""
     global _github_service_impl
     if _github_service_impl is None:
@@ -92,11 +92,11 @@ def get_github_service_impl():
 class _GitHubServiceImplProxy:
     """Proxy class to provide lazy loading for GithubServiceImpl."""
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Any:
         impl = get_github_service_impl()
         return getattr(impl, name)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Any:
         impl = get_github_service_impl()
         return impl(*args, **kwargs)
 

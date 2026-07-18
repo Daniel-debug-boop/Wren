@@ -16,7 +16,7 @@ from wren.app_server.orchestration.sub_agent_service import (
 from wren.app_server.orchestration.working_memory import WorkingMemory
 
 
-def __getattr__(name: str):
+def __getattr__(name: str) -> Any:
     """Lazy-load SDK-dependent modules on first access."""
     if name in ('ReflectionProcessor', 'WorkingMemoryProcessor', 'hooks'):
         from wren.app_server.orchestration.hooks import (  # noqa: PLC0415

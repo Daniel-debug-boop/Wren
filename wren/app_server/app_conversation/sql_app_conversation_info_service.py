@@ -545,7 +545,7 @@ class SQLAppConversationInfoService(AppConversationInfoService):
         stored.last_updated_at = utc_now()
         await self.db_session.commit()
 
-    async def _secure_select(self):
+    async def _secure_select(self) -> Any:
         query = select(StoredConversationMetadata).where(
             StoredConversationMetadata.conversation_version == 'V1'
         )

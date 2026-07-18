@@ -45,10 +45,10 @@ init_tavily_proxy()
 mcp_app = mcp_server.http_app(path='/mcp', stateless_http=True)
 
 
-def combine_lifespans(*lifespans):
+def combine_lifespans(*lifespans) -> Any:
     # Create a combined lifespan to manage multiple session managers
     @contextlib.asynccontextmanager
-    async def combined_lifespan(app):
+    async def combined_lifespan(app) -> None:
         async with contextlib.AsyncExitStack() as stack:
             for lifespan in lifespans:
                 await stack.enter_async_context(lifespan(app))
@@ -73,7 +73,7 @@ app = FastAPI(
 
 
 @app.exception_handler(AuthenticationError)
-async def authentication_error_handler(request: Request, exc: AuthenticationError):
+async def authentication_error_handler(request: Request, exc: AuthenticationError) -> Any:
     return JSONResponse(
         status_code=401,
         content=str(exc),

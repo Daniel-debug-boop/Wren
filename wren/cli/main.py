@@ -433,7 +433,7 @@ def _check_dependencies_hard() -> None:
 def _open_browser(host: str, port: int, delay: float = 2.0) -> None:
     import threading
 
-    def _do_open():
+    def _do_open() -> None:
         time.sleep(delay)
         url = f'http://{host}:{port}'
         try:
@@ -446,7 +446,7 @@ def _open_browser(host: str, port: int, delay: float = 2.0) -> None:
 
 
 def _setup_signal_handlers() -> None:
-    def _handler(signum, frame):
+    def _handler(signum, frame) -> None:
         print()  # newline after ^C
         logger.info('Shutting down...')
         sys.exit(0)

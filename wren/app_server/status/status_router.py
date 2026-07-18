@@ -6,7 +6,7 @@ router = APIRouter(tags=['Status'])
 
 
 @router.get('/alive')
-async def alive():
+async def alive() -> Any:
     """Endpoint for liveness probes.
 
     If this responds then the server is considered alive.
@@ -26,7 +26,7 @@ async def health() -> str:
 
 
 @router.get('/server_info')
-async def get_server_info():
+async def get_server_info() -> Any:
     """Server information endpoint.
 
     Returns system information including CPU count, memory usage, and

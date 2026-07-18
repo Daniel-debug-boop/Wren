@@ -23,31 +23,31 @@ _logger = logging.getLogger(__name__)
 # ── Lazy imports (avoid circular deps at package init) ──────────
 
 
-def _goal_detector():
+def _goal_detector() -> Any:
     from wren.app_server.orchestration.goal_detector import GoalDetector  # noqa: PLC0415
 
     return GoalDetector
 
 
-def _working_memory(project_root: str | None = None):
+def _working_memory(project_root: str | None = None) -> Any:
     from wren.app_server.orchestration.working_memory import WorkingMemory  # noqa: PLC0415
 
     return WorkingMemory(project_root or CONFIG.project_root)
 
 
-def _manager():
+def _manager() -> Any:
     from wren.app_server.orchestration.manager import ManagerAgent  # noqa: PLC0415
 
     return ManagerAgent
 
 
-def _self_memory_loop(project_root: str | None = None):
+def _self_memory_loop(project_root: str | None = None) -> Any:
     from wren.app_server.orchestration.self_memory_loop import SelfMemoryLoop  # noqa: PLC0415
 
     return SelfMemoryLoop(project_root or CONFIG.project_root)
 
 
-def _solution_registry(project_root: str | None = None):
+def _solution_registry(project_root: str | None = None) -> Any:
     from wren.app_server.orchestration.error_recovery import SolutionRegistry  # noqa: PLC0415
 
     return SolutionRegistry(project_root or CONFIG.project_root)

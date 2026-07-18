@@ -58,7 +58,7 @@ class EventService(ABC):
             yield event
 
     @abstractmethod
-    async def save_event(self, conversation_id: UUID, event: Event):
+    async def save_event(self, conversation_id: UUID, event: Event) -> None:
         """Save an event. Internal method intended not be part of the REST api."""
 
     async def batch_get_events(

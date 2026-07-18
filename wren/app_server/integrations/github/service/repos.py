@@ -58,7 +58,7 @@ class GitHubReposMixin(GitHubMixinBase):
 
         return repos[:max_repos]  # Trim to max_repos if needed
 
-    def parse_pushed_at_date(self, repo):
+    def parse_pushed_at_date(self, repo) -> Any:
         ts = repo.get('pushed_at')
         return datetime.strptime(ts, '%Y-%m-%dT%H:%M:%SZ') if ts else datetime.min
 

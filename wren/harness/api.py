@@ -69,7 +69,7 @@ class HarnessAPI:
     def _rate_headers(self) -> dict[str, str]:
         return self._rate_limiter.check('127.0.0.1')
 
-    def _build_app(self):
+    def _build_app(self) -> Any:
         """Build FastAPI app with all routes."""
         from fastapi import FastAPI, HTTPException, Response
         from pydantic import BaseModel
@@ -91,11 +91,11 @@ class HarnessAPI:
         _rate_headers = self._rate_headers  # noqa: F841
 
         @app.on_event('startup')
-        async def startup():
+        async def startup() -> None:
             await orch.start()
 
         @app.on_event('shutdown')
-        async def shutdown():
+        async def shutdown() -> None:
             await orch.shutdown()
 
         @app.post('/goal')

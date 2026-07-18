@@ -366,7 +366,7 @@ class MetaOrchestrator:
         try:
             start = time.time()
 
-            async def _timed_run():
+            async def _timed_run() -> Any:
                 return await asyncio.wait_for(
                     task_obj, timeout=self._cfg.child_timeout_s
                 )

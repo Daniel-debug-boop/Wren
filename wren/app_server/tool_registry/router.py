@@ -68,7 +68,7 @@ def _get_orchestrator() -> ToolOrchestrator:
 
 
 @router.get('/inventory')
-async def get_inventory():
+async def get_inventory() -> Any:
     """List all installed capabilities from local inventory."""
     orch = _get_orchestrator()
     summary = orch.inventory.capability_summary()
@@ -76,7 +76,7 @@ async def get_inventory():
 
 
 @router.post('/ensure')
-async def ensure_capabilities(req: EnsureCapabilitiesRequest):
+async def ensure_capabilities(req: EnsureCapabilitiesRequest) -> Any:
     """Ensure capabilities exist, scraping and installing if needed."""
     orch = _get_orchestrator()
     result = await orch.ensure_capabilities(
@@ -88,7 +88,7 @@ async def ensure_capabilities(req: EnsureCapabilitiesRequest):
 
 
 @router.post('/analyze')
-async def analyze_task(req: AnalyzeTaskRequest):
+async def analyze_task(req: AnalyzeTaskRequest) -> Any:
     """Analyze a task description and ensure necessary tools exist."""
     orch = _get_orchestrator()
     result = await orch.analyze_task_for_tools(
@@ -99,7 +99,7 @@ async def analyze_task(req: AnalyzeTaskRequest):
 
 
 @router.post('/install-mcp')
-async def install_mcp(req: InstallMcpRequest):
+async def install_mcp(req: InstallMcpRequest) -> Any:
     """Install an MCP server by registering it as a skill."""
     installer = ToolInstaller()
     try:
@@ -114,7 +114,7 @@ async def install_mcp(req: InstallMcpRequest):
 
 
 @router.post('/install-skill')
-async def install_skill(req: InstallSkillRequest):
+async def install_skill(req: InstallSkillRequest) -> Any:
     """Install a custom skill from provided markdown content."""
     installer = ToolInstaller()
     try:
@@ -129,7 +129,7 @@ async def install_skill(req: InstallSkillRequest):
 
 
 @router.delete('/skills/{name}')
-async def uninstall_skill(name: str):
+async def uninstall_skill(name: str) -> Any:
     """Remove an installed skill by name."""
     installer = ToolInstaller()
     removed = installer.uninstall_skill(name)
@@ -142,7 +142,7 @@ async def uninstall_skill(name: str):
 
 
 @router.get('/marketplace')
-async def list_marketplace():
+async def list_marketplace() -> Any:
     """List well-known installable MCP servers."""
     installer = ToolInstaller()
     servers = installer.list_installable_mcp_servers()
@@ -150,7 +150,7 @@ async def list_marketplace():
 
 
 @router.post('/refresh')
-async def refresh_inventory():
+async def refresh_inventory() -> Any:
     """Force refresh the inventory cache."""
     inventory = ToolInventory()
     inventory.invalidate_cache()

@@ -2664,7 +2664,7 @@ You have access to the following tools and systems:
             raise ValueError(f'Conversation not found: {conversation_id}')
         return conversation_info
 
-    async def _validate_conversation_export_size(self, conversation_id: UUID):
+    async def _validate_conversation_export_size(self, conversation_id: UUID) -> None:
         if self.export_max_events <= 0:
             return
 
@@ -2754,7 +2754,7 @@ You have access to the following tools and systems:
 
         refresh_interval = self._conversation_export_lock_refresh_interval()
 
-        async def stream():
+        async def stream() -> None:
             # Refresh the lock in a background task so the streaming loop stays
             # simple and lock maintenance doesn't block chunk generation.
             refresh_task = (

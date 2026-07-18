@@ -68,13 +68,13 @@ class Spinner:
         self._running = False
         self._task: asyncio.Task | None = None
 
-    async def start(self):
+    async def start(self) -> None:
         if not _COLOR or not sys.stdout.isatty():
             return
         self._running = True
         self._task = asyncio.create_task(self._spin())
 
-    async def _spin(self):
+    async def _spin(self) -> None:
         idx = 0
         while self._running:
             frame = _SPINNER_FRAMES[idx % len(_SPINNER_FRAMES)]
@@ -83,7 +83,7 @@ class Spinner:
             idx += 1
             await asyncio.sleep(0.08)
 
-    async def stop(self, done: bool = True):
+    async def stop(self, done: bool = True) -> None:
         self._running = False
         if self._task:
             self._task.cancel()
@@ -190,7 +190,7 @@ class CodeSession:
         )
         self._last_event_id: str = ""
 
-    async def close(self):
+    async def close(self) -> None:
         await self._client.aclose()
 
     async def health_check(self) -> bool:

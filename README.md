@@ -93,12 +93,6 @@ To include subtle motion or interactive previews in this README:
 
 This repository's frontend uses Framer Motion for micro-interactions; keep README animations small, focused, and respectful of users' prefers-reduced-motion setting.
 
-> Note: I have the new logo image you uploaded in this chat, but I cannot access binary image data directly to write files into the repo from the chat environment. To complete the branding update I can either:
-> 1) Commit the image files for you if you paste the image as a base64 string here, or
-> 2) You can upload the following files to the repository (assets/logo-320.png, assets/logo-160.png, assets/logo-64.png, assets/logo-320.webp, and replace ./logo.png) and I will finish any further README or reference edits on main.  
->
-> If you prefer, I can provide a small script and ImageMagick commands to generate optimized variants locally and push them.
-
 ---
 
 ## Features (short)

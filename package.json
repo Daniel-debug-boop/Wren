@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@dietrichgebert/ponytail": "^4.8.4"
+  },
+  "name": "wren-ai",
+  "version": "1.0.0",
+  "description": "Self-hosted AI Engineering Platform",
+  "repository": "https://github.com/Daniel-debug-boop/Wren",
+  "keywords": "ai,agent,llm,coding,ide"
+}

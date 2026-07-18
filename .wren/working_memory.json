@@ -1,0 +1,418 @@
+{
+  "entries": [
+    {
+      "id": "mem_1783070945330_0",
+      "type": "decision",
+      "content": "Goal auto-detected as complex project. Decomposed into 4 sub-tasks.",
+      "metadata": {
+        "context": "goal_detector"
+      },
+      "timestamp": 1783070945.3303158
+    },
+    {
+      "id": "mem_1783070945332_1",
+      "type": "todo",
+      "content": "Setup infrastructure",
+      "metadata": {
+        "status": "pending",
+        "depends_on": []
+      },
+      "timestamp": 1783070945.3325477
+    },
+    {
+      "id": "mem_1783070945332_2",
+      "type": "todo",
+      "content": "Implement frontend UI",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure"
+        ]
+      },
+      "timestamp": 1783070945.3329434
+    },
+    {
+      "id": "mem_1783070945333_3",
+      "type": "todo",
+      "content": "Write tests & verify",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070945.3333445
+    },
+    {
+      "id": "mem_1783070945333_4",
+      "type": "todo",
+      "content": "Integration & final review",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure",
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070945.3338451
+    },
+    {
+      "id": "mem_1783070959814_5",
+      "type": "decision",
+      "content": "Goal auto-detected as complex project. Decomposed into 4 sub-tasks.",
+      "metadata": {
+        "context": "goal_detector"
+      },
+      "timestamp": 1783070959.8141558
+    },
+    {
+      "id": "mem_1783070959814_6",
+      "type": "todo",
+      "content": "Setup infrastructure",
+      "metadata": {
+        "status": "pending",
+        "depends_on": []
+      },
+      "timestamp": 1783070959.8147511
+    },
+    {
+      "id": "mem_1783070959815_7",
+      "type": "todo",
+      "content": "Implement frontend UI",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure"
+        ]
+      },
+      "timestamp": 1783070959.8153331
+    },
+    {
+      "id": "mem_1783070959815_8",
+      "type": "todo",
+      "content": "Write tests & verify",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070959.8159363
+    },
+    {
+      "id": "mem_1783070959816_9",
+      "type": "todo",
+      "content": "Integration & final review",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure",
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070959.8165703
+    },
+    {
+      "id": "mem_1783070973969_10",
+      "type": "decision",
+      "content": "Goal auto-detected as complex project. Decomposed into 4 sub-tasks.",
+      "metadata": {
+        "context": "goal_detector"
+      },
+      "timestamp": 1783070973.9691756
+    },
+    {
+      "id": "mem_1783070973970_11",
+      "type": "todo",
+      "content": "Setup infrastructure",
+      "metadata": {
+        "status": "pending",
+        "depends_on": []
+      },
+      "timestamp": 1783070973.9702952
+    },
+    {
+      "id": "mem_1783070973971_12",
+      "type": "todo",
+      "content": "Implement frontend UI",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure"
+        ]
+      },
+      "timestamp": 1783070973.9711454
+    },
+    {
+      "id": "mem_1783070973971_13",
+      "type": "todo",
+      "content": "Write tests & verify",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070973.9718373
+    },
+    {
+      "id": "mem_1783070973972_14",
+      "type": "todo",
+      "content": "Integration & final review",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure",
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783070973.9722912
+    },
+    {
+      "id": "mem_1783070973986_15",
+      "type": "error",
+      "content": "Attempt 1/5 for test_op: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 1
+      },
+      "timestamp": 1783070973.986132
+    },
+    {
+      "id": "mem_1783070973987_16",
+      "type": "error",
+      "content": "Attempt 2/5 for test_op: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 2
+      },
+      "timestamp": 1783070973.987697
+    },
+    {
+      "id": "mem_1783070973989_17",
+      "type": "error",
+      "content": "Attempt 3/5 for test_op: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 3
+      },
+      "timestamp": 1783070973.9894392
+    },
+    {
+      "id": "mem_1783070973991_18",
+      "type": "error",
+      "content": "Attempt 4/5 for test_op: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 4
+      },
+      "timestamp": 1783070973.991249
+    },
+    {
+      "id": "mem_1783070973993_19",
+      "type": "error",
+      "content": "Attempt 5/5 for test_op: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 5
+      },
+      "timestamp": 1783070973.9932349
+    },
+    {
+      "id": "mem_1783070973997_20",
+      "type": "reflection",
+      "content": "Failed to fix test_op after 5 attempts. Last error: main.<locals>.op() takes 0 positional arguments but 1 was given",
+      "metadata": {
+        "tags": [
+          "error_recovery",
+          "failure",
+          "test_op"
+        ]
+      },
+      "timestamp": 1783070973.9974108
+    },
+    {
+      "id": "mem_1783071030960_21",
+      "type": "error",
+      "content": "Attempt 1/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 1
+      },
+      "timestamp": 1783071030.9604225
+    },
+    {
+      "id": "mem_1783071030961_22",
+      "type": "error",
+      "content": "Attempt 2/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 2
+      },
+      "timestamp": 1783071030.9613838
+    },
+    {
+      "id": "mem_1783071030968_23",
+      "type": "error",
+      "content": "Attempt 3/5 for test_op: object str can't be used in 'await' expression",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 3
+      },
+      "timestamp": 1783071030.9680648
+    },
+    {
+      "id": "mem_1783071030969_24",
+      "type": "error",
+      "content": "Attempt 4/5 for test_op: object str can't be used in 'await' expression",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 4
+      },
+      "timestamp": 1783071030.9694514
+    },
+    {
+      "id": "mem_1783071030970_25",
+      "type": "error",
+      "content": "Attempt 5/5 for test_op: object str can't be used in 'await' expression",
+      "metadata": {
+        "error_type": "default",
+        "attempt": 5
+      },
+      "timestamp": 1783071030.9708652
+    },
+    {
+      "id": "mem_1783071030971_26",
+      "type": "reflection",
+      "content": "Failed to fix test_op after 5 attempts. Last error: object str can't be used in 'await' expression",
+      "metadata": {
+        "tags": [
+          "error_recovery",
+          "failure",
+          "test_op"
+        ]
+      },
+      "timestamp": 1783071030.9719007
+    },
+    {
+      "id": "mem_1783071040308_27",
+      "type": "error",
+      "content": "Attempt 1/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 1
+      },
+      "timestamp": 1783071040.3082619
+    },
+    {
+      "id": "mem_1783071040309_28",
+      "type": "error",
+      "content": "Attempt 2/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 2
+      },
+      "timestamp": 1783071040.3093028
+    },
+    {
+      "id": "mem_1783071040310_29",
+      "type": "reflection",
+      "content": "Fixed test_op: strategy \"Add the package to requirements.txt and install\" worked after 3 attempt(s)",
+      "metadata": {
+        "tags": [
+          "error_recovery",
+          "test_op"
+        ]
+      },
+      "timestamp": 1783071040.3106983
+    },
+    {
+      "id": "mem_1783071051687_30",
+      "type": "decision",
+      "content": "Goal auto-detected as complex project. Decomposed into 4 sub-tasks.",
+      "metadata": {
+        "context": "goal_detector"
+      },
+      "timestamp": 1783071051.687876
+    },
+    {
+      "id": "mem_1783071051689_31",
+      "type": "todo",
+      "content": "Setup infrastructure",
+      "metadata": {
+        "status": "pending",
+        "depends_on": []
+      },
+      "timestamp": 1783071051.6895318
+    },
+    {
+      "id": "mem_1783071051691_32",
+      "type": "todo",
+      "content": "Implement frontend UI",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure"
+        ]
+      },
+      "timestamp": 1783071051.691417
+    },
+    {
+      "id": "mem_1783071051693_33",
+      "type": "todo",
+      "content": "Write tests & verify",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783071051.6931891
+    },
+    {
+      "id": "mem_1783071051695_34",
+      "type": "todo",
+      "content": "Integration & final review",
+      "metadata": {
+        "status": "pending",
+        "depends_on": [
+          "Setup infrastructure",
+          "Implement frontend UI"
+        ]
+      },
+      "timestamp": 1783071051.6950076
+    },
+    {
+      "id": "mem_1783071051712_35",
+      "type": "error",
+      "content": "Attempt 1/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 1
+      },
+      "timestamp": 1783071051.7124207
+    },
+    {
+      "id": "mem_1783071051714_36",
+      "type": "error",
+      "content": "Attempt 2/5 for test_op: ModuleNotFoundError: No module named flask",
+      "metadata": {
+        "error_type": "import_missing",
+        "attempt": 2
+      },
+      "timestamp": 1783071051.7145627
+    },
+    {
+      "id": "mem_1783071051717_37",
+      "type": "reflection",
+      "content": "Fixed test_op: strategy \"Add the package to requirements.txt and install\" worked after 3 attempt(s)",
+      "metadata": {
+        "tags": [
+          "error_recovery",
+          "test_op"
+        ]
+      },
+      "timestamp": 1783071051.717974
+    }
+  ]
+}

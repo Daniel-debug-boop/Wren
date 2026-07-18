@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Wren AI</string>
+    <string name="bootstrap_title">Setting up Wren AI</string>
+    <string name="server_running">Wren AI is running</string>
+    <string name="job_ready_title">Your project is ready!</string>
+    <string name="job_ready_message">Wren AI finished building your app. Tap to open.</string>
+</resources>

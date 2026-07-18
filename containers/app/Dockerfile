@@ -1,0 +1,116 @@
+ARG WREN_BUILD_VERSION=dev
+FROM node:25.9-trixie-slim AS frontend-builder
+
+WORKDIR /app
+
+COPY frontend/package.json frontend/bun.lock ./
+RUN npm ci
+
+COPY frontend ./
+RUN npm run build
+
+FROM python:3.13.7-slim-trixie AS base
+FROM base AS backend-builder
+
+WORKDIR /app
+ENV PYTHONPATH='/app'
+
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=1 \
+    POETRY_VIRTUALENVS_CREATE=1 \
+    POETRY_CACHE_DIR=/tmp/poetry_cache
+
+# Pin Poetry version to match the version used to generate poetry.lock
+ARG POETRY_VERSION=2.3.4
+RUN apt-get update -y \
+    && apt-get install -y curl make git build-essential jq gettext \
+    && python3 -m pip install "poetry==${POETRY_VERSION}" --break-system-packages
+
+COPY pyproject.toml poetry.lock ./
+RUN touch README.md
+RUN export POETRY_CACHE_DIR && poetry install --no-root && rm -rf $POETRY_CACHE_DIR
+
+FROM base AS wren-app
+
+WORKDIR /app
+
+# re-declare for this section
+ARG WREN_BUILD_VERSION
+
+ENV RUN_AS_WREN=true
+# A random number--we need this to be different from the user's UID on the host machine
+ENV WREN_USER_ID=42420
+ENV USE_HOST_NETWORK=false
+ENV WORKSPACE_BASE=/opt/workspace_base
+ENV WREN_BUILD_VERSION=$WREN_BUILD_VERSION
+ENV SANDBOX_USER_ID=0
+ENV FILE_STORE=local
+ENV FILE_STORE_PATH=/.wren
+ENV INIT_GIT_IN_EMPTY_WORKSPACE=1
+RUN mkdir -p $FILE_STORE_PATH
+RUN mkdir -p $WORKSPACE_BASE
+
+RUN apt-get update -y \
+    && apt-get install -y curl git ssh sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+# Default is 1000, but OSX is often 501
+RUN sed -i 's/^UID_MIN.*/UID_MIN 499/' /etc/login.defs
+# Default is 60000, but we've seen up to 200000
+RUN sed -i 's/^UID_MAX.*/UID_MAX 1000000/' /etc/login.defs
+
+RUN groupadd --gid $WREN_USER_ID wren
+RUN useradd -l -m -u $WREN_USER_ID --gid $WREN_USER_ID -s /bin/bash wren && \
+    usermod -aG wren wren && \
+    usermod -aG sudo wren && \
+    echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+RUN chown -R wren:wren /app && chmod -R 770 /app
+RUN sudo chown -R wren:wren $WORKSPACE_BASE && sudo chmod -R 770 $WORKSPACE_BASE
+USER wren
+
+ENV VIRTUAL_ENV=/app/.venv \
+    PATH="/app/.venv/bin:$PATH" \
+    PYTHONPATH='/app'
+
+COPY --chown=wren:wren --chmod=770 --from=backend-builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+
+# Pin pip to a known-good version (reproducible builds) and fix CVE-2025-8869
+ARG PIP_VERSION=26.0.1
+RUN python -m pip install --no-cache-dir "pip==${PIP_VERSION}"
+
+USER root
+RUN /usr/local/bin/python3 -m pip install --no-cache-dir "pip==${PIP_VERSION}" --break-system-packages
+USER wren
+
+# Scrapling MCP dependencies (anti-bot browser automation)
+# Installs Playwright chromium + stealth browser deps for Scrapling
+USER root
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        libnss3 libxss1 libasound2t64 libatk-bridge2.0-0 libgtk-3-0 \
+        libgbm1 libxdamage1 libxrandr2 libpango-1.0-0 libcairo2 \
+        fonts-liberation libappindicator3-1 xdg-utils wget \
+    && rm -rf /var/lib/apt/lists/*
+USER wren
+RUN playwright install chromium 2>/dev/null || echo "Playwright install deferred to runtime"
+RUN playwright install-deps chromium 2>/dev/null || echo "Playwright deps deferred to runtime"
+
+COPY --chown=wren:wren --chmod=770 ./skills ./skills
+COPY --chown=wren:wren wren ./wren
+COPY --chown=wren:wren pyproject.toml poetry.lock README.md MANIFEST.in LICENSE ./
+
+# Add this line to set group ownership of all files/directories not already in "wren" group
+RUN find /app \! -group wren -exec chgrp wren {} +
+
+COPY --chown=wren:wren --chmod=770 --from=frontend-builder /app/build ./frontend/build
+COPY --chown=wren:wren --chmod=770 ./containers/app/entrypoint.sh /app/entrypoint.sh
+
+USER root
+
+WORKDIR /app
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:3000/ || exit 1
+
+ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["uvicorn", "wren.app_server.app:app", "--host", "0.0.0.0", "--port", "3000"]

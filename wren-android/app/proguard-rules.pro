@@ -1,0 +1,3 @@
+-keep class com.wren.android.** { *; }
+-dontwarn com.chaquo.python.**
+-keep class com.chaquo.python.** { *; }

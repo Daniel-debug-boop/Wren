@@ -1,0 +1,43 @@
+name: pr
+
+# Lints PR titles (conventional commits).
+on:
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  pr-title:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check PR title format
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const conventionalPattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?!?: .+/;
+            if (!conventionalPattern.test(title)) {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+              });
+              const marker = '<!-- pr-title-warning -->';
+              const existing = comments.find(c => c.body.includes(marker));
+              const body = `${marker}
+              ⚠️ **PR Title Format**
+
+              Please use conventional commit format: \`type: description\`
+              Examples: \`feat: add new feature\`, \`fix: resolve bug\`, \`docs: update readme\`
+              `;
+              if (!existing) {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.issue.number,
+                  body: body,
+                });
+              }
+            }

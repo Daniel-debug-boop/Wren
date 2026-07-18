@@ -5,7 +5,7 @@ export function CodeEditor() {
   const [content, setContent] = useState("");
 
   return (
-    <div className="h-1/2 border-t border-white/5 bg-[#0a0e14]">
+    <div className="h-1/2 border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg)' }}>
       <MonacoEditor
         filename="untitled.ts"
         content={content}

@@ -46,8 +46,10 @@ export function FileTree({ files, onOpenFile, editable = true, viewMode = "tree"
     return (
       <div key={file.path} className="select-none">
         <div
-          className="flex items-center py-1.5 px-2 rounded-md hover:bg-white/5 transition-colors cursor-pointer group"
+          className="flex items-center py-1.5 px-2 rounded-md transition-colors cursor-pointer group"
           style={{ paddingLeft: `${indent + 8}px` }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
           onClick={() => {
             if (isFolder) {
               toggleFolder(file.path);
@@ -63,7 +65,9 @@ export function FileTree({ files, onOpenFile, editable = true, viewMode = "tree"
                   e.stopPropagation();
                   toggleFolder(file.path);
                 }}
-                className="p-0.5 hover:bg-white/10 rounded transition-colors"
+                className="p-0.5 rounded transition-colors"
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--surface-hover)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
               >
                 {isExpanded ? (
                   <ChevronDown size={12} className="text-text-muted" />
@@ -158,8 +162,14 @@ export function FileTree({ files, onOpenFile, editable = true, viewMode = "tree"
             onClick={() => setViewModeState("tree")}
             className={`px-2 py-1 text-xs rounded transition-all ${viewModeState === "tree"
               ? "bg-accent/20 text-accent"
-              : "text-text-muted hover:text-text-primary hover:bg-white/5"
+              : "text-text-muted hover:text-text-primary"
             }`}
+            onMouseEnter={(e) => {
+              if (viewModeState !== 'tree') e.currentTarget.style.background = 'var(--surface-hover)';
+            }}
+            onMouseLeave={(e) => {
+              if (viewModeState !== 'tree') e.currentTarget.style.background = 'transparent';
+            }}
           >
             Tree View
           </button>
@@ -167,8 +177,13 @@ export function FileTree({ files, onOpenFile, editable = true, viewMode = "tree"
             onClick={() => setViewModeState("list")}
             className={`px-2 py-1 text-xs rounded transition-all ${viewModeState === "list"
               ? "bg-accent/20 text-accent"
-              : "text-text-muted hover:text-text-primary hover:bg-white/5"
-            }`}
+              : "text-text-muted hover:text-text-primary"}`}
+            onMouseEnter={(e) => {
+              if (viewModeState !== 'list') e.currentTarget.style.background = 'var(--surface-hover)';
+            }}
+            onMouseLeave={(e) => {
+              if (viewModeState !== 'list') e.currentTarget.style.background = 'transparent';
+            }}
           >
             List View
           </button>

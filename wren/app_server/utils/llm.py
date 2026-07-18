@@ -17,19 +17,11 @@ from wren.app_server.utils.logger import wren_logger as logger
 # ``VERIFIED_WREN_MODELS``.  SaaS mode overrides it with the database
 # (via ``get_wren_models``).
 # ---------------------------------------------------------------------------
-from openhands.sdk.llm.utils.verified_models import (  # noqa: E402
+from wren.llm.utils.verified_models import (  # noqa: E402
     VERIFIED_ANTHROPIC_MODELS as _SDK_ANTHROPIC,
-)
-from openhands.sdk.llm.utils.verified_models import (
     VERIFIED_MISTRAL_MODELS as _SDK_MISTRAL,
-)
-from openhands.sdk.llm.utils.verified_models import (
     VERIFIED_MODELS as _SDK_VERIFIED_MODELS,
-)
-from openhands.sdk.llm.utils.verified_models import (
     VERIFIED_OPENAI_MODELS as _SDK_OPENAI,
-)
-from openhands.sdk.llm.utils.verified_models import (
     VERIFIED_WREN_MODELS as _SDK_WREN_PROVIDER,
 )
 

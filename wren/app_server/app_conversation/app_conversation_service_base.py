@@ -36,9 +36,9 @@ from wren.app_server.utils.auth import looks_like_jwt
 from wren.app_server.utils.git import ensure_valid_git_branch_name
 from wren.app_server.tool_registry.orchestrator import ToolOrchestrator
 from wren import Agent, LLMSummarizingCondenser
-from openhands.sdk.context import AgentContext
-from openhands.sdk.llm import LLM
-from openhands.sdk.security import (
+from wren.context import AgentContext
+from wren.llm import LLM
+from wren.security import (
     AlwaysConfirm,
     ConfirmationPolicyBase,
     ConfirmRisky,
@@ -46,8 +46,8 @@ from openhands.sdk.security import (
     NeverConfirm,
     SecurityAnalyzerBase,
 )
-from openhands.sdk.skills import Skill
-from openhands.sdk.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
+from wren.skills import Skill
+from wren.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
 
 _logger = logging.getLogger(__name__)
 

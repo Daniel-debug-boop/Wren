@@ -11,7 +11,7 @@ import logging
 
 import httpx
 
-from openhands.sdk.hooks import HookConfig
+from wren.hooks import HookConfig
 
 _logger = logging.getLogger(__name__)
 

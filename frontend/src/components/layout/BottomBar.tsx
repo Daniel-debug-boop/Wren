@@ -2,7 +2,7 @@ import { Terminal } from "../Terminal";
 
 export function BottomBar() {
   return (
-    <div className="h-full w-full bg-[#0a0e14]">
+    <div className="h-full w-full" style={{ background: 'var(--bg)' }}>
       <Terminal />
     </div>
   );

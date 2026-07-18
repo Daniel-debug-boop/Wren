@@ -15,7 +15,7 @@ from wren.app_server.app_conversation.app_conversation_models import (
 from wren.app_server.sandbox.sandbox_models import SandboxInfo
 from wren.app_server.services.injector import Injector
 from wren.utils.models import DiscriminatedUnionMixin
-from openhands.sdk.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
+from wren.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
 
 
 class ConversationExportAlreadyRunning(Exception):

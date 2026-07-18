@@ -18,7 +18,7 @@ from wren.app_server.web_client.web_client_models import (
     WebClientConfig,
     WebClientFeatureFlags,
 )
-from openhands.sdk.settings import ACP_PROVIDERS
+from wren.settings import ACP_PROVIDERS
 
 
 def _get_recaptcha_site_key() -> str | None:

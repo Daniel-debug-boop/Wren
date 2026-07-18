@@ -9,7 +9,7 @@ from wren.app_server.app_conversation.app_conversation_models import (
 from wren.app_server.services.jwt_service import JwtService
 from wren.app_server.user.user_context import UserContext
 from wren.app_server.user.user_models import UserInfo
-from openhands.sdk.secret import SecretSource
+from wren.secret import SecretSource
 
 
 @dataclass

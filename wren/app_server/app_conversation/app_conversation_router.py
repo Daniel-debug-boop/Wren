@@ -89,8 +89,8 @@ from wren.app_server.utils.dependencies import get_dependencies
 from wren.app_server.utils.docker_utils import (
     replace_localhost_hostname_for_docker,
 )
-from openhands.sdk.skills import KeywordTrigger, TaskTrigger
-from openhands.sdk.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
+from wren.skills import KeywordTrigger, TaskTrigger
+from wren.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
 
 # Handle anext compatibility for Python < 3.10
 if sys.version_info >= (3, 10):

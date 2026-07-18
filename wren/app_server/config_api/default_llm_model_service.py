@@ -29,7 +29,7 @@ from wren.app_server.utils.llm import (
     get_supported_llm_models,
 )
 from wren.app_server.utils.paging_utils import paginate_results
-from openhands.sdk.llm.utils.verified_models import VERIFIED_MODELS
+from wren.llm.utils.verified_models import VERIFIED_MODELS
 
 _logger = logging.getLogger(__name__)
 

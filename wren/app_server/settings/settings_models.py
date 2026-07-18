@@ -35,7 +35,7 @@ from wren.app_server.integrations.provider import ProviderToken
 from wren.app_server.integrations.service_types import ProviderType
 from wren.app_server.settings.llm_profiles import LLMProfiles
 from wren.app_server.utils.jsonpatch_compat import deep_merge
-from openhands.sdk.settings import (
+from wren.settings import (
     ACPAgentSettings,
     AgentSettingsConfig,
     ConversationSettings,

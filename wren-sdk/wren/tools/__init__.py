@@ -1,7 +1,7 @@
 """Tools compatibility shim.
 
-Temporary re-exports from openhands.tools for migration.
-Will be replaced with full wren-tools implementation.
+Provides backward-compatible re-exports for tools.
+Uses langchain_core.tools under the hood.
 """
 
 from __future__ import annotations
@@ -14,13 +14,13 @@ warnings.warn(
     stacklevel=2,
 )
 
-# Re-export from openhands for backward compatibility
+# Re-export from wren-sdk native tools
 try:
-    from openhands.tools.preset.default import (
+    from wren.tools.preset.default import (
         get_default_tools,
         register_builtins_agents,
     )
-    from openhands.tools.preset.planning import (
+    from wren.tools.preset.planning import (
         format_plan_structure,
         get_planning_tools,
     )

@@ -58,9 +58,7 @@ dependencies = [
   "memory-profiler==0.61.0",
   "numpy==2.4.4",
   "openai==2.33.0",
-  "openhands-agent-server==1.30.0",
-  "openhands-sdk==1.30.0",
-  "openhands-tools==1.30.0",
+  "langgraph-sdk",
   "opentelemetry-api==1.39.1",
   "opentelemetry-exporter-otlp-proto-grpc==1.39.1",
   "orjson==3.11.8",
@@ -106,7 +104,7 @@ dependencies = [
   "uvicorn",
   "whatthepatch==1.0.7",
   "zope-interface==7.2",
-  "structlog (>=26.1.0,<27.0.0)",
+  "structlog>=26.1.0,<27.0.0",
 ]
 
 urls.Homepage = "https://github.com/Daniel-debug-boop/Wren"
@@ -256,9 +254,8 @@ e2b-code-interpreter = { version = "^2.0.0", optional = true }
 pybase62 = "1.0.0"
 
 # V1 dependencies
-openhands-sdk = "1.30.0"
-openhands-agent-server = "1.30.0"
-openhands-tools = "1.30.0"
+langgraph = "^0.4.0"
+langgraph-sdk = "^0.2.0"
 joserfc = ">=1.0.0"
 sqlalchemy = { extras = [ "asyncio" ], version = "^2.0.40" }
 pg8000 = "1.31.5"
@@ -358,7 +355,7 @@ omit = [ "enterprise/tests/*", "**/test_*" ]
 
 [tool.uv]
 exclude-newer = "7 days"
-exclude-newer-package = { openhands-agent-server = false, openhands-sdk = false, openhands-tools = false }
+exclude-newer-package = {}
 
 [tool.pylint.main]
 init-hook = "import sys; sys.path.insert(0, '.'); sys.path.insert(0, 'scripts')"

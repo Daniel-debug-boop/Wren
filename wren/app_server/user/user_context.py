@@ -10,7 +10,7 @@ from wren.app_server.services.injector import Injector
 from wren.app_server.user.user_models import (
     UserInfo,
 )
-from openhands.sdk.secret import SecretSource
+from wren.secret import SecretSource
 from wren.utils.models import DiscriminatedUnionMixin
 
 

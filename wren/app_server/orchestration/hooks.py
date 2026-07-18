@@ -27,7 +27,7 @@ from wren.event import (
     ObservationEvent,
     ConversationStateUpdateEvent,
 )
-from openhands.sdk.conversation import ConversationExecutionStatus
+from wren.conversation import ConversationExecutionStatus
 
 _logger = logging.getLogger(__name__)
 

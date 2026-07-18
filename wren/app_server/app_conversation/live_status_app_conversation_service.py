@@ -125,25 +125,25 @@ from wren.app_server.utils.redis_lock import (
     try_acquire_redis_lock,
 )
 from wren import Agent, AgentContext, LocalWorkspace
-from openhands.sdk.hooks import HookConfig
-from openhands.sdk.llm import LLM
-from openhands.sdk.llm.llm_profile_store import PROFILE_NAME_REGEX
-from openhands.sdk.plugin import PluginSource
-from openhands.sdk.secret import LookupSecret, StaticSecret
-from openhands.sdk.settings import ACPAgentSettings
-from openhands.sdk.subagent import get_registered_agent_definitions
-from openhands.sdk.tool.builtins import SwitchLLMTool
+from wren.hooks import HookConfig
+from wren.llm import LLM
+from wren.llm.llm_profile_store import PROFILE_NAME_REGEX
+from wren.plugin import PluginSource
+from wren.secret import LookupSecret, StaticSecret
+from wren.settings import ACPAgentSettings
+from wren.subagent import get_registered_agent_definitions
+from wren.tool.builtins import SwitchLLMTool
 from wren.utils.redact import (
     redact_api_key_literals,
     redact_text_secrets,
     sanitize_config,
 )
-from openhands.sdk.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
-from openhands.tools.preset.default import (
+from wren.workspace.remote.async_remote_workspace import AsyncRemoteWorkspace
+from wren.tools.preset.default import (
     get_default_tools,
     register_builtins_agents,
 )
-from openhands.tools.preset.planning import (
+from wren.tools.preset.planning import (
     format_plan_structure,
     get_planning_tools,
 )

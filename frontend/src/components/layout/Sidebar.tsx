@@ -132,7 +132,7 @@ export default function Sidebar() {
           type="button"
           onClick={() => navigate("/conversations/new")}
           title="New chat"
-          className="press flex h-7 w-7 items-center justify-center rounded-xl transition-all duration-300 hover:bg-white/5 hover:text-accent"
+          className="press flex h-7 w-7 items-center justify-center rounded-xl transition-all duration-300 hover:text-accent hover:bg-surface-hover"
           style={{ color: "var(--text-quiet)" }}
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true">

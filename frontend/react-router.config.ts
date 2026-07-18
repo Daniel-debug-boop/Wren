@@ -1,4 +1,9 @@
 import type { Config } from "@react-router/dev/config";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * This script is used to unpack the client directory from the frontend build directory.
@@ -10,7 +15,6 @@ import type { Config } from "@react-router/dev/config";
  */
 const unpackClientDirectory = async () => {
   const fs = await import("fs");
-  const path = await import("path");
 
   const buildDir = path.resolve(__dirname, "build");
   const clientDir = path.resolve(buildDir, "client");
@@ -32,9 +36,8 @@ export default {
   appDirectory: "src",
   buildEnd: unpackClientDirectory,
   ssr: false,
-  future: {
-    v8_middleware: true,
-    v8_splitRouteModules: true,
-    v8_viteEnvironmentApi: true,
-  },
+  // @react-router 8.x enables middleware, the Vite Environment API, and
+  // splitRouteModules by default, so the legacy `future.*` flags have been
+  // removed. splitRouteModules defaults to `true`.
+  splitRouteModules: true,
 } satisfies Config;

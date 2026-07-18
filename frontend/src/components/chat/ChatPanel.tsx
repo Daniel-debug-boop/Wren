@@ -38,10 +38,10 @@ export function ChatPanel() {
   };
 
   return (
-    <div className="flex h-1/2 flex-col bg-[#0a0e14]">
+    <div className="flex h-1/2 flex-col" style={{ background: 'var(--bg)' }}>
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
         {messages.length === 0 && (
-          <p className="text-sm text-zinc-600">
+          <p className="text-sm" style={{ color: 'var(--text-subtle)' }}>
             Conversation started. Messages stream here.
           </p>
         )}
@@ -50,19 +50,19 @@ export function ChatPanel() {
         ))}
         <div ref={endRef} />
       </div>
-      <div className="border-t border-white/5 p-3">
+      <div className="border-t p-3" style={{ borderColor: 'var(--border)' }}>
         <div className="flex gap-2">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send()}
             placeholder={connected ? "Message Wren…" : "Connecting…"}
-            className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-200 outline-none focus:ring-2 focus:ring-cyan-500/30"
+            className="input"
           />
           <button
             type="button"
             onClick={send}
-            className="rounded-lg bg-cyan-500/20 px-4 py-2 text-sm text-cyan-200 transition hover:bg-cyan-500/30"
+            className="btn-accent shrink-0"
           >
             Send
           </button>

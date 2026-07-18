@@ -18,7 +18,7 @@ from wren.app_server.user.specifiy_user_context import USER_CONTEXT_ATTR
 from wren.app_server.user.user_context import UserContext, UserContextInjector
 from wren.app_server.user.user_models import UserInfo
 from wren.app_server.user_auth.user_auth import UserAuth, get_user_auth
-from openhands.sdk.secret import SecretSource, StaticSecret
+from wren.secret import SecretSource, StaticSecret
 
 USER_AUTH_ATTR = 'user_auth'
 _logger = logging.getLogger(__name__)

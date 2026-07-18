@@ -23,7 +23,19 @@ export function SkillsBrowser() {
       {skills.map((s) => (
         <div
           key={s}
-          className="mb-1 rounded-md px-2 py-1.5 text-xs text-zinc-400 transition hover:bg-white/5"
+          className="mb-1 rounded-md px-2 py-1.5 text-xs transition"
+          style={{
+            color: 'var(--text-subtle)',
+            cursor: 'default',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--surface-hover)';
+            e.currentTarget.style.color = 'var(--text)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'var(--text-subtle)';
+          }}
         >
           {s}
         </div>

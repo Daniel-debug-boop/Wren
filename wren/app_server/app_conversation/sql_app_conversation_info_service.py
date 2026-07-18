@@ -57,7 +57,7 @@ from wren.app_server.utils.sql_utils import (
 )
 from wren import ConversationStats
 from wren.event import ConversationStateUpdateEvent
-from openhands.sdk.llm import MetricsSnapshot, TokenUsage
+from wren.llm import MetricsSnapshot, TokenUsage
 
 logger = logging.getLogger(__name__)
 

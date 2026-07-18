@@ -10,6 +10,7 @@ from enum import Enum
 from typing import Any
 
 from wren.tool.base import ToolDef, Action, ToolSafety
+from wren.utils.models import WrenModel
 
 logger = logging.getLogger("wren.security")
 

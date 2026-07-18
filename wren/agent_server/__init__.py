@@ -1,6 +1,12 @@
-"""Agent server shim — re-exports from openhands for backward compatibility."""
+"""Agent server compatibility shim.
 
-from wren.agent_server import env_parser  # noqa: F401
+Provides backward-compatible re-exports for the agent server interface.
+Uses langgraph under the hood.
+"""
+
+from __future__ import annotations
+
+from wren.agent_server.env_parser import ABC, DiscriminatedUnionMixin, from_env  # noqa: F401
 from wren.agent_server.models import (  # noqa: F401
     ConversationInfo,
     EventPage,

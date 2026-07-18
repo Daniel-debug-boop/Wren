@@ -22,7 +22,7 @@ from wren.app_server.integrations.service_types import AuthenticationError
 from wren.app_server.sandbox.sandbox_models import SandboxInfo
 from wren.app_server.settings.settings_models import MarketplaceRegistration
 from wren.app_server.user.user_context import UserContext
-from openhands.sdk.skills import KeywordTrigger, Skill, TaskTrigger
+from wren.skills import KeywordTrigger, Skill, TaskTrigger
 
 _logger = logging.getLogger(__name__)
 

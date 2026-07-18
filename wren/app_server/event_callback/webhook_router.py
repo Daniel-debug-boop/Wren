@@ -55,9 +55,9 @@ from wren.app_server.user_auth.user_auth import (
 )
 from wren import ConversationExecutionStatus, Event
 from wren.event import ConversationStateUpdateEvent, ObservationEvent
-from openhands.sdk.settings import ACPAgentSettings
-from openhands.sdk.settings.acp_providers import detect_acp_provider_by_command
-from openhands.sdk.tool.builtins import SwitchLLMObservation
+from wren.settings import ACPAgentSettings
+from wren.settings.acp_providers import detect_acp_provider_by_command
+from wren.tool.builtins import SwitchLLMObservation
 
 router = APIRouter(prefix='/webhooks', tags=['Webhooks'])
 event_service_dependency = depends_event_service()

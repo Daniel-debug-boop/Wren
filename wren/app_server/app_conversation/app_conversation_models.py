@@ -20,9 +20,9 @@ from wren.app_server.sandbox.sandbox_models import SandboxStatus
 
 # Import from new location and re-export for backward compatibility
 from wren.app_server.settings.settings_models import SandboxGroupingStrategy
-from openhands.sdk.conversation import ConversationExecutionStatus
-from openhands.sdk.llm import MetricsSnapshot
-from openhands.sdk.plugin import PluginSource
+from wren.conversation import ConversationExecutionStatus
+from wren.llm import MetricsSnapshot
+from wren.plugin import PluginSource
 
 __all__ = ['SandboxGroupingStrategy']
 

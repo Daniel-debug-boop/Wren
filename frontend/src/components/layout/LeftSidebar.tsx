@@ -10,22 +10,29 @@ export function LeftSidebar() {
   const [files] = useState<FileNode[]>([]);
 
   return (
-    <div className="flex h-full w-full flex-col bg-[#0d1117]">
-      <div className="flex border-b border-white/5 text-xs">
+    <div className="flex h-full w-full flex-col" style={{ background: 'var(--bg)' }}>
+      <div className="flex border-b" style={{ borderColor: 'var(--border)' }}>
         {(["files", "skills"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={cn(
-              "flex-1 py-2 capitalize transition",
-              tab === t ? "text-cyan-400" : "text-zinc-500 hover:text-zinc-300",
-            )}
+            className="flex-1 py-2 text-xs capitalize transition-colors"
+            style={{
+              color: tab === t ? 'var(--accent)' : 'var(--text-muted)',
+            }}
+            onMouseEnter={(e) => {
+              if (tab !== t) e.currentTarget.style.color = 'var(--text)';
+            }}
+            onMouseLeave={(e) => {
+              if (tab !== t) e.currentTarget.style.color = 'var(--text-muted)';
+            }}
           >
             {t}
             {tab === t && (
               <motion.div
                 layoutId="leftTab"
-                className="mx-auto mt-1 h-0.5 w-8 rounded bg-cyan-400"
+                className="mx-auto mt-1 h-0.5 w-8 rounded"
+                style={{ background: 'var(--accent)' }}
               />
             )}
           </button>

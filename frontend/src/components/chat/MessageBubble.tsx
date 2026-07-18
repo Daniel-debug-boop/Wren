@@ -17,15 +17,16 @@ export function MessageBubble({ role, mode, content, streaming }: Props) {
       className={`flex ${role === "user" ? "justify-end" : "justify-start"}`}
     >
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-          role === "user"
-            ? "bg-cyan-500/10 text-cyan-100"
-            : "bg-white/5 text-zinc-200"
-        }`}
+        className="max-w-[80%] rounded-2xl px-4 py-3 text-sm"
+        style={{
+          background: role === 'user' ? 'var(--accent-subtle)' : 'var(--surface)',
+          border: role === 'user' ? '1px solid color-mix(in srgb, var(--accent) 15%, transparent)' : '1px solid var(--border)',
+          color: role === 'user' ? 'var(--text)' : 'var(--text)',
+        }}
       >
         <Badge className="mb-1">{mode}</Badge>
         <ReactMarkdown>{content}</ReactMarkdown>
-        {streaming && <span className="animate-pulse text-cyan-400">▋</span>}
+        {streaming && <span className="animate-pulse" style={{ color: 'var(--accent)' }}>▋</span>}
       </div>
     </motion.div>
   );

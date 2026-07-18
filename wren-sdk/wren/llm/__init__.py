@@ -1,5 +1,6 @@
 """LLM exports."""
 
+from wren.utils.models import WrenModel
 from wren.llm.message import (
     Message,
     MessageRole,
@@ -21,10 +22,16 @@ from wren.llm.client import (
     ToolCallInfo,
 )
 
-# LLM alias: use openhands SDK's LLM (Pydantic model) for backward compat
-# with wren/app_server/settings/llm_profiles.py and other pydantic-dependent code.
-# Our LLMClient is available directly as LLMClient.
-from openhands.sdk.llm import LLM  # noqa: F401
+class LLM(WrenModel):
+    """LLM configuration model (native replacement for openhands.sdk.llm.LLM)."""
+
+    model: str = "gpt-4o"
+    api_key: str | None = None
+    base_url: str | None = None
+    temperature: float = 0.7
+    max_tokens: int = 4096
+    max_retries: int = 2
+    timeout: float = 60.0
 
 
 class MetricsSnapshot:

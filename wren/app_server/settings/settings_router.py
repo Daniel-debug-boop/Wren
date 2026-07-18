@@ -50,8 +50,8 @@ from wren.app_server.utils.llm import (
     resolve_llm_base_url,
 )
 from wren.app_server.utils.logger import wren_logger as logger
-from openhands.sdk.llm import LLM
-from openhands.sdk.settings import (
+from wren.llm import LLM
+from wren.settings import (
     ConversationSettings,
     OpenHandsAgentSettings,
     export_agent_settings_schema,

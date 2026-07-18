@@ -21,10 +21,15 @@ function ResizeHandle({
   return (
     <div
       onPointerDown={onPointerDown}
-      className={`shrink-0 bg-white/5 transition hover:bg-cyan-500/40 ${
+      className={`shrink-0 transition ${
         axis === "x" ? "w-1 cursor-col-resize" : "h-1 cursor-row-resize"
       }`}
-      style={{ cursor }}
+      style={{
+        cursor,
+        background: 'var(--border)',
+      }}
+      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent)'; }}
+      onMouseLeave={(e) => { e.currentTarget.style.background = 'var(--border)'; }}
     />
   );
 }
@@ -64,7 +69,7 @@ export function AppShell() {
   });
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-[#0a0e14] text-zinc-200">
+    <div className="flex h-screen flex-col overflow-hidden" style={{ background: 'var(--bg)', color: 'var(--text)' }}>
       <TopBar />
       {}
       <div className="hidden md:flex md:flex-1 md:overflow-hidden">
@@ -75,7 +80,7 @@ export function AppShell() {
               animate={{ width: leftWidth, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ type: "spring", stiffness: 400, damping: 40 }}
-              className="shrink-0 overflow-hidden border-r border-white/5"
+              className="shrink-0 overflow-hidden border-r" style={{ borderColor: 'var(--border)' }}
             >
               <LeftSidebar />
             </motion.aside>
@@ -93,7 +98,7 @@ export function AppShell() {
           <div className="flex flex-1 overflow-hidden">
             <div className="flex flex-1 flex-col overflow-hidden">
               <ChatPanel />
-              <div className="h-px bg-white/5" />
+              <div className="h-px" style={{ background: 'var(--border)' }} />
               <CodeEditor />
             </div>
             <AnimatePresence initial={false}>
@@ -103,7 +108,7 @@ export function AppShell() {
                   animate={{ width: rightWidth, opacity: 1 }}
                   exit={{ width: 0, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 400, damping: 40 }}
-                  className="shrink-0 overflow-hidden border-l border-white/5"
+                  className="shrink-0 overflow-hidden border-l" style={{ borderColor: 'var(--border)' }}
                 >
                   <RightSidebar />
                 </motion.aside>
@@ -124,7 +129,7 @@ export function AppShell() {
                 animate={{ height: bottomHeight }}
                 exit={{ height: 0 }}
                 transition={{ type: "spring", stiffness: 400, damping: 40 }}
-                className="overflow-hidden border-t border-white/5"
+                className="overflow-hidden border-t" style={{ borderColor: 'var(--border)' }}
               >
                 <BottomBar />
               </motion.div>
@@ -143,7 +148,7 @@ export function AppShell() {
       {}
       <div className="flex flex-1 flex-col overflow-hidden md:hidden">
         <ChatPanel />
-        <div className="h-px bg-white/5" />
+        <div className="h-px" style={{ background: 'var(--border)' }} />
         <CodeEditor />
       </div>
       <AnimatePresence>

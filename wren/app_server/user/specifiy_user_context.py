@@ -7,7 +7,7 @@ from wren.app_server.integrations.provider import PROVIDER_TOKEN_TYPE, ProviderT
 from wren.app_server.integrations.service_types import UserGitInfo
 from wren.app_server.user.user_context import UserContext
 from wren.app_server.user.user_models import UserInfo
-from openhands.sdk.secret import SecretSource
+from wren.secret import SecretSource
 
 
 @dataclass(frozen=True)

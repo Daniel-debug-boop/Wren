@@ -16,7 +16,7 @@ from pydantic import (
 
 from wren.app_server.utils.llm import resolve_llm_base_url
 from wren.app_server.utils.logger import wren_logger as logger
-from openhands.sdk.llm import LLM
+from wren.llm import LLM
 
 
 def has_real_api_key(api_key: Any) -> bool:

@@ -45,7 +45,7 @@ export function CommandPalette() {
             initial={{ scale: 0.95, y: -10 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: -10 }}
-            className="w-[540px] overflow-hidden rounded-xl border border-white/10 bg-[#0d1117] shadow-2xl"
+            className="card w-[540px] overflow-hidden rounded-xl shadow-2xl" style={{ borderColor: 'var(--border-strong)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <input
@@ -53,7 +53,11 @@ export function CommandPalette() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Type a command or search…"
-              className="w-full border-b border-white/5 bg-transparent px-4 py-3 text-sm text-zinc-200 outline-none placeholder:text-zinc-600"
+              className="w-full border-b bg-transparent px-4 py-3 text-sm outline-none"
+              style={{
+                borderColor: 'var(--border)',
+                color: 'var(--text)',
+              }}
             />
             <div className="max-h-80 overflow-y-auto p-2">
               {COMMANDS.filter((c) =>
@@ -61,7 +65,18 @@ export function CommandPalette() {
               ).map((c) => (
                 <div
                   key={c}
-                  className="cursor-pointer rounded-md px-3 py-2 text-sm text-zinc-400 transition hover:bg-white/5 hover:text-zinc-200"
+                  className="cursor-pointer rounded-md px-3 py-2 text-sm transition"
+                  style={{
+                    color: 'var(--text-subtle)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'var(--surface-hover)';
+                    e.currentTarget.style.color = 'var(--text)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-subtle)';
+                  }}
                 >
                   {c}
                 </div>

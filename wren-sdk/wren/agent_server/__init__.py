@@ -14,7 +14,7 @@ warnings.warn(
     stacklevel=2,
 )
 
-# Re-export from openhands for backward compatibility
+# Re-export from wren.agent_server for backward compatibility
 try:
     from wren.agent_server.env_parser import ABC, DiscriminatedUnionMixin, from_env  # noqa: F401
     from wren.agent_server.models import (  # noqa: F401

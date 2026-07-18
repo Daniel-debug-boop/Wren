@@ -9,11 +9,24 @@ export function GlassCard({
   return (
     <div
       className={cn(
-        "rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl",
-        "shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-200",
-        "hover:border-cyan-500/30 hover:bg-white/[0.07]",
+        "rounded-xl border backdrop-blur-xl",
+        "transition-all duration-200",
+        "hover:-translate-y-0.5",
         className,
       )}
+      style={{
+        background: 'var(--surface)',
+        borderColor: 'var(--border)',
+        boxShadow: 'var(--shadow-sm), var(--shadow-inner)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--accent) 30%, var(--border))';
+        e.currentTarget.style.boxShadow = 'var(--shadow-md), var(--shadow-inner), var(--shadow-glow)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = 'var(--border)';
+        e.currentTarget.style.boxShadow = 'var(--shadow-sm), var(--shadow-inner)';
+      }}
       {...rest}
     />
   );
@@ -29,9 +42,13 @@ export function Badge({
   return (
     <span
       className={cn(
-        "rounded-full bg-cyan-500/15 px-2 py-0.5 text-[10px] font-medium text-cyan-300",
+        "rounded-full px-2 py-0.5 text-[10px] font-medium",
         className,
       )}
+      style={{
+        background: 'var(--accent-subtle)',
+        color: 'var(--accent)',
+      }}
     >
       {children}
     </span>
@@ -49,10 +66,23 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-zinc-300 transition",
-        "hover:bg-white/10 hover:text-white",
+        "rounded-md px-3 py-1.5 text-xs transition",
         className,
       )}
+      style={{
+        border: '1px solid var(--border)',
+        background: 'var(--surface)',
+        color: 'var(--text-muted)',
+        cursor: 'pointer',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = 'var(--surface-hover)';
+        e.currentTarget.style.color = 'var(--text)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'var(--surface)';
+        e.currentTarget.style.color = 'var(--text-muted)';
+      }}
       {...rest}
     >
       {children}

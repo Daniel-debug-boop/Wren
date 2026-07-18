@@ -21,7 +21,7 @@ from wren.app_server.settings.settings_models import MarketplaceRegistration
 from wren.app_server.user.user_context import UserContext
 from wren.app_server.utils.dependencies import get_dependencies
 from wren.app_server.utils.logger import wren_logger as logger
-from openhands.sdk.marketplace import Marketplace
+from wren.marketplace import Marketplace
 
 router = APIRouter(prefix='/skills', tags=['Skills'], dependencies=get_dependencies())
 user_context_dependency = depends_user_context()

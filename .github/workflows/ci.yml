@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - uses: actions/setup-python@8d9ed9ac5c53487de1db0862b5f0e1e154222a87 # v5.5.2
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5.5.2
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - run: pip install flake8

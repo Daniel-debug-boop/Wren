@@ -387,13 +387,18 @@ class AutomatedProjectGenerator:
         validate: bool = True,
         max_correction_rounds: int = 3,
         progress_callback: ProgressCallback | None = None,
+        omnirouter: Any | None = None,
     ) -> None:
+        # OmniRouter must be explicitly passed — auto-discovery from CLI context
+        # is not possible because OmnniRoute's FastAPI router needs fastapi/pydantic.
+        # The FastAPI server (app.py) passes it automatically when configured.
         self._llm = LLMClient(
             api_key=api_key,
             model=model,
             base_url=base_url,
             max_tokens=max_tokens,
             temperature=temperature,
+            omnirouter=omnirouter,
         )
         self._output_root = Path(output_dir)
         self._resume = resume
@@ -402,6 +407,8 @@ class AutomatedProjectGenerator:
         self._progress = RunnerProgress()
         self._progress_callback = progress_callback
         self._state: ProjectState | None = None
+        self._manifest: Manifest | None = None
+        self._output_dir: Path | None = None
 
     # ── Public entry point ─────────────────────────────────────────
 
@@ -1022,13 +1029,14 @@ needs fixing, output a fenced code block with a special comment header:
 
     def _finalize(self, result: ProjectResult, start_time: float) -> ProjectResult:
         """Populate final result metadata and display summary."""
-        assert self._state is not None
-        assert self._manifest is not None
-
-        result.project_name = self._manifest.project_name
-        result.output_dir = str(self._output_dir)
-        result.files = self._collect_generated_files()
         result.total_duration_s = time.time() - start_time
+
+        if self._manifest is not None:
+            result.project_name = self._manifest.project_name
+        if self._output_dir is not None:
+            result.output_dir = str(self._output_dir)
+        if self._state is not None:
+            result.files = self._collect_generated_files()
 
         self._progress.summary(result)
         return result
@@ -1045,7 +1053,9 @@ async def run_pipeline(
     base_url: str | None = None,
     output_dir: str = DEFAULT_OUTPUT_DIR,
     validate: bool = True,
+    resume: bool = True,
     progress_callback: AutomatedProjectGenerator.ProgressCallback | None = None,
+    omnirouter: Any | None = None,
 ) -> ProjectResult:
     """Convenience function to run the full pipeline with auto-cleanup."""
     runner = AutomatedProjectGenerator(
@@ -1054,7 +1064,9 @@ async def run_pipeline(
         base_url=base_url,
         output_dir=output_dir,
         validate=validate,
+        resume=resume,
         progress_callback=progress_callback,
+        omnirouter=omnirouter,
     )
     try:
         return await runner.run(prompt)
@@ -1126,6 +1138,7 @@ def main() -> None:
             base_url=args.base_url,
             output_dir=args.output,
             validate=not args.no_validate,
+            resume=not args.no_resume,
         )
     )
 

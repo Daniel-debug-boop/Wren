@@ -311,6 +311,10 @@ class OmniRouter:
     def is_initialized(self) -> bool:
         return self._initialized
 
+    def get_api_key(self, provider: str) -> str | None:
+        """Get the API key for a given provider."""
+        return self._available_providers.get(provider)
+
     def get_provider_summary(self) -> list[dict[str, Any]]:
         """Get summary of all configured providers."""
         return self._discovery.get_provider_summary()

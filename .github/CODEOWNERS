@@ -1,0 +1,41 @@
+# ═══════════════════════════════════════════════════════════════
+#  WREN — Code Owners
+# ═══════════════════════════════════════════════════════════════
+# Each line is a file pattern followed by one or more owners.
+# Order is important: the last matching pattern takes precedence.
+# ═══════════════════════════════════════════════════════════════
+
+# Global owners (fallback for everything not matched below)
+* @Daniel-debug-boop
+
+# Core backend engine
+/wren/                      @Daniel-debug-boop
+/wren/app_builder/          @Daniel-debug-boop
+/wren/omniroute/            @Daniel-debug-boop
+
+# SDK
+/wren-sdk/                  @Daniel-debug-boop
+
+# Frontend web application
+/frontend/                  @Daniel-debug-boop
+
+# Android client
+/wren-android/              @Daniel-debug-boop
+
+# Infrastructure & CI
+/Dockerfile*                @Daniel-debug-boop
+/docker-compose*            @Daniel-debug-boop
+/.github/workflows/         @Daniel-debug-boop
+/.github/CODEOWNERS         @Daniel-debug-boop
+
+# Documentation
+/README.md                  @Daniel-debug-boop
+/CONTRIBUTING.md            @Daniel-debug-boop
+/SECURITY.md                @Daniel-debug-boop
+/CODE_OF_CONDUCT.md         @Daniel-debug-boop
+
+# Configuration
+/pyproject.toml             @Daniel-debug-boop
+/.env.example               @Daniel-debug-boop
+/.gitignore                 @Daniel-debug-boop
+/Makefile                   @Daniel-debug-boop

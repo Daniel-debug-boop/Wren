@@ -615,8 +615,10 @@ RULES:
 
     async def _stage_generate(self) -> str:
         """Iterate over files, generating each with context from previous files."""
-        assert self._manifest is not None
-        assert self._state is not None
+        if self._manifest is None or self._state is None:
+            raise RuntimeError(
+                "Cannot run Stage 2 (Generate) before Stage 1 (Blueprint) completes."
+            )
 
         files = self._manifest.files
         total = len(files)
@@ -751,7 +753,8 @@ Every function body must be fully implemented. Output code ONLY inside a fenced 
         if not self._validate:
             return "Validation skipped"
 
-        assert self._state is not None
+        if self._state is None:
+            return "No state available — skipping validation"
 
         # Find files with build commands
         file_commands: list[tuple[Path, list[str]]] = []
@@ -936,8 +939,8 @@ provided code. Output the COMPLETE corrected file — no placeholders, no diffs.
 
     async def _attempt_project_correction(self, error_text: str, round_num: int) -> bool:
         """Send project-level build errors to LLM for correction."""
-        assert self._state is not None
-        assert self._manifest is not None
+        if self._state is None or self._manifest is None:
+            return False
 
         # Collect all file contents
         all_files: dict[str, str] = {}
@@ -1080,6 +1083,7 @@ async def run_pipeline(
 def main() -> None:
     """CLI entry point: python -m wren.app_builder.automated_runner"""
     import argparse
+    import signal
 
     parser = argparse.ArgumentParser(
         description="Wren Automated Multi-File Project Generator",
@@ -1130,17 +1134,35 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    result = asyncio.run(
-        run_pipeline(
-            prompt=args.prompt,
-            api_key=args.api_key,
-            model=args.model,
-            base_url=args.base_url,
-            output_dir=args.output,
-            validate=not args.no_validate,
-            resume=not args.no_resume,
+    # Handle graceful shutdown
+    shutdown_requested = False
+
+    def _on_signal(signum, frame):
+        nonlocal shutdown_requested
+        if shutdown_requested:
+            print("\nForced exit.", file=sys.stderr)
+            sys.exit(1)
+        shutdown_requested = True
+        print("\nShutdown requested — finishing current operation... (Ctrl+C again to force)", file=sys.stderr)
+
+    signal.signal(signal.SIGINT, _on_signal)
+    signal.signal(signal.SIGTERM, _on_signal)
+
+    try:
+        result = asyncio.run(
+            run_pipeline(
+                prompt=args.prompt,
+                api_key=args.api_key,
+                model=args.model,
+                base_url=args.base_url,
+                output_dir=args.output,
+                validate=not args.no_validate,
+                resume=not args.no_resume,
+            )
         )
-    )
+    except KeyboardInterrupt:
+        print("\nInterrupted by user.", file=sys.stderr)
+        sys.exit(130)
 
     sys.exit(0 if result.success else 1)
 

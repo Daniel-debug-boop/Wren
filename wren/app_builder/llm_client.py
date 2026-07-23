@@ -163,16 +163,37 @@ class LLMClient:
                     response_data = json.loads(resp.read().decode("utf-8"))
             except HTTPError as e:
                 error_body = e.read().decode("utf-8", errors="replace")
+                status = e.code
+                # Provide actionable guidance for common HTTP errors
+                guidance = ""
+                if status == 401:
+                    guidance = " (check your API key — it may be invalid or expired)"
+                elif status == 403:
+                    guidance = " (access denied — the API key may not have access to this model)"
+                elif status == 429:
+                    guidance = " (rate limited — try again later or reduce request frequency)"
+                elif status == 500:
+                    guidance = " (server error — the LLM provider may be experiencing issues)"
                 raise RuntimeError(
-                    f"LLM API error {e.code}: {error_body[:500]}"
+                    f"LLM API error {e.code}: {error_body[:500]}{guidance}"
                 ) from e
             except URLError as e:
+                reason = str(e.reason)
+                guidance = ""
+                if "Name or service not known" in reason or "getaddrinfo" in reason:
+                    guidance = f" (DNS resolution failed — check the base URL: {base_url})"
+                elif "Connection refused" in reason:
+                    guidance = f" (connection refused — is the server at {base_url} running?)"
+                elif "Connection reset" in reason:
+                    guidance = " (connection reset — the server dropped the connection; retry may help)"
+                elif "timed out" in reason.lower():
+                    guidance = f" (timeout after {self._timeout}s — the model may be too slow or overloaded)"
                 raise RuntimeError(
-                    f"LLM API connection failed: {e.reason}"
+                    f"LLM API connection failed: {reason}{guidance}"
                 ) from e
             except json.JSONDecodeError as e:
                 raise RuntimeError(
-                    f"LLM API returned invalid JSON: {e}"
+                    f"LLM API returned invalid JSON (expected chat completion response): {e}"
                 ) from e
 
             content = response_data.get("choices", [{}])[0].get("message", {}).get("content", "")
@@ -185,10 +206,14 @@ class LLMClient:
             duration_ms = (time.time() - start_time) * 1000
             success = True
             return result
-        except Exception:
+        except RuntimeError:
             duration_ms = (time.time() - start_time) * 1000
             success = False
             raise
+        except Exception as e:
+            duration_ms = (time.time() - start_time) * 1000
+            success = False
+            raise RuntimeError(f"LLM request failed: {e}") from e
         finally:
             # Record the call in OmniRoute for cost tracking + health
             if self._omnirouter is not None and self._omnirouter.is_initialized:

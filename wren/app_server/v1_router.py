@@ -21,6 +21,7 @@ from wren.app_server.user import skills_router, user_router
 from wren.app_server.github.issue_to_pr_router import router as github_issue_to_pr_router
 from wren.app_server.tool_registry.router import router as tool_registry_router
 from wren.app_server.web_client import web_client_router
+from wren.app_server.auto_generation import auto_generation_router
 
 # Include routers
 router = APIRouter(prefix='/api/v1')
@@ -39,3 +40,4 @@ router.include_router(git_router)
 router.include_router(config_router)
 router.include_router(github_issue_to_pr_router)
 router.include_router(tool_registry_router)
+router.include_router(auto_generation_router.router)

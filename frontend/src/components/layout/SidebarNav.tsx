@@ -92,6 +92,27 @@ export default function SidebarNav() {
       ),
     },
     {
+      id: "generation",
+      label: "Generate",
+      path: "/generation",
+      icon: (
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 16 16"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="shrink-0"
+        >
+          <path d="M12 2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
+          <path d="M8 5v6M5 8h6" />
+        </svg>
+      ),
+    },
+    {
       id: "settings",
       label: "Settings",
       path: "/settings",

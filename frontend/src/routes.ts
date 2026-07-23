@@ -17,6 +17,7 @@ export default [
       route("api-keys", "routes/api-keys.tsx"),
       route("video", "routes/video.tsx"),
       route("orchestration", "routes/orchestration.tsx"),
+      route("generation", "routes/generation.tsx"),
       route("modes", "routes/modes.tsx"),
     ]),
     route("login", "routes/login.tsx"),

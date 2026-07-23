@@ -912,8 +912,8 @@ class AppBuilder:
                 '      - name: Deploy to Netlify\n'
                 '        run: npx netlify-cli deploy --prod --dir=dist/\n'
                 '        env:\n'
-                '          NETLIFY_AUTH_TOKEN: \${{ secrets.NETLIFY_AUTH_TOKEN }}\n'
-                '          NETLIFY_SITE_ID: \${{ secrets.NETLIFY_SITE_ID }}\n'
+                r'          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}\n'
+                r'          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}\n'
             )
         elif result.project_type == 'mobile':
             content += (

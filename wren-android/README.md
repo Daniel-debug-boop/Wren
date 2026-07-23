@@ -5,12 +5,23 @@ Build Wren AI as a standalone APK. One install. Type prompts. Get apps.
 ## How it works
 
 ```
-Open app → WebView shows Wren UI → type prompt → agent works hours → notification "Ready!"
-                                                                       ↓
-                                                              Tap notification → see result
+Open app → Bootstrap screen → WebView shows Wren UI → type prompt → agent works → notification "Ready!"
+                                                                              ↓
+                                                                     Tap notification → see result
 ```
 
 No Termux terminal ever visible. No commands to type. No technical knowledge needed.
+
+## Features
+
+- **One-tap install** — No terminal, no setup commands
+- **Background server** — Python server runs as a foreground service
+- **Auto-start** — Server starts automatically on phone boot
+- **Job notifications** — Get notified when your project is ready
+- **Settings UI** — Configure LLM API key, model selection, and server preferences
+- **Security hardened** — Network security config, JS bridge sanitization, cleartext restrictions
+- **Error recovery** — Health check polling with retry, error state UI with retry button
+- **Battery optimized** — Requests battery optimization exemption for long agent runs
 
 ## Prerequisites to BUILD (done once on a computer)
 
@@ -23,8 +34,7 @@ No Termux terminal ever visible. No commands to type. No technical knowledge nee
 ### 1. Build the Wren frontend
 
 ```bash
-cd wren
-cd frontend && npm install && npm run build
+cd wren/frontend && npm install && npm run build
 ```
 
 ### 2. Copy frontend build into Android project
@@ -65,10 +75,10 @@ Transfer APK to phone → tap to install → open "Wren AI"
 
 ## First launch
 
-1. App shows "Setting up Wren AI..." progress bar
+1. App shows "Setting up Wren AI..." with real progress
 2. Downloads Python runtime (~20MB)
 3. Installs pip packages (~30MB)
-4. Starts server
+4. Starts server with health check verification
 5. WebView loads — you see the Wren chat interface
 6. Type a prompt → agent works → notification arrives
 
@@ -83,38 +93,65 @@ Transfer APK to phone → tap to install → open "Wren AI"
 ```
 wren-android/
 ├── app/
-│   ├── build.gradle.kts          # Android + Chaquopy configuration
+│   ├── build.gradle.kts              # Android + Chaquopy + signing config
+│   ├── proguard-rules.pro             # ProGuard rules for release builds
 │   └── src/main/
-│       ├── AndroidManifest.xml    # Permissions, activities, service
+│       ├── AndroidManifest.xml        # Permissions, activities, service
 │       ├── java/com/wren/android/
-│       │   ├── WrenApp.kt        # Application class, notification channels
-│       │   ├── MainActivity.kt   # WebView with JavaScript bridge
-│       │   ├── BootstrapActivity.kt # First-launch setup screen
-│       │   ├── ServerManager.kt  # Python server start/stop
-│       │   ├── WrenService.kt    # Background foreground service
-│       │   ├── BootReceiver.kt   # Auto-start on phone boot
-│       │   └── WrenApp.kt        # App class + channels + first-run prefs
+│       │   ├── WrenApp.kt            # Application class, notification channels
+│       │   ├── MainActivity.kt       # WebView with JS bridge, error states, progress
+│       │   ├── BootstrapActivity.kt  # First-launch setup with real progress
+│       │   ├── ServerManager.kt      # Python server with health check + retry
+│       │   ├── WrenService.kt        # Background foreground service with graceful shutdown
+│       │   ├── BootReceiver.kt       # Auto-start on phone boot
+│       │   ├── SettingsActivity.kt   # Settings UI for LLM config, model, server
+│       │   └── WrenUtils.kt          # Battery optimization, network checks
 │       ├── assets/
 │       │   ├── python/
 │       │   │   ├── wren_server_runner.py  # Python entry point
 │       │   │   └── wren/                   # Copied from Wren backend
 │       │   └── www/                         # Copied from frontend/build
-│       └── res/                              # Icons, themes, strings
+│       ├── res/
+│       │   ├── xml/
+│       │   │   └── network_security_config.xml  # Security config
+│       │   ├── drawable/              # Icons
+│       │   ├── mipmap-anydpi-v26/     # Adaptive icons
+│       │   └── values/                # Themes, strings
 ├── build.gradle.kts
 ├── settings.gradle.kts
 └── gradle.properties
 ```
 
+## Architecture
+
+### Security
+- **Network Security Config**: Cleartext HTTP only allowed for `127.0.0.1` (local server)
+- **JS Bridge Sanitization**: All inputs from JavaScript are sanitized (max length, control char stripping)
+- **WebView Hardening**: File access disabled, mixed content blocked, no password saving
+- **ProGuard**: Release builds are minified and obfuscated
+
+### Reliability
+- **Health Check**: Server start includes polling `GET /api/health` with retry (10 attempts, 1s delay)
+- **Error States**: UI shows error with retry button when server fails to start
+- **Graceful Shutdown**: `onTaskRemoved()` properly stops the Python server
+- **Crash Recovery**: `ServerManager.resetState()` called on app start
+
+### UX
+- **Real Progress**: Bootstrap screen shows actual server startup phases
+- **Job Progress**: Agent progress updates shown as a banner overlay
+- **File Downloads**: WebView download listener handles file downloads
+- **Battery Optimization**: App requests exemption for long-running agent tasks
+
 ## Limitations
 
 | Aspect | Status |
 |---|---|
-| ARM64 only | Yes — x86 phones not supported |
+| ARM64 + x86_64 | Supported (real devices + emulator) |
 | Python C extensions | Some may not have Android wheels. Pure Python works. |
 | First build | Requires Android Studio + copying assets |
 | APK size | ~150MB (Python + deps + Wren) |
 | RAM usage | ~500MB for server + WebView |
-| Battery | Significant drain during long agent runs |
+| Battery | Requests optimization exemption for long runs |
 
 ## License
 

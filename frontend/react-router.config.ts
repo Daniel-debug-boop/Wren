@@ -35,7 +35,7 @@ const unpackClientDirectory = async () => {
 export default {
   appDirectory: "src",
   buildEnd: unpackClientDirectory,
-  ssr: false,
+  ssr: true,
   // @react-router 8.x enables middleware, the Vite Environment API, and
   // splitRouteModules by default, so the legacy `future.*` flags have been
   // removed. splitRouteModules defaults to `true`.

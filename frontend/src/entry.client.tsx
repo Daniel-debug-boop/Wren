@@ -1,5 +1,5 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
+import { StrictMode, startTransition } from "react";
+import { hydrateRoot } from "react-dom/client";
 import { HydratedRouter } from "react-router/dom";
 import "./index.css";
 
@@ -12,8 +12,11 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-createRoot(document).render(
-  <StrictMode>
-    <HydratedRouter />
-  </StrictMode>,
-);
+startTransition(() => {
+  hydrateRoot(
+    document,
+    <StrictMode>
+      <HydratedRouter />
+    </StrictMode>,
+  );
+});

@@ -10,11 +10,15 @@ export default function WorkspaceFooter({
   artifactsOpen,
   onToggleArtifacts,
 }: WorkspaceFooterProps) {
-  const [isDark, setIsDark] = useState(
-    () =>
-      // Default dark; check stored preference
-      localStorage.getItem("wren-theme") !== "light",
-  );
+  const [isDark, setIsDark] = useState(true);
+
+  // Hydrate theme from localStorage on client side
+  useEffect(() => {
+    const stored = localStorage.getItem("wren-theme");
+    if (stored) {
+      setIsDark(stored !== "light");
+    }
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle("light", !isDark);

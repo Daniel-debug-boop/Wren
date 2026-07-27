@@ -49,9 +49,12 @@ export interface ConversationMessage {
 export type PipelineStage = "architect" | "planner" | "writer" | "reviewer" | "complete";
 
 export interface PipelineStatus {
-  stage: PipelineStage;
+  task_id: string;
+  status: "queued" | "running" | "completed" | "error";
+  stage?: PipelineStage;
   progress: number;
   message: string;
+  error?: string | null;
 }
 
 export interface GenerationRequest {

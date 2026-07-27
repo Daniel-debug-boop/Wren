@@ -15,8 +15,11 @@ def utc_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-class OpenHandsUUID:
-    """UUID generator matching the OpenHands UUID format."""
+class OpenHandsUUID(uuid.UUID):
+    """UUID type matching the OpenHands UUID format.
+
+    Inherits from uuid.UUID so it can be used as a Pydantic field type.
+    """
 
     @staticmethod
     def generate() -> str:

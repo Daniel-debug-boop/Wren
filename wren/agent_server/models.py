@@ -57,6 +57,18 @@ class ConversationInfo(BaseModel):
     updated_at: float | None = None
 
 
+class OpenHandsModel(BaseModel):
+    """Base model class for all OpenHands models."""
+
+
+class SendMessageRequest(BaseModel):
+    """Request to send a message to a conversation."""
+
+    role: str = 'user'
+    content: list[TextContent | ImageContent] = Field(default_factory=list)
+    run: bool = True
+
+
 class Success(BaseModel):
     """Success response."""
 
@@ -69,6 +81,8 @@ __all__ = [
     'EventPage',
     'EventSortOrder',
     'ImageContent',
+    'OpenHandsModel',
+    'SendMessageRequest',
     'Success',
     'TextContent',
 ]

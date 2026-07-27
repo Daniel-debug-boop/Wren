@@ -141,8 +141,8 @@ export default function ConversationPage() {
                 onClick={() => setActiveConvId(conv.conversation_id)}
                 className="group flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 transition-all"
                 style={{
-                  background: activeConvId === conv.conversation_id ? "var(--accent-muted, rgba(139,92,246,0.1))" : "transparent",
-                  border: activeConvId === conv.conversation_id ? "1px solid rgba(139,92,246,0.3)" : "1px solid transparent",
+                  background: activeConvId === conv.conversation_id ? "var(--accent-subtle)" : "transparent",
+                  border: activeConvId === conv.conversation_id ? "1px solid rgba(245,158,11,0.2)" : "1px solid transparent",
                 }}
               >
                 <div className="min-w-0 flex-1">

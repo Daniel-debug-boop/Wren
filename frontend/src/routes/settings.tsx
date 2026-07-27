@@ -224,9 +224,8 @@ export default function SettingsPage() {
               <div
                 key={profile.name}
                 className="flex items-center justify-between rounded-lg px-4 py-3"
-                style={{
-                  background: "var(--surface)",
-                  border: activeProfile === profile.name
+                style={{                    background: "var(--bg-elevated)",
+                    border: activeProfile === profile.name
                     ? "1px solid var(--accent)"
                     : "1px solid var(--border)",
                 }}

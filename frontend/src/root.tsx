@@ -62,32 +62,28 @@ export function ErrorBoundary() {
   if (isRouteErrorResponse(error)) {
     return (
       <div className="flex min-h-screen items-center justify-center p-8">
-        <div className="glass-shell-outer max-w-md w-full">
-          <div className="glass-shell-inner p-8 text-center">
-            <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>
+        <div className="card p-8 max-w-md w-full text-center">
+            <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
               {error.status} — {error.statusText}
             </h1>
-            <p className="text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+            <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
               {error.data?.message || "Something went wrong."}
             </p>
           </div>
-        </div>
       </div>
     );
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center p-8">
-      <div className="glass-shell-outer max-w-md w-full">
-        <div className="glass-shell-inner p-8 text-center">
-          <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>
+      <div className="card p-8 max-w-md w-full text-center">
+          <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--text-primary)" }}>
             Unexpected Error
           </h1>
-          <p className="text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+          <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
             An unexpected error occurred. Please try again.
           </p>
         </div>
-      </div>
     </div>
   );
 }

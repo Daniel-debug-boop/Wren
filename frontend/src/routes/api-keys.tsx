@@ -52,10 +52,11 @@ export default function ApiKeysPage() {
       </div>
 
       {/* Create new key */}
-      {showNew && (            <div className="card p-6 mb-6">
-              <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
-                Create New API Key
-              </h2>
+      {showNew && (
+        <div className="card p-6 mb-6">
+          <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+            Create New API Key
+          </h2>
           <div className="flex gap-2">
             <input
               className="input flex-1"

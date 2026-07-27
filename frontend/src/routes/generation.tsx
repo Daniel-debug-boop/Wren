@@ -202,7 +202,7 @@ export default function GenerationPage() {
                   key={stage.key}
                   className="flex items-center gap-3 rounded-lg px-4 py-3 transition-all"
                   style={{
-                    background: isCurrent ? "rgba(139,92,246,0.08)" : "var(--surface)",
+                    background: isCurrent ? "rgba(245,158,11,0.08)" : "var(--bg-elevated)",
                     border: isCurrent ? "1px solid var(--accent)" : "1px solid transparent",
                     opacity: isActive ? 1 : 0.4,
                   }}

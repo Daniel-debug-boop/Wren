@@ -1,64 +1,11 @@
-"use client";
-
-import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate, useSearchParams } from "react-router";
-import { authApi } from "#/api/endpoints";
-import { setAuthToken } from "#/api/client";
-
 /* ── Login Page ──────────────────────────────────────────────────────────────
- * Full authentication flow with login/register, token storage,
- * error handling, and redirect to return URL.
+ * Demo info page. No auth required — Wren is free to use.
+ * Enterprise tier handles authentication server-side.
  */
 
+import { Link } from "react-router";
+
 export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const returnTo = searchParams.get("returnTo") || "/settings";
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isRegister, setIsRegister] = useState(false);
-  const [error, setError] = useState("");
-
-  const loginMutation = useMutation({
-    mutationFn: () => authApi.login(username, password),
-    onSuccess: (data) => {
-      setAuthToken(data.token);
-      navigate(returnTo, { replace: true });
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.detail || "Login failed. Check your credentials.");
-    },
-  });
-
-  const registerMutation = useMutation({
-    mutationFn: () => authApi.login(username, password),
-    onSuccess: (data) => {
-      setAuthToken(data.token);
-      navigate(returnTo, { replace: true });
-    },
-    onError: (err: any) => {
-      setError(err.response?.data?.detail || "Registration failed. Username may be taken.");
-    },
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    if (!username.trim() || !password.trim()) {
-      setError("Username and password are required.");
-      return;
-    }
-    if (isRegister) {
-      registerMutation.mutate();
-    } else {
-      loginMutation.mutate();
-    }
-  };
-
-  const isPending = loginMutation.isPending || registerMutation.isPending;
-
   return (
     <div className="mx-auto flex min-h-[80vh] max-w-md items-center px-6 py-12">
       <div className="w-full">
@@ -69,94 +16,49 @@ export default function LoginPage() {
             </svg>
           </div>
           <h1 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
-            {isRegister ? "Create Account" : "Welcome Back"}
+            Wren is Free
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--color-text-tertiary)" }}>
-            {isRegister
-              ? "Sign up to start building with Wren AI"
-              : "Sign in to continue building with Wren AI"}
+          <p className="mt-2 text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+            No account needed. No login required.
+            <br />
+            Just drop in your API key and start building.
           </p>
         </div>
 
         <div className="glass-shell-outer">
           <div className="glass-shell-inner p-6">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {error && (
-                <div className="rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-2.5">
-                  <p className="text-xs text-red-400">{error}</p>
-                </div>
-              )}
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
-                  Username
-                </label>
-                <input
-                  className="input w-full"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={isRegister ? "Choose a username" : "Your username"}
-                  autoFocus
-                  disabled={isPending}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
-                  Password
-                </label>
-                <input
-                  className="input w-full"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={isRegister ? "Choose a password" : "Your password"}
-                  disabled={isPending}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isPending || !username.trim() || !password.trim()}
-                className="accent-button w-full justify-center text-xs"
-              >
-                {isPending ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                    {isRegister ? "Creating account..." : "Signing in..."}
-                  </span>
-                ) : isRegister ? (
-                  "Create Account"
-                ) : (
-                  "Sign In"
-                )}
-              </button>
-
-              <p className="pt-2 text-center text-xs" style={{ color: "var(--color-text-tertiary)" }}>
-                {isRegister ? "Already have an account?" : "Don't have an account?"}{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsRegister(!isRegister);
-                    setError("");
-                  }}
-                  className="font-medium underline-offset-2 hover:underline"
-                  style={{ color: "var(--accent)" }}
-                >
-                  {isRegister ? "Sign in" : "Create one"}
-                </button>
-              </p>
-            </form>
-
-            {/* Default credentials hint */}
-            {!isRegister && (
-              <div className="mt-4 rounded-lg bg-white/[0.03] px-4 py-2.5">
-                <p className="text-[10px] leading-relaxed" style={{ color: "var(--color-text-tertiary)" }}>
-                  <strong>Demo:</strong> admin / admin
+            <div className="space-y-4">
+              <div className="rounded-lg p-4" style={{ background: "rgba(45,212,191,0.05)", border: "1px solid rgba(45,212,191,0.1)" }}>
+                <h3 className="text-sm font-semibold mb-1 flex items-center gap-2" style={{ color: "var(--teal, #2DD4BF)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                  Free & Open Source
+                </h3>
+                <p className="text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+                  The community edition is completely free with no authentication required.
+                  Enterprise features (SSO, audit logs, dedicated agents) require a license.
                 </p>
               </div>
-            )}
+
+              <div className="rounded-lg p-4" style={{ background: "rgba(139,92,246,0.05)", border: "1px solid rgba(139,92,246,0.1)" }}>
+                <h3 className="text-sm font-semibold mb-1 flex items-center gap-2" style={{ color: "var(--accent)" }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
+                  Quick Start
+                </h3>
+                <ol className="text-xs space-y-1.5 mt-2" style={{ color: "var(--color-text-secondary)" }}>
+                  <li>1. Go to <strong>Settings</strong> to configure your LLM provider</li>
+                  <li>2. Add your OpenRouter (or other) API key</li>
+                  <li>3. Use <strong>Generate</strong> for AI-powered project generation</li>
+                  <li>4. Use <strong>Chat</strong> for interactive assistance</li>
+                </ol>
+              </div>
+
+              <Link
+                to="/settings"
+                className="accent-button w-full justify-center text-xs"
+              >
+                Go to Settings
+              </Link>
+            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { Outlet, Link, useLocation } from "react-router";
-import { AuthProvider, useAuth } from "#/lib/auth-context";
 
 /* ── Navigation Items ──────────────────────────────────────────────────────── */
 
@@ -63,57 +61,15 @@ const NAV_ITEMS = [
   },
 ];
 
-/* ── NavLink Component ─────────────────────────────────────────────────────── */
+/* ── Layout ────────────────────────────────────────────────────────────────── */
 
-function NavLink({
-  to,
-  label,
-  icon,
-  isActive,
-}: {
-  to: string;
-  label: string;
-  icon: React.ReactNode;
-  isActive: boolean;
-}) {
-  return (
-    <Link
-      to={to}
-      className="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200"
-      style={{
-        color: isActive ? "var(--accent)" : "var(--color-text-tertiary)",
-        background: isActive ? "rgba(139,92,246,0.08)" : "transparent",
-      }}
-    >
-      <span
-        className="transition-transform duration-200 group-hover:scale-110"
-        style={{ opacity: isActive ? 1 : 0.7 }}
-      >
-        {icon}
-      </span>
-      {label}
-    </Link>
-  );
-}
-
-/* ── Layout Inner ──────────────────────────────────────────────────────────── */
-
-function LayoutInner() {
+export default function RootLayout() {
   const location = useLocation();
-  const { isAuthenticated, username, logout } = useAuth();
-  const [showUserMenu, setShowUserMenu] = useState(false);
   const isHome = location.pathname === "/";
-
-  // Close user menu on outside click
-  const handleBlur = (e: React.FocusEvent) => {
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      setShowUserMenu(false);
-    }
-  };
 
   return (
     <div className="flex min-h-screen" style={{ background: "var(--color-surface-base)" }}>
-      {/* Sidebar — only show for authenticated pages */}
+      {/* Sidebar — only show for internal pages */}
       {!isHome && (
         <aside
           className="flex w-56 shrink-0 flex-col border-r"
@@ -137,85 +93,42 @@ function LayoutInner() {
             <span className="text-sm font-bold tracking-tight" style={{ color: "var(--color-text-primary)" }}>
               Wren
             </span>
+            <span className="text-[9px] font-medium rounded-full px-1.5 py-0.5 ml-auto" style={{ background: "rgba(45,212,191,0.1)", color: "var(--teal, #2DD4BF)" }}>
+              Free
+            </span>
           </div>
 
           {/* Navigation */}
           <nav className="flex-1 space-y-0.5 px-2 py-4">
             {NAV_ITEMS.map((item) => (
-              <NavLink
+              <Link
                 key={item.to}
                 to={item.to}
-                label={item.label}
-                icon={item.icon}
-                isActive={location.pathname === item.to}
-              />
+                className="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200"
+                style={{
+                  color: location.pathname === item.to ? "var(--accent)" : "var(--color-text-tertiary)",
+                  background: location.pathname === item.to ? "rgba(139,92,246,0.08)" : "transparent",
+                }}
+              >
+                <span
+                  className="transition-transform duration-200 group-hover:scale-110"
+                  style={{ opacity: location.pathname === item.to ? 1 : 0.7 }}
+                >
+                  {item.icon}
+                </span>
+                {item.label}
+              </Link>
             ))}
           </nav>
 
-          {/* User menu */}
-          <div
-            className="relative border-t px-2 py-3"
-            style={{ borderColor: "var(--border)" }}
-            onBlur={handleBlur}
-          >
-            {isAuthenticated ? (
-              <>
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs transition-colors hover:bg-white/5"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  <div
-                    className="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold"
-                    style={{ background: "var(--accent)" }}
-                  >
-                    {username?.charAt(0).toUpperCase() || "U"}
-                  </div>
-                  <span className="flex-1 truncate text-left">{username || "User"}</span>
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-
-                {showUserMenu && (
-                  <div
-                    className="absolute bottom-full left-2 right-2 mb-1 overflow-hidden rounded-lg border shadow-lg"
-                    style={{
-                      background: "var(--surface)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    <Link
-                      to="/login"
-                      className="block px-3 py-2 text-xs transition-colors hover:bg-white/5"
-                      style={{ color: "var(--color-text-secondary)" }}
-                    >
-                      Account
-                    </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setShowUserMenu(false);
-                      }}
-                      className="w-full px-3 py-2 text-left text-xs text-red-400 transition-colors hover:bg-red-500/10"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link
-                to="/login"
-                className="flex items-center justify-center rounded-lg px-3 py-2 text-xs font-medium transition-colors"
-                style={{
-                  color: "var(--accent)",
-                  border: "1px solid var(--accent)",
-                }}
-              >
-                Sign In
-              </Link>
-            )}
+          {/* Bottom status */}
+          <div className="border-t px-3 py-3" style={{ borderColor: "var(--border)" }}>
+            <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--teal, #2DD4BF)", boxShadow: "0 0 6px rgba(45,212,191,0.5)" }} />
+              <span className="text-[10px]" style={{ color: "var(--color-text-tertiary)" }}>
+                All systems operational
+              </span>
+            </div>
           </div>
         </aside>
       )}
@@ -227,15 +140,5 @@ function LayoutInner() {
         </main>
       </div>
     </div>
-  );
-}
-
-/* ── Root Layout (Export) ──────────────────────────────────────────────────── */
-
-export default function RootLayout() {
-  return (
-    <AuthProvider>
-      <LayoutInner />
-    </AuthProvider>
   );
 }

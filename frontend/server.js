@@ -51,7 +51,15 @@ app.use(compression());
 
 /* ── Static asset middleware (MUST come before SSR handler) ── */
 
-// 1. Immutable cache for hashed assets (fingerprinted files under /assets/)
+// 1. Immutable cache for hashed assets from BOTH client and server builds
+//    (React Router SSR may reference server-build assets with different hashes)
+app.use(
+  "/assets",
+  express.static(path.join(BUILD_DIR, "server", "assets"), {
+    immutable: true,
+    maxAge: "1y",
+  }),
+);
 app.use(
   "/assets",
   express.static(path.join(BUILD_DIR, "assets"), {

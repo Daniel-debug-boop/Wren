@@ -1,90 +1,93 @@
-import { Links, Outlet } from "react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "react-hot-toast";
-import { ErrorBoundary } from "./components/ErrorBoundary";
-import "@fontsource-variable/geist";
-import "@fontsource-variable/geist-mono";
+import {
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  isRouteErrorResponse,
+  useRouteError,
+} from "react-router";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 2,
-      staleTime: 30_000,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {
-      retry: 0,
-    },
+import type { Route } from "./+types/root";
+import "./index.css";
+
+export const links: Route.LinksFunction = () => [
+  { rel: "icon", href: "/favicon.ico" },
+  { rel: "manifest", href: "/manifest.json" },
+  { rel: "apple-touch-icon", href: "/icons/icon-192.png" },
+];
+
+export const meta: Route.MetaFunction = () => [
+  { title: "Wren — AI Engineering Platform" },
+  { charSet: "utf-8" },
+  { name: "viewport", content: "width=device-width, initial-scale=1" },
+  { name: "theme-color", content: "#000000" },
+  {
+    name: "description",
+    content:
+      "Wren — Premium AI Engineering Platform. Generate complete apps with a 4-agent AI pipeline. Architect, Plan, Write, Review.",
   },
-});
+  { name: "application-name", content: "Wren AI" },
+  { name: "apple-mobile-web-app-capable", content: "yes" },
+  { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
+  { name: "mobile-web-app-capable", content: "yes" },
+];
 
-export default function Root() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <Meta />
         <Links />
-        <meta
-          name="theme-color"
-          content="#0A0A0B"
-          media="(prefers-color-scheme: dark)"
-        />
-        <meta
-          name="description"
-          content="Wren — Premium AI Engineering Platform. Code with your own LLM API key."
-        />
-        <title>Wren — AI Engineering Platform</title>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="manifest" href="/manifest.json" />
-        <meta name="application-name" content="Wren AI" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Wren" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body>
         <a href="#main" className="skip-link">
           Skip to main content
         </a>
-        <QueryClientProvider client={queryClient}>
-          <ErrorBoundary>
-            <Outlet />
-          </ErrorBoundary>
-          <Toaster
-            position="bottom-right"
-            gutter={8}
-            toastOptions={{
-              duration: 4000,
-              style: {
-                background:
-                  "color-mix(in srgb, var(--surface-hover) 85%, transparent)",
-                backdropFilter: "blur(24px) saturate(160%)",
-                WebkitBackdropFilter: "blur(24px) saturate(160%)",
-                border: "1px solid var(--border-strong)",
-                borderRadius: "var(--radius-xl)",
-                color: "var(--text)",
-                fontSize: "0.85rem",
-                padding: "0.875rem 1rem",
-                boxShadow: "var(--shadow-lg)",
-              },
-              success: {
-                iconTheme: {
-                  primary: "var(--success)",
-                  secondary: "var(--bg)",
-                },
-              },
-              error: {
-                iconTheme: {
-                  primary: "var(--error)",
-                  secondary: "var(--bg)",
-                },
-              },
-            }}
-          />
-        </QueryClientProvider>
+        {children}
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return <Outlet />;
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  if (isRouteErrorResponse(error)) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-8">
+        <div className="glass-shell-outer max-w-md w-full">
+          <div className="glass-shell-inner p-8 text-center">
+            <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>
+              {error.status} — {error.statusText}
+            </h1>
+            <p className="text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+              {error.data?.message || "Something went wrong."}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center p-8">
+      <div className="glass-shell-outer max-w-md w-full">
+        <div className="glass-shell-inner p-8 text-center">
+          <h1 className="text-lg font-semibold mb-2" style={{ color: "var(--color-text-primary)" }}>
+            Unexpected Error
+          </h1>
+          <p className="text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+            An unexpected error occurred. Please try again.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

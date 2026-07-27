@@ -113,16 +113,16 @@ export default function GenerationPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="mb-8">
-        <h1 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
+        <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
           AI Project Generator
         </h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+        <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
           Describe your project and Wren's AI pipeline will architect, plan, write, and review it.
         </p>
       </div>
 
       {/* Input Section */}
-      <div className="premium-card p-6 mb-6">
+      <div className="card p-6 mb-6">
         <textarea
           ref={textareaRef}
           className="input w-full min-h-[120px] mb-3 resize-y"
@@ -142,7 +142,7 @@ export default function GenerationPage() {
                 className="rounded-full px-3 py-1 text-xs transition-all hover:opacity-80"
                 style={{
                   background: "var(--surface)",
-                  color: "var(--color-text-tertiary)",
+                  color: "var(--text-tertiary)",
                   border: "1px solid var(--border)",
                 }}
               >
@@ -152,7 +152,7 @@ export default function GenerationPage() {
           </div>
           <div className="flex gap-2">
             {taskId && (
-              <button onClick={handleReset} className="rounded-lg px-4 py-2 text-xs transition-colors hover:bg-white/5" style={{ color: "var(--color-text-secondary)", border: "1px solid var(--border)" }}>
+              <button onClick={handleReset} className="rounded-lg px-4 py-2 text-xs transition-colors hover:bg-white/5" style={{ color: "var(--text-secondary)", border: "1px solid var(--border)" }}>
                 Reset
               </button>
             )}
@@ -186,8 +186,8 @@ export default function GenerationPage() {
 
       {/* Pipeline Progress */}
       {(isRunning || result) && (
-        <div className="premium-card p-6 mb-6">
-          <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text-primary)" }}>
+        <div className="card p-6 mb-6">
+          <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
             Pipeline Progress
           </h2>
           <div className="space-y-3">
@@ -210,7 +210,7 @@ export default function GenerationPage() {
                   <span className="text-lg">{stage.icon}</span>
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
+                      <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                         {stage.label}
                       </span>
                       {isComplete && <span className="text-xs text-emerald-400">✓ Complete</span>}
@@ -249,44 +249,44 @@ export default function GenerationPage() {
           )}
 
           {result.architecture && (
-            <div className="premium-card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 🏗️ Architecture
               </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                 {result.architecture}
               </pre>
             </div>
           )}
 
           {result.plan && (
-            <div className="premium-card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 📋 Implementation Plan
               </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                 {result.plan}
               </pre>
             </div>
           )}
 
           {result.code && (
-            <div className="premium-card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 ✍️ Generated Code
               </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)", fontFamily: "ui-monospace, monospace" }}>
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "ui-monospace, monospace" }}>
                 {result.code}
               </pre>
             </div>
           )}
 
           {result.review && (
-            <div className="premium-card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--color-text-primary)" }}>
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
                 🔍 Code Review
               </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--color-text-secondary)" }}>
+              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
                 {result.review}
               </pre>
             </div>

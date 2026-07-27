@@ -87,9 +87,9 @@ export default function ConversationPage() {
     <div className="mx-auto flex h-[calc(100vh-8rem)] max-w-6xl gap-4 px-6 py-6">
       {/* Sidebar */}
       <div className="w-64 shrink-0">
-        <div className="premium-card p-4 h-full flex flex-col">
+        <div className="card p-4 h-full flex flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-semibold" style={{ color: "var(--color-text-primary)" }}>
+            <h2 className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>
               Conversations
             </h2>
             <button
@@ -129,7 +129,7 @@ export default function ConversationPage() {
           {/* Conversation list */}
           <div className="flex-1 space-y-1 overflow-y-auto">
             {conversations.length === 0 && !showNewConv && (
-              <p className="py-8 text-center text-xs" style={{ color: "var(--color-text-tertiary)" }}>
+              <p className="py-8 text-center text-xs" style={{ color: "var(--text-tertiary)" }}>
                 No conversations yet.
                 <br />
                 Click + to start one.
@@ -146,10 +146,10 @@ export default function ConversationPage() {
                 }}
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-medium" style={{ color: "var(--color-text-primary)" }}>
+                  <p className="truncate text-xs font-medium" style={{ color: "var(--text-primary)" }}>
                     {conv.title || "Untitled"}
                   </p>
-                  <p className="text-[10px]" style={{ color: "var(--color-text-tertiary)" }}>
+                  <p className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
                     {conv.created_at ? new Date(conv.created_at).toLocaleDateString() : ""}
                   </p>
                 </div>
@@ -172,16 +172,16 @@ export default function ConversationPage() {
 
       {/* Chat Area */}
       <div className="flex flex-1 flex-col">
-        <div className="premium-card flex-1 flex flex-col overflow-hidden">
+        <div className="card flex-1 flex flex-col overflow-hidden">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {!activeConvId && (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-secondary)" }}>
+                  <p className="text-sm font-medium" style={{ color: "var(--text-secondary)" }}>
                     Select a conversation
                   </p>
-                  <p className="mt-1 text-xs" style={{ color: "var(--color-text-tertiary)" }}>
+                  <p className="mt-1 text-xs" style={{ color: "var(--text-tertiary)" }}>
                     or create a new one to start chatting
                   </p>
                 </div>
@@ -189,7 +189,7 @@ export default function ConversationPage() {
             )}
             {activeConvId && messages.length === 0 && (
               <div className="flex h-full items-center justify-center">
-                <p className="text-xs" style={{ color: "var(--color-text-tertiary)" }}>
+                <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
                   Start the conversation by sending a message.
                 </p>
               </div>
@@ -212,12 +212,12 @@ export default function ConversationPage() {
                   }}
                 >
                   <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{
-                    color: msg.role === "user" ? "#fff" : "var(--color-text-primary)"
+                    color: msg.role === "user" ? "#fff" : "var(--text-primary)"
                   }}>
                     {msg.content}
                   </p>
                   <p className="mt-1 text-[10px] opacity-50 text-right" style={{
-                    color: msg.role === "user" ? "#fff" : "var(--color-text-tertiary)"
+                    color: msg.role === "user" ? "#fff" : "var(--text-tertiary)"
                   }}>
                     {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString() : ""}
                   </p>

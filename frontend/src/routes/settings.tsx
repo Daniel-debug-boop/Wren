@@ -110,10 +110,10 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
+          <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
             Settings
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
             Configure your LLM provider and application preferences
           </p>
         </div>
@@ -136,13 +136,13 @@ export default function SettingsPage() {
       </div>
 
       {/* LLM Configuration */}
-      <div className="premium-card p-6 mb-6">
-        <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text-primary)" }}>
+      <div className="card p-6 mb-6">
+        <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
           LLM Configuration
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
               Model
             </label>
             <input
@@ -153,7 +153,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
               Base URL
             </label>
             <input
@@ -164,7 +164,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+            <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
               API Key
             </label>
             <input
@@ -177,7 +177,7 @@ export default function SettingsPage() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+              <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
                 Max Tokens
               </label>
               <input
@@ -188,7 +188,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--color-text-secondary)" }}>
+              <label className="mb-1.5 block text-xs font-medium" style={{ color: "var(--text-secondary)" }}>
                 Temperature
               </label>
               <input
@@ -206,16 +206,16 @@ export default function SettingsPage() {
       </div>
 
       {/* Profiles */}
-      <div className="premium-card p-6 mb-6">
-        <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text-primary)" }}>
+      <div className="card p-6 mb-6">
+        <h2 className="text-sm font-semibold mb-4" style={{ color: "var(--text-primary)" }}>
           LLM Profiles
         </h2>
-        <p className="text-xs mb-4" style={{ color: "var(--color-text-tertiary)" }}>
+        <p className="text-xs mb-4" style={{ color: "var(--text-tertiary)" }}>
           Save different model configurations and switch between them.
         </p>
 
         {profiles.length === 0 ? (
-          <p className="text-sm py-3 text-center" style={{ color: "var(--color-text-tertiary)" }}>
+          <p className="text-sm py-3 text-center" style={{ color: "var(--text-tertiary)" }}>
             No profiles yet. Create your first profile below.
           </p>
         ) : (
@@ -232,10 +232,10 @@ export default function SettingsPage() {
                 }}
               >
                 <div>
-                  <span className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
+                  <span className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                     {profile.name}
                   </span>
-                  <span className="ml-2 text-xs" style={{ color: "var(--color-text-tertiary)" }}>
+                  <span className="ml-2 text-xs" style={{ color: "var(--text-tertiary)" }}>
                     {profile.model}
                   </span>
                 </div>
@@ -248,7 +248,7 @@ export default function SettingsPage() {
                   <button
                     onClick={() => activateProfileMutation.mutate(profile.name)}
                     className="rounded px-2 py-1 text-xs transition-colors hover:bg-white/5"
-                    style={{ color: "var(--color-text-secondary)" }}
+                    style={{ color: "var(--text-secondary)" }}
                     disabled={activeProfile === profile.name}
                   >
                     Activate

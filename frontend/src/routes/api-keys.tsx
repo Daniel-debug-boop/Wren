@@ -36,10 +36,10 @@ export default function ApiKeysPage() {
     <div className="mx-auto max-w-4xl px-6 py-12">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: "var(--color-text-primary)" }}>
+          <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
             API Keys
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--color-text-tertiary)" }}>
+          <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
             Manage API keys for accessing Wren's API programmatically.
           </p>
         </div>
@@ -52,11 +52,10 @@ export default function ApiKeysPage() {
       </div>
 
       {/* Create new key */}
-      {showNew && (
-        <div className="premium-card p-6 mb-6">
-          <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--color-text-primary)" }}>
-            Create New API Key
-          </h2>
+      {showNew && (            <div className="card p-6 mb-6">
+              <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+                Create New API Key
+              </h2>
           <div className="flex gap-2">
             <input
               className="input flex-1"
@@ -81,14 +80,14 @@ export default function ApiKeysPage() {
       )}
 
       {/* Keys list */}
-      <div className="premium-card">
+      <div className="card">
         {keys.length === 0 ? (
           <div className="p-12 text-center">
             <div className="mb-3 text-2xl">🔑</div>
-            <p className="text-sm font-medium mb-1" style={{ color: "var(--color-text-secondary)" }}>
+            <p className="text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
               No API keys yet
             </p>
-            <p className="text-xs" style={{ color: "var(--color-text-tertiary)" }}>
+            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
               Create your first key to start using the Wren API.
             </p>
           </div>
@@ -100,14 +99,14 @@ export default function ApiKeysPage() {
                 className="flex items-center justify-between px-6 py-4"
               >
                 <div>
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-primary)" }}>
+                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                     {key.name}
                   </p>
                   <div className="mt-1 flex items-center gap-2">
-                    <code className="rounded bg-white/5 px-2 py-0.5 text-xs font-mono" style={{ color: "var(--color-text-tertiary)" }}>
+                    <code className="rounded bg-white/5 px-2 py-0.5 text-xs font-mono" style={{ color: "var(--text-tertiary)" }}>
                       {key.key_preview}...
                     </code>
-                    <span className="text-[10px]" style={{ color: "var(--color-text-tertiary)" }}>
+                    <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
                       Created {key.created_at ? new Date(key.created_at).toLocaleDateString() : ""}
                     </span>
                   </div>

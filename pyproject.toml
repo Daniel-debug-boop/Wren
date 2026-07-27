@@ -105,6 +105,7 @@ dependencies = [
   "whatthepatch==1.0.7",
   "zope-interface==7.2",
   "structlog>=26.1.0,<27.0.0",
+  "posthog (>=7.29.0,<8.0.0)",
 ]
 
 urls.Homepage = "https://github.com/Daniel-debug-boop/Wren"

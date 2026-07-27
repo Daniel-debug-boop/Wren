@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAutoGeneration } from "#/hooks/useAutoGeneration";
+import type { FileStatus } from "#/api/auto-generation-service/auto-generation-service.api";
 
 /* ── Utility: format ms to readable duration ── */
 function formatDuration(ms: number): string {

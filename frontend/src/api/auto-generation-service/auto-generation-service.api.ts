@@ -32,6 +32,7 @@ export interface GenerationStage {
   status: "pending" | "running" | "done" | "error";
   detail?: string;
   duration_s?: number;
+  success?: boolean;
 }
 
 export interface FileStatus {

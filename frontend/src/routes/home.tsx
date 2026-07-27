@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
-import { motion, useScroll, useTransform, useReducedMotion } from "motion/react";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 type LaunchTarget = "header" | "cta" | null;
 
@@ -8,6 +8,8 @@ type LaunchTarget = "header" | "cta" | null;
 const WREN_REPO = "https://github.com/Daniel-debug-boop/Wren";
 
 /* ── Animation Variants ─────────────────────────────────────── */
+const easeSmooth = [0.16, 1, 0.3, 1] as const;
+
 const container = {
   hidden: { opacity: 0 },
   visible: {
@@ -22,7 +24,7 @@ const fadeUp = {
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.9, ease: easeSmooth },
   },
 };
 
@@ -31,7 +33,7 @@ const scaleIn = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.8, ease: easeSmooth },
   },
 };
 

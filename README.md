@@ -140,21 +140,35 @@ make start-backend   # Starts on port 3000
 
 ## Configuration
 
-### Environment Variables
+### Quick Start: Production .env
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `LLM_API_KEY` | API key for your LLM provider | — |
-| `LLM_MODEL` | Default model (e.g., `gpt-4o`, `claude-sonnet-4`) | `gpt-4o` |
-| `LLM_BASE_URL` | Custom API base URL for OpenAI-compatible providers | — |
-| `WORKSPACE_DIR` | Path for agent project files | `./workspace` |
-| `FRONTEND_PORT` | Frontend dev server port | `3001` |
-| `BACKEND_HOST` | Backend server host | `127.0.0.1` |
-| `BACKEND_PORT` | Backend server port | `3000` |
-| `INSTALL_DOCKER` | Set to `0` to skip Docker checks | `1` |
-| `RUNTIME` | Execution runtime (`local`, `docker`, `kubernetes`) | `docker` |
+The app uses environment variables for all configuration. Set these in your shell or `.env` file before starting:
 
-### config.toml
+```bash
+# ── LLM Provider ───────────────────────────────────────
+LLM_API_KEY="sk-or-v1-xxxxxxxx"    # Auto-detects provider (OpenAI, Anthropic, Groq, etc.)
+LLM_MODEL="openrouter/auto"        # Default model
+LLM_BASE_URL=""                     # Custom base URL (auto-detected otherwise)
+
+# ── Server ──────────────────────────────────────────────
+BACKEND_HOST="0.0.0.0"             # Bind address (0.0.0.0 for production)
+BACKEND_PORT=3000                    # Backend port
+FRONTEND_HOST="0.0.0.0"
+FRONTEND_PORT=3001                   # Frontend port
+
+# ── Runtime ─────────────────────────────────────────────
+INSTALL_DOCKER=0                     # 0 = no Docker needed
+RUNTIME=local                        # local | docker | kubernetes
+WORKSPACE_BASE="./workspace"         # Project output directory
+
+# ── Features ────────────────────────────────────────────
+ENABLE_BILLING=false                 # false = free mode
+ENABLE_AUTH=false                    # false = no login required
+ENABLE_OMNIROUTE=true                # true = intelligent LLM routing
+ENABLE_COMPRESSION=true              # true = auto token compression
+```
+
+### config.toml (Advanced)
 
 For advanced configuration, create a `config.toml` in the project root:
 
@@ -163,9 +177,9 @@ For advanced configuration, create a `config.toml` in the project root:
 workspace_base = "./workspace"
 
 [llm]
-model = "gpt-4o"
-api_key = "sk-..."
-base_url = "https://api.openai.com/v1"
+model = "openrouter/auto"
+api_key = "sk-or-v1-..."
+base_url = "https://openrouter.ai/api/v1"
 
 [sandbox]
 base_container_image = "wren-sandbox:latest"
@@ -191,25 +205,34 @@ make test               # Run all tests
 
 ```bash
 cd frontend
+npm install
 npm run dev             # Dev server with hot reload
-npm run dev:mock        # Mock mode (no backend needed)
-npm run build           # Production build
-npm run test            # Run tests
+npm run build           # Production build (370ms, 27KB CSS gzip'd to 6KB)
+npm run test            # Run vitest tests
 npm run lint:fix        # Fix lint issues
 ```
 
 ### Backend Development
 
 ```bash
+poetry install
 poetry shell            # Activate virtual environment
-poetry run pytest       # Run tests
-make lint-backend       # Lint Python code
+make start-backend      # Starts uvicorn on port 3000
+poetry run pytest       # Run Python tests
 ```
 
-### Pre-commit Hooks
+### Verifying Production Readiness
 
 ```bash
-make install-pre-commit-hooks
+# Frontend
+cd frontend && npx tsc --noEmit    # TypeScript check (0 errors ✓)
+npm run build                       # Production bundle
+
+# Backend
+curl http://localhost:3000/api/v1/alive   # Health check → {"status":"ok","version":"1.0.0"}
+
+# OmniRoute
+curl http://localhost:3000/api/v1/omniroute/status   # Full routing status
 ```
 
 ---
@@ -222,17 +245,27 @@ make install-pre-commit-hooks
 docker compose up -d
 ```
 
-### Kubernetes
+This uses the multi-stage Dockerfile at `containers/app/Dockerfile` — builds frontend with Node then backend with Python in a slim production image.
 
-See `kind/` directory for local Kubernetes manifests and `containers/dev/` for development containers.
-
-### Production Build
+### Standalone Production
 
 ```bash
-cd frontend
-npm run build
-npx react-router-serve build/server/index.js
+# Terminal 1: Backend
+poetry run uvicorn wren.server.listen:app --host 0.0.0.0 --port 3000
+
+# Terminal 2: Frontend
+cd frontend && npm run build && node server.js
 ```
+
+### Production Checklist
+
+| Check | Command | Expected |
+|-------|---------|----------|
+| TypeScript | `cd frontend && npx tsc --noEmit` | `EXIT:0` |
+| Frontend build | `cd frontend && npm run build` | `✓ built in <1s` |
+| Backend health | `curl localhost:3000/api/v1/alive` | `{"status":"ok"}` |
+| OmniRoute | `curl localhost:3000/api/v1/omniroute/status` | `{"initialized":true,...}` |
+| Docker | `docker compose build` | Builds successfully |
 
 ---
 
@@ -240,43 +273,127 @@ npx react-router-serve build/server/index.js
 
 ```
 Wren/
-├── frontend/              # React SPA + SSR
+├── frontend/              # React 19 + TypeScript SSR app
 │   ├── src/
-│   │   ├── routes/        # Page components
-│   │   ├── components/    # Shared UI components
-│   │   ├── api/           # API client layer
-│   │   ├── hooks/         # React hooks (queries, mutations)
-│   │   └── stores/        # Zustand state stores
-│   ├── build/             # Production build output
-│   └── package.json
-├── wren/                  # Python backend
-│   ├── app_server/        # FastAPI application
-│   ├── llm/               # LLM integration (LiteLLM)
-│   └── sandbox/           # Execution sandbox
+│   │   ├── routes/        # Home, Generate, Chat, Settings, API Keys, Skills, Orchestrate
+│   │   ├── api/           # API client layer (fetch wrappers)
+│   │   └── index.css      # Design system tokens (amber accent, dark theme)
+│   ├── build/             # Production build output (client + SSR)
+│   └── public/            # Static assets, manifest, favicons, PWA service worker
+├── wren/                  # Python backend (FastAPI + OmniRoute)
+│   ├── app_server/        # FastAPI application with routers
+│   ├── app_builder/       # Dual pipeline: Automated 3-stage + Multi-agent 5-stage
+│   ├── omniroute/         # Intelligent AI routing (250+ providers, 18 strategies)
+│   └── cli/               # CLI tools and app builder
 ├── wren-sdk/              # Python SDK for agent development
-├── wren-ui/               # Shared UI component library
-├── wren-android/          # Android APK build
-├── tests/                 # Backend tests
+├── wren-android/          # Native Android APK (Kotlin + Chaquopy Python)
+│   ├── app/               # Compose UI, WebView, Service, BootReceiver
+│   └── build.gradle.kts   # SDK 35, minSdk 26, arm64 + x86_64
+├── tests/                 # 50+ Python unit tests (pytest)
+├── android/               # APK build script (TWA + Termux)
 ├── termux/                # Android Termux launcher
-└── skills/                # Agent skill definitions
+├── containers/            # Dockerfiles for app, dev, harness
+├── skills/                # 44+ agent skill definitions
+├── .github/workflows/     # 11 CI workflows (lint, test, PR, e2e)
+└── config.toml            # Advanced configuration
 ```
 
 ---
 
-## Android Support
+## Android APK — Build Your Own Installable App
 
-Wren can run on Android devices via Termux:
+The project includes a **native Android app** built with Kotlin + Jetpack Compose + Chaquopy (embedded Python runtime).
+
+### Features
+- **One-tap install** — APK includes everything, no setup
+- **Background server** — Python server runs as foreground service
+- **Auto-start** — Server starts on phone boot
+- **Job notifications** — Get notified when your project is ready
+- **Settings UI** — Configure LLM API key and model from the app
+- **WebView UI** — Full Wren chat interface embedded
+
+### Build the APK (on your computer)
+
+**Prerequisites:**
+- **Android Studio** (latest, free from [developer.android.com](https://developer.android.com/studio))
+- **Android SDK 35** (bundled with Android Studio)
+- **Linux, macOS, or Windows with WSL**
+
+**Step-by-step:**
 
 ```bash
-# On your Android phone (Termux)
-pkg install git
+# 1. Clone the repository
+cd ~
 git clone https://github.com/Daniel-debug-boop/Wren.git
 cd Wren
-bash termux/bootstrap.sh
-bash termux/start.sh
+
+# 2. Build the frontend production bundle (needed by Android)
+cd frontend
+npm install && npm run build
+cd ..
+
+# 3. Build the Android APK
+cd wren-android
+
+# Option A: Using the build script (recommended)
+# First time: Open wren-android/ in Android Studio → File → Open
+# Then: Build → Build Bundle(s) / APK(s) → Build APK(s)
+
+# Option B: Command-line (requires ANDROID_HOME set)
+export ANDROID_HOME=$HOME/Android/Sdk
+./gradlew assembleDebug
+
+# 4. Find your APK
+find . -name "*.apk"
+# → app/build/outputs/apk/debug/app-debug.apk
+
+# 5. Install on phone
+# Transfer the APK to your phone and tap to install
+# Enable "Install from unknown sources" in Settings if needed
 ```
 
-See [termux/termux-setup.md](./termux/termux-setup.md) for detailed instructions.
+**Release APK (for Play Store):**
+
+```bash
+# 1. Generate a keystore
+keytool -genkey -v -keystore release-keystore.jks \
+  -alias wren -keyalg RSA -keysize 2048 -validity 10000
+
+# 2. Set signing config in build.gradle.kts
+#    (uncomment the signingConfig block)
+
+# 3. Build signed release APK
+cd wren-android
+export KEYSTORE_PASSWORD="your-password"
+export KEY_ALIAS="wren"
+export KEY_PASSWORD="your-password"
+./gradlew assembleRelease
+
+# 4. APK ready for Play Store upload
+# → app/build/outputs/apk/release/app-release.apk
+```
+
+**APK size:** ~150MB (includes Python runtime + dependencies)
+**Minimum Android:** 8.0 (API 26)
+**Architecture:** ARM64 (phones) + x86_64 (emulator)
+
+### Android Technical Architecture
+
+```
+Android App (Kotlin + Jetpack Compose)
+├── BootstrapActivity   → First-launch setup screen with progress
+├── MainActivity        → WebView loading http://127.0.0.1:12000
+├── WrenService         → Foreground service keeping server alive
+├── ServerManager       → Starts Python backend via Chaquopy
+├── BootReceiver        → Auto-starts server on phone boot
+└── SettingsActivity    → LLM config, model selection, port
+         │
+         ▼ (via Chaquopy)
+Python Backend (embedded in APK)
+├── FastAPI (uvicorn)
+├── OmniRoute (routing engine)
+└── App Builder (3-stage pipeline)
+```
 
 ---
 
@@ -303,6 +420,7 @@ This project follows a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating
 - **Issues** — [GitHub Issues](https://github.com/Daniel-debug-boop/Wren/issues)
 - **Discussions** — [GitHub Discussions](https://github.com/Daniel-debug-boop/Wren/discussions)
 - **Changelog** — See [CHANGELOG.md](./CHANGELOG.md) for release notes
+- **Android** — APK builds available in `wren-android/` directory
 
 ---
 
@@ -310,7 +428,7 @@ This project follows a [Code of Conduct](./CODE_OF_CONDUCT.md). By participating
 
 **MIT License** — see [LICENSE](./LICENSE) for details.
 
-Copyright © 2024-2025 Daniel and contributors.
+Copyright © 2024-2026 Daniel and contributors.
 
 ---
 

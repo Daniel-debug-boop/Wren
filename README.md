@@ -251,7 +251,7 @@ This uses the multi-stage Dockerfile at `containers/app/Dockerfile` — builds f
 
 ```bash
 # Terminal 1: Backend
-poetry run uvicorn wren.server.listen:app --host 0.0.0.0 --port 3000
+poetry run uvicorn backend.main:app --host 0.0.0.0 --port 3000
 
 # Terminal 2: Frontend
 cd frontend && npm run build && node server.js

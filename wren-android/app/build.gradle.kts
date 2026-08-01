@@ -1,7 +1,7 @@
 plugins {
     id("com.android.application")
-    id("com.chaquo.python")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
@@ -19,21 +19,6 @@ android {
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        python {
-            buildPython("/usr/bin/python3")
-            pip {
-                install("fastapi==0.115.6")
-                install("uvicorn[standard]==0.34.0")
-                install("httpx==0.28.1")
-                install("pydantic==2.10.4")
-                install("websockets==14.1")
-                install("python-dotenv==1.0.1")
-                install("pyyaml==6.0.2")
-                install("aiofiles==24.1.0")
-                install("jinja2==3.1.5")
-            }
-        }
     }
 
     signingConfigs {
@@ -80,9 +65,7 @@ android {
         buildConfig = true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
-    }
+    // Compose enabled via kotlin.plugin.compose (Kotlin 2.0+)
 
     packaging {
         resources.excludes.addAll(listOf(

@@ -191,7 +191,10 @@ private fun SettingsScreen(onBack: () -> Unit) {
                                 DropdownMenuItem(
                                     text = { Text(name, color = Color.White) },
                                     onClick = { selectedModel = id; modelDropdownExpanded = false; saved = false },
-                                    containerColor = if (id == selectedModel) Color(0xFF1A1A2E) else Color(0xFF0A0A0F)
+                                    colors = MenuDefaults.itemColors(
+                                        textColor = Color.White,
+                                        leadingIconColor = Color.White
+                                    )
                                 )
                             }
                         }
@@ -285,7 +288,7 @@ private fun SettingsScreen(onBack: () -> Unit) {
                     if (ServerManager.isRunning()) {
                         ServerManager.stop()
                         // Brief delay to release port then restart with new config
-                        android.os.Handler(mainLooper).postDelayed({
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                             val restartScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
                             ServerManager.start(
                                 ctx = context,

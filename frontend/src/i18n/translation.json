@@ -37,5 +37,110 @@
   },
   "COMMON$SAVE": {
     "en": "Save"
+  },
+  "COMMON$SKIP_TO_CONTENT": {
+    "en": "Skip to main content"
+  },
+  "ERROR$DEFAULT_MESSAGE": {
+    "en": "Something went wrong."
+  },
+  "ERROR$UNEXPECTED_TITLE": {
+    "en": "Unexpected Error"
+  },
+  "ERROR$UNEXPECTED_MESSAGE": {
+    "en": "An unexpected error occurred. Please try again."
+  },
+  "SETTINGS$TITLE": {
+    "en": "Settings"
+  },
+  "SETTINGS$SUBTITLE": {
+    "en": "Configure your LLM provider and application preferences"
+  },
+  "SETTINGS$BACKEND_CONNECTED": {
+    "en": "Backend connected"
+  },
+  "SETTINGS$BACKEND_OFFLINE": {
+    "en": "Backend offline"
+  },
+  "SETTINGS$SAVING": {
+    "en": "Saving..."
+  },
+  "SETTINGS$SAVED": {
+    "en": "✓ Saved!"
+  },
+  "SETTINGS$SAVE_CHANGES": {
+    "en": "Save Changes"
+  },
+  "SETTINGS$LLM_CONFIGURATION": {
+    "en": "LLM Configuration"
+  },
+  "SETTINGS$PROVIDER": {
+    "en": "Provider"
+  },
+  "SETTINGS$MODEL": {
+    "en": "Model"
+  },
+  "SETTINGS$BASE_URL": {
+    "en": "Base URL (optional)"
+  },
+  "SETTINGS$API_KEY": {
+    "en": "API Key"
+  },
+  "SETTINGS$MAX_TOKENS": {
+    "en": "Max Tokens"
+  },
+  "SETTINGS$TEMPERATURE": {
+    "en": "Temperature"
+  },
+  "SETTINGS$PROVIDER_OPENAI": {
+    "en": "OpenAI"
+  },
+  "SETTINGS$PROVIDER_ANTHROPIC": {
+    "en": "Anthropic"
+  },
+  "SETTINGS$PROVIDER_OPENROUTER": {
+    "en": "OpenRouter"
+  },
+  "SETTINGS$PROVIDER_GROQ": {
+    "en": "Groq"
+  },
+  "SETTINGS$PROVIDER_GOOGLE": {
+    "en": "Google"
+  },
+  "SETTINGS$PROVIDER_MISTRAL": {
+    "en": "Mistral"
+  },
+  "SETTINGS$TIPS_PREFIX": {
+    "en": "Tips: for Anthropic use base URL"
+  },
+  "SETTINGS$TIPS_MIDDLE": {
+    "en": ". For OpenRouter use"
+  },
+  "SETTINGS$TIPS_MODEL": {
+    "en": " with a model like"
+  },
+  "SETTINGS$TIPS_SUFFIX": {
+    "en": ". Your key is stored server-side and never returned to the browser."
+  },
+  "WORKSPACE$MODEL_CLAUDE_SONNET": {
+    "en": "Claude Sonnet 4"
+  },
+  "WORKSPACE$MODEL_GPT4O": {
+    "en": "GPT-4o"
+  },
+  "WORKSPACE$MODEL_CLAUDE_OPUS": {
+    "en": "Claude Opus 4"
+  },
+  "WORKSPACE$MODEL_DEEPSEEK": {
+    "en": "DeepSeek V3"
+  },
+  "WORKSPACE$CONVERSATIONS": {
+    "en": "Conversations"
+  },
+  "WORKSPACE$FILES": {
+    "en": "Files"
+  },
+  "WORKSPACE$NO_FILES": {
+    "en": "No files loaded. Start the backend to browse your workspace."
   }
 }

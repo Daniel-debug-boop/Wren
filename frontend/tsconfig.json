@@ -1,51 +1,27 @@
 {
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/.server/**/*.ts",
-    "**/.server/**/*.tsx",
-    "**/.client/**/*.ts",
-    "**/.client/**/*.tsx",
-    ".react-router/types/**/*",
-  ],
-  "exclude": [
-    "__tests__",
-    "**/__tests__/**",
-  ],
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2022"
-    ],
-    "target": "es2022",
-    "types": [
-      "@react-router/node",
-      "vite/client",
-    ],
-    "rootDirs": [
-      ".",
-      "./.react-router/types"
-    ],
-    "allowJs": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "#/*": [
-        "./src/*"
-      ]
-    },
-    // Vite takes care of building everything, not tsc.
-    "noEmit": true
+    "@/*": ["./src/*"],
+    "#/*": ["./src/*"]
   }
+  },
+  "include": ["src", "vite-env.d.ts"],
+  "rootDir": ".",
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

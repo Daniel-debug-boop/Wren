@@ -14,6 +14,19 @@ export interface LLMConfig {
 
 /* ── Settings ── */
 export interface Settings {
+  // Flat fields returned by the Wren backend (wren/server.py)
+  provider?: string;
+  model?: string;
+  base_url?: string;
+  api_key_set?: boolean;
+  api_key?: string;
+  temperature?: number;
+  max_tokens?: number;
+  theme?: string;
+  font_size?: number;
+  tab_size?: number;
+  word_wrap?: boolean;
+  // Legacy v1 shape kept for backward compatibility
   llm_config?: LLMConfig;
   username?: string;
   language?: string;
@@ -46,7 +59,8 @@ export interface ConversationMessage {
 }
 
 /* ── Generation / Pipeline ── */
-export type PipelineStage = "architect" | "planner" | "writer" | "reviewer" | "complete";
+export type PipelineStage =
+  "architect" | "planner" | "writer" | "reviewer" | "complete";
 
 export interface PipelineStatus {
   task_id: string;

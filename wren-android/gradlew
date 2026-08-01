@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# Gradle wrapper start script
+
+eval "set -- \"-Dorg.gradle.appname=gradlew\" \"$@\""
+
+# Resolve links
+PRG="$0"
+while [ -h "$PRG" ] ; do
+    ls=$(ls -ld "$PRG")
+    link=$(expr "$ls" : '.*-> \(.*\)$')
+    if expr "$link" : '/.*' > /dev/null; then
+        PRG="$link"
+    else
+        PRG=$(dirname "$PRG")/"$link"
+    fi
+done
+
+APP_HOME=$(cd "$(dirname "$PRG")" >/dev/null 2>&1; pwd -P)
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+DEFAULT_JVM_OPTS='"-Xmx1g" "-Xms256m"'
+
+JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-17-openjdk-amd64}
+
+exec "$JAVA_HOME/bin/java" $DEFAULT_JVM_OPTS \
+    -classpath "$CLASSPATH" \
+    org.gradle.wrapper.GradleWrapperMain "$@"

@@ -12,6 +12,7 @@ export default [
     route("api-keys", "routes/api-keys.tsx"),
     route("generation", "routes/generation.tsx"),
     route("conversation", "routes/conversation.tsx"),
+    route("workspace", "routes/workspace.tsx"),
     route("skills", "routes/skills.tsx"),
     route("orchestration", "routes/orchestration.tsx"),
     route("login", "routes/login.tsx"),

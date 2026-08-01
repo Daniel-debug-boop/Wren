@@ -112,7 +112,7 @@ private fun WrenMainScreen(
     onOpenSettings: () -> Unit
 ) {
     val context = LocalContext.current
-    var serverState by remember { mutableStateOf<ServerState>(ServerState.Starting) }
+    var serverState by remember { mutableStateOf<ServerState>(ServerState.Starting("Starting...", 0f)) }
     var jobProgress by remember { mutableStateOf<Pair<String, Int>?>(null) }
     // Changing this value re-triggers server start (for retry)
     var retryTrigger by remember { mutableIntStateOf(0) }

@@ -26,12 +26,15 @@ android {
         getByName("debug") {
             // Uses default debug keystore
         }
-        // Release signing — configure with your keystore
+        // Release signing — keystore at wren-android/release-keystore.jks
+        // (gitignored). Credentials come from env vars so CI can sign too:
+        //   KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
         create("release") {
-            // To configure: storeFile = file("path/to/keystore.jks")
-            // storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            // keyAlias = System.getenv("KEY_ALIAS") ?: ""
-            // keyPassword = System.getenv("KEY_PASSWORD") ?: ""
+            val keystoreFile = rootProject.file("release-keystore.jks")
+            storeFile = keystoreFile
+            storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "wren-release-2026"
+            keyAlias = System.getenv("KEY_ALIAS") ?: "wren"
+            keyPassword = System.getenv("KEY_PASSWORD") ?: "wren-release-2026"
         }
     }
 
@@ -42,14 +45,12 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-            // Uncomment when release signing is configured:
-            // signingConfig = signingConfigs.getByName("release")
+            // R8 minification disabled: this is a WebView wrapper app — the real
+            // app logic lives in the bundled web assets. Disabling R8 keeps the
+            // release build fast and reliable on all CI runners.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

@@ -78,10 +78,20 @@ export interface GenerationRequest {
   validate?: boolean;
 }
 
+export interface GeneratedFile {
+  path: string;
+  language: string;
+  lines: number;
+  size_bytes: number;
+}
+
 export interface GenerationResult {
   success: boolean;
   project_path?: string;
-  files: string[];
+  files: GeneratedFile[];
+  total_files?: number;
+  total_lines?: number;
+  write_errors?: string[];
   error?: string;
 }
 

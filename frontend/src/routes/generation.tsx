@@ -248,48 +248,100 @@ export default function GenerationPage() {
             </div>
           )}
 
+          {/* File Results */}
+          {result.total_files !== undefined && result.total_files > 0 && (
+            <div className="card p-6">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                </svg>
+                Generated Files
+                <span className="text-[10px] font-normal ml-auto" style={{ color: "var(--text-muted)" }}>
+                  {result.total_files} files, {result.total_lines} lines
+                </span>
+              </h3>
+              <div className="space-y-1">
+                {result.files.map((file, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-3 py-1.5 rounded-md text-xs"
+                    style={{ background: "var(--bg-elevated)" }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" style={{ color: "var(--text-muted)" }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    <span style={{ color: "var(--text-secondary)" }}>{file.path}</span>
+                    <span className="ml-auto text-[10px]" style={{ color: "var(--text-muted)" }}>
+                      {file.lines} lines
+                    </span>
+                  </div>
+                ))}
+              </div>
+              {result.project_path && (
+                <div className="mt-3 text-[10px] px-3" style={{ color: "var(--text-muted)" }}>
+                  Saved to: {result.project_path}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Architecture */}
           {result.architecture && (
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-                🏗️ Architecture
-              </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                {result.architecture}
-              </pre>
-            </div>
+            <details className="card">
+              <summary className="p-4 cursor-pointer text-sm font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5Z" />
+                  <path d="m2 17 10 5 10-5" />
+                </svg>
+                Architecture
+              </summary>
+              <div className="px-4 pb-4">
+                <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {result.architecture}
+                </pre>
+              </div>
+            </details>
           )}
 
+          {/* Plan */}
           {result.plan && (
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-                📋 Implementation Plan
-              </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                {result.plan}
-              </pre>
-            </div>
+            <details className="card">
+              <summary className="p-4 cursor-pointer text-sm font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <line x1="8" y1="6" x2="21" y2="6" />
+                  <line x1="8" y1="12" x2="21" y2="12" />
+                  <line x1="8" y1="18" x2="21" y2="18" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" />
+                </svg>
+                Implementation Plan
+              </summary>
+              <div className="px-4 pb-4">
+                <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {result.plan}
+                </pre>
+              </div>
+            </details>
           )}
 
-          {result.code && (
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-                ✍️ Generated Code
-              </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "ui-monospace, monospace" }}>
-                {result.code}
-              </pre>
-            </div>
-          )}
-
+          {/* Review */}
           {result.review && (
-            <div className="card p-6">
-              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-                🔍 Code Review
-              </h3>
-              <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
-                {result.review}
-              </pre>
-            </div>
+            <details className="card">
+              <summary className="p-4 cursor-pointer text-sm font-semibold flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                  <circle cx="11" cy="11" r="8" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                Code Review
+              </summary>
+              <div className="px-4 pb-4">
+                <pre className="whitespace-pre-wrap text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                  {result.review}
+                </pre>
+              </div>
+            </details>
           )}
         </div>
       )}

@@ -1,24 +1,27 @@
-
 services:
   wren:
-    build:
-      context: ./
-      dockerfile: ./containers/app/Dockerfile
-    image: wren:latest
-    container_name: wren-app-${DATE:-}
-    environment:
-      - AGENT_SERVER_IMAGE_REPOSITORY=${AGENT_SERVER_IMAGE_REPOSITORY:-ghcr.io/wren/agent-server}
-      - AGENT_SERVER_IMAGE_TAG=${AGENT_SERVER_IMAGE_TAG:-1.30.0-python}
-      #- SANDBOX_USER_ID=${SANDBOX_USER_ID:-1234} # enable this only if you want a specific non-root sandbox user but you will have to manually adjust permissions of ~/.wren for this user
-      - WORKSPACE_MOUNT_PATH=${WORKSPACE_BASE:-$PWD/workspace}
+    build: .
+    container_name: wren
     ports:
-      - "3000:3000"
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - "${PORT:-3000}:3000"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ~/.wren:/.wren
-      - ${WORKSPACE_BASE:-$PWD/workspace}:/opt/workspace_base
-    pull_policy: build
-    stdin_open: true
-    tty: true
+      - wren-workspace:/workspace
+      - wren-data:/root/.wren
+    environment:
+      - WORKSPACE_BASE=/workspace
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=3000
+      - ENABLE_DOCS=false
+      - WREN_CORS_ORIGINS=${WREN_CORS_ORIGINS:-http://localhost:3000}
+      - WREN_SHELL=/bin/bash
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/v1/alive"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  wren-workspace:
+  wren-data:

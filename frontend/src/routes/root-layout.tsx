@@ -119,9 +119,9 @@ export default function RootLayout() {
           {/* Bottom status */}
           <div className="border-t px-3 py-3" style={{ borderColor: "var(--border)" }}>
             <div className="flex items-center gap-2 rounded-md px-2 py-1.5">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--accent)" }} />
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: "var(--status-success, #22C55E)" }} />
               <span className="text-[10px]" style={{ color: "var(--text-muted)" }}>
-                Self-hosted. Private.
+                v1.0.0 -- Self-hosted
               </span>
             </div>
           </div>

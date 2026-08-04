@@ -1,6 +1,6 @@
 """Skills exports."""
 
-from wren.skills.skill import Skill, SkillTrigger, SkillLoader
+from wren.skills.skill import Skill, SkillLoader, SkillTrigger
 
 
 class KeywordTrigger(SkillTrigger):
@@ -12,7 +12,13 @@ class KeywordTrigger(SkillTrigger):
 class TaskTrigger(SkillTrigger):
     """Trigger based on task type."""
 
-    pass
+    keywords: list[str] = []
+    triggers: list[str] = []
+
+    def matches(self, text: str) -> bool:
+        """Check if text matches this trigger."""
+        text_lower = text.lower()
+        return any(trigger.lower() in text_lower for trigger in self.triggers)
 
 
 __all__ = [

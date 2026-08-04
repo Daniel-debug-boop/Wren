@@ -23,6 +23,10 @@ API_KEY_PATTERNS: list[Pattern[str]] = [
     re.compile(r'(sk-oh-[A-Za-z0-9_-]{10,})'),
     # Tavily keys
     re.compile(r'(tvly-[A-Za-z0-9_-]{10,})'),
+    # GitHub personal access tokens
+    re.compile(r'(ghp_[A-Za-z0-9]{20,})'),
+    # GitHub fine-grained PATs
+    re.compile(r'(github_pat_[A-Za-z0-9_]{20,})'),
     # Generic bearer tokens
     re.compile(r'(Bearer\s+)[A-Za-z0-9\-_.]{20,}'),
     # Authorization header values
@@ -103,6 +107,10 @@ def redact_text_secrets(text: str, placeholder: str = '<redacted>') -> str:
         return text
 
     def _replace(match: re.Match[str]) -> str:
+        value = match.group('value')
+        if value in ('******', '<redacted>', '***REDACTED***'):
+            # Already masked by an earlier pass; leave untouched.
+            return match.group(0)
         keyquote = match.group('keyquote') or ''
         quote = match.group('quote') or ''
         return (
@@ -113,15 +121,16 @@ def redact_text_secrets(text: str, placeholder: str = '<redacted>') -> str:
     result = _REDACT_SECRET_PATTERN.sub(_replace, text)
 
     # Fall back to the generic key=value patterns for anything the
-    # key-name-aware pattern missed. Values already replaced with the
+    # key-name-aware pattern missed. Values already replaced with a
     # placeholder are left untouched so quotes are not stripped from
     # ``'key': '<redacted>'`` output.
+    _MASKED_VALUES = ('******', '<redacted>', '***REDACTED***')
     for pattern in SECRET_PATTERNS:
         try:
             result = pattern.sub(
                 lambda m: (
                     f"{m.group(1)}={placeholder}"
-                    if m.group(2) != placeholder
+                    if m.group(2).rstrip(',;{} ').rstrip() not in _MASKED_VALUES
                     else m.group(0)
                 ),
                 result,
@@ -152,6 +161,7 @@ def redact_url_params(url: str, sensitive_params: frozenset[str] | None = None) 
             'token', 'access_token', 'secret',
             'password', 'passwd', 'pwd',
             'key', 'auth', 'session',
+            'session_api_key', 'session-key', 'sessionkey',
         })
 
     import urllib.parse
@@ -165,8 +175,13 @@ def redact_url_params(url: str, sensitive_params: frozenset[str] | None = None) 
         redacted = False
 
         for param in list(params.keys()):
-            if param.lower() in sensitive_params:
-                params[param] = ['***REDACTED***']
+            param_lower = param.lower()
+            # Match exact names or names containing a sensitive token
+            # (e.g. ``session_api_key`` matches ``api_key``).
+            if param_lower in sensitive_params or any(
+                token in param_lower for token in sensitive_params
+            ):
+                params[param] = ['<redacted>']
                 redacted = True
 
         if not redacted:

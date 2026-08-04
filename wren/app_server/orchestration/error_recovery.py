@@ -193,8 +193,16 @@ class ErrorSignature:
         return 'default'
 
     def _compute_signature(self) -> str:
-        """Hash the error type + key identifiers for deterministic lookup."""
-        raw = f'{self.error_type}:{":".join(self.key_identifiers[:3])}'
+        """Hash the error type + key identifiers for deterministic lookup.
+
+        When no identifiers could be extracted (the error fell back to
+        ``generic``), the raw error text is folded into the hash so distinct
+        errors do not collide on the same signature.
+        """
+        if self.key_identifiers and self.key_identifiers != ['generic']:
+            raw = f'{self.error_type}:{":".join(self.key_identifiers[:3])}'
+        else:
+            raw = f'{self.error_type}:{self.error_text[:200]}'
         return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
     def _extract_identifiers(self, text: str) -> list[str]:
@@ -391,8 +399,9 @@ class AdaptiveRetryLoop:
             strategy_index = 0
             is_known_solution = False
 
-            if attempt == 1 and last_error:
+            if not strategy and last_error:
                 # Check if we have a known solution for the previous error
+                # (any retry after the first failure, not just attempt 2).
                 known = self._registry.lookup(last_error)
                 if known:
                     strategy = known['strategy']
@@ -403,22 +412,21 @@ class AdaptiveRetryLoop:
                         operation_name,
                         strategy[:60],
                     )
-
-            if not strategy and last_error:
-                # Classify and get next mutation
-                sig = ErrorSignature(last_error)
-                strategies = ErrorSignature.STRATEGY_MUTATIONS.get(
-                    sig.error_type,
-                    ErrorSignature.STRATEGY_MUTATIONS['default'],
-                )
-                strategy_index = min(attempt - 1, len(strategies) - 1)
-                strategy = strategies[strategy_index]
-                _logger.info(
-                    'RetryLoop: mutated strategy[%d] for %s → %s',
-                    strategy_index,
-                    sig.error_type,
-                    strategy[:60],
-                )
+                else:
+                    # Classify and get next mutation
+                    sig = ErrorSignature(last_error)
+                    strategies = ErrorSignature.STRATEGY_MUTATIONS.get(
+                        sig.error_type,
+                        ErrorSignature.STRATEGY_MUTATIONS['default'],
+                    )
+                    strategy_index = min(attempt - 1, len(strategies) - 1)
+                    strategy = strategies[strategy_index]
+                    _logger.info(
+                        'RetryLoop: mutated strategy[%d] for %s → %s',
+                        strategy_index,
+                        sig.error_type,
+                        strategy[:60],
+                    )
 
             try:
                 result = await operation_fn(strategy if attempt > 1 else None)

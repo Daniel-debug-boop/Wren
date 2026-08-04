@@ -46,6 +46,7 @@ class LLM(WrenModel):
     max_retries: int = 2
     timeout: float = 60.0
     usage_id: str | None = None
+    stream: bool = False
     litellm_extra_body: dict[str, Any] | None = None
     reasoning_effort: str | None = "high"
     extended_thinking_budget: int | None = None

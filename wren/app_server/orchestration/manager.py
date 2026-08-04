@@ -216,9 +216,17 @@ class ManagerAgent:
         observations = (
             f'{completed} tasks completed, {failed} failed. Goal: {self._goal[:200]}'
         )
+        # Normalize free-text outcomes to the canonical success/failure enum
+        # that the reflection loop keys on for preference learning.
+        outcome_lower = overall_outcome.strip().lower()
+        outcome = (
+            'success'
+            if ('success' in outcome_lower or 'complete' in outcome_lower)
+            else 'failure'
+        )
         result = await self._sml.reflect(
             task_description=self._goal,
-            outcome=overall_outcome,
+            outcome=outcome,
             observations=observations,
             tags=['manager-agent', 'project'],
         )

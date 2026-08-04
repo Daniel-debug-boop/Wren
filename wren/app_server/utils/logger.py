@@ -285,7 +285,7 @@ class SensitiveDataFilter(logging.Filter):
 
         for attr in sensitive_patterns:
             pattern = rf"{attr}='?([\w-]+)'?"
-            msg = re.sub(pattern, f"{attr}='******'", msg)
+            msg = re.sub(pattern, f"{attr}='<redacted>'", msg)
 
         # Apply SDK redaction utils to catch API key literals (e.g. sk_live_,
         # sk-proj-, ghp_, etc.) and secret dict patterns (e.g. 'GITHUB_TOKEN':

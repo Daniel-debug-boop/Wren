@@ -40,27 +40,37 @@ class Skill(WrenModel):
     """A skill that enhances agent capabilities."""
 
     name: str
-    description: str
     content: str
+    description: str | None = None
+    trigger: SkillTrigger | None = None
+    source: str | None = None
+    is_agentskills_format: bool = False
+    # Legacy plural form used by the SDK loader; mirrors ``trigger``.
     triggers: list[SkillTrigger] | None = None
     metadata: dict[str, Any] | None = None
 
     @property
     def has_triggers(self) -> bool:
         """Check if skill has auto-triggers."""
-        return self.triggers is not None and len(self.triggers) > 0
+        return (
+            self.trigger is not None
+            or (self.triggers is not None and len(self.triggers) > 0)
+        )
 
     def matches(self, text: str) -> bool:
         """Check if text should activate this skill."""
-        if not self.has_triggers:
+        trigger = self.trigger
+        if trigger is None and self.triggers:
+            trigger = self.triggers[0]
+        if trigger is None:
             return True  # No triggers = always loaded
 
-        return any(trigger.matches(text) for trigger in self.triggers)
+        return trigger.matches(text)
 
     def to_prompt_section(self) -> str:
         """Convert skill to prompt section."""
         return f"""## Skill: {self.name}
-{self.description}
+{self.description or ''}
 
 {self.content}"""
 
@@ -127,7 +137,8 @@ class SkillLoader:
                 name=name,
                 description=description or f"Skill: {name}",
                 content=content,
-                triggers=triggers,
+                trigger=triggers,
+                triggers=[triggers] if triggers else None,
             )
 
         except Exception as e:

@@ -1437,10 +1437,10 @@ async def get_conversation_skills(
             # Extract triggers
             triggers: list[str] = []
             if isinstance(skill.trigger, (KeywordTrigger, TaskTrigger)):
-                if hasattr(skill.trigger, 'keywords'):
-                    triggers = skill.trigger.keywords
-                elif hasattr(skill.trigger, 'triggers'):
-                    triggers = skill.trigger.triggers
+                if isinstance(skill.trigger, TaskTrigger):
+                    triggers = skill.trigger.triggers or []
+                else:
+                    triggers = skill.trigger.keywords or []
 
             skills_response.append(
                 SkillResponse(

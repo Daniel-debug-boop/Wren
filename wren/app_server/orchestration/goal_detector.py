@@ -56,7 +56,9 @@ class GoalDetector:
     """
 
     def __init__(self, project_root: str | None = None):
-        self._project_root = project_root or os.getcwd()
+        # Keep None so the current working directory is resolved lazily at
+        # analyze() time (tests may chdir after construction).
+        self._project_root = project_root
 
     def analyze(self, message: str) -> dict[str, Any]:
         """Analyze an initial message for manager-mode suitability.
@@ -75,7 +77,10 @@ class GoalDetector:
         tech_matches = sum(1 for t in TECH_TRIGGERS if re.search(t, msg_lower))
 
         score = pattern_matches + (tech_matches * 0.5)
-        is_complex = score >= COMPLEX_GOAL_THRESHOLD or pattern_matches >= 2
+        # Any manager-mode pattern marks the goal as complex ("build a complete
+        # X", "design the whole Y", "microservices platform", ...). Tech
+        # triggers alone are never sufficient.
+        is_complex = pattern_matches >= 1
 
         result: dict[str, Any] = {
             'is_complex_goal': is_complex,
@@ -91,7 +96,7 @@ class GoalDetector:
             result['auto_decomposition'] = decomposition
 
             # Write to working memory so the agent sees it via summary()
-            wm = WorkingMemory(self._project_root)
+            wm = WorkingMemory(self._project_root or os.getcwd())
             wm.add_decision(
                 f'Goal auto-detected as complex project. Decomposed into '
                 f'{len(decomposition)} sub-tasks.',

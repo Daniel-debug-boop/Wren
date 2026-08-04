@@ -310,7 +310,7 @@ def test_invalid_profile_entry_is_skipped_not_fatal():
     data = {
         'profiles': {
             'ok': {'model': 'openai/gpt-4o'},
-            'bad': {},  # missing required 'model' → LLM validation fails
+            'bad': {'model': 123},  # invalid model type → LLM validation fails
         },
     }
 

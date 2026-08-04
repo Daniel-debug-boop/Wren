@@ -240,10 +240,10 @@ async def get_optional_user(
 
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(tags=["auth"])
 
 
-@router.post("/register")
+@router.post("/api/auth/register")
 async def register(email: str, username: str, password: str, db: Session = Depends(get_db)):
     \"\"\"Register a new user account.\"\"\"
     # Check if user exists
@@ -276,7 +276,7 @@ async def register(email: str, username: str, password: str, db: Session = Depen
     }
 
 
-@router.post("/login")
+@router.post("/api/auth/login")
 async def login(email: str, password: str, db: Session = Depends(get_db)):
     \"\"\"Authenticate and return tokens.\"\"\"
     user = db.query(User).filter(User.email == email).first()

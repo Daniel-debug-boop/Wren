@@ -129,7 +129,7 @@ def generate_three_scene_tsx() -> str:
     - GPU resource cleanup
     """
     return """\
-import React, { useRef, useMemo, Suspense } from 'react'
+import React, { useRef, useMemo, Suspense, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {
     OrbitControls,
@@ -189,6 +189,21 @@ function SceneContent() {
             meshRef.current.rotation.y += delta * 0.5
         }
     })
+
+    // Dispose GPU resources on unmount to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            const mesh = meshRef.current
+            if (!mesh) return
+            mesh.geometry?.dispose()
+            const material = mesh.material
+            if (Array.isArray(material)) {
+                material.forEach((m) => m.dispose())
+            } else if (material) {
+                material.dispose()
+            }
+        }
+    }, [])
 
     return (
         <group>

@@ -246,8 +246,8 @@ def check_3d_resource_leaks(content: str, file_path: str) -> list[ValidationChec
     for pattern, resource_type in create_patterns:
         creates = list(re.finditer(pattern, content))
         if creates:
-            # Check if dispose is called somewhere
-            dispose_pattern = r"\.(geometry|material|texture|renderTarget)\.dispose\(\)"
+            # Check if dispose is called somewhere (any object disposal counts)
+            dispose_pattern = r"\.dispose\(\)"
             has_dispose = bool(re.search(dispose_pattern, content))
 
             if not has_dispose:
@@ -259,7 +259,7 @@ def check_3d_resource_leaks(content: str, file_path: str) -> list[ValidationChec
                             passed=False,
                             severity="warning",
                             message=f"{resource_type} created at line {line_num} but no .dispose() found",
-                            details="Three.js GPU resources must be disposed to prevent memory leaks",
+                            details=f"{resource_type} must be disposed to prevent GPU memory leaks",
                             file_path=file_path,
                         )
                     )

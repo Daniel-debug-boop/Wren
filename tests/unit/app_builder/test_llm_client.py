@@ -70,10 +70,11 @@ class TestLLMClientConstruction:
         client = LLMClient(api_key='sk-test', base_url='')
         assert client.base_url == 'https://api.openai.com/v1'
 
-    def test_close_is_noop(self):
+    @pytest.mark.asyncio
+    async def test_close_is_noop(self):
         """close() does nothing since urllib has no persistent client."""
         client = LLMClient(api_key='sk-test')
-        result = client.close()
+        result = await client.close()
         assert result is None
 
     def test_from_env_with_env_vars(self, monkeypatch):
@@ -128,7 +129,7 @@ class TestLLMClientSendDirect:
             # Verify the API URL and headers
             call_args = mock_urlopen.call_args
             req = call_args[0][0]
-            assert '/chat/completions' in str(req.url)
+            assert '/chat/completions' in str(req.full_url)
             assert 'Bearer sk-test' in str(req.headers)
             assert 'application/json' in str(req.headers)
 
@@ -393,10 +394,18 @@ class TestLLMClientOmniRoute:
 class TestGetOmniRouter:
     """get_omnirouter() lazy import function."""
 
-    def test_returns_none_when_not_available(self):
-        """get_omnirouter returns None when fastapi/pydantic not available."""
-        # In test context, the full fastapi stack isn't available
-        # so get_omnirouter gracefully returns None
+    def test_returns_none_when_not_available(self, monkeypatch):
+        """get_omnirouter returns None when the module isn't importable."""
+        import builtins
+
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == 'wren.omniroute.omniroute_router':
+                raise ImportError('simulated missing module')
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setattr(builtins, '__import__', fake_import)
         result = get_omnirouter()
         assert result is None
 

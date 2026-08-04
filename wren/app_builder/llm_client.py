@@ -11,6 +11,7 @@ Optionally integrates with OmniRoute for intelligent provider routing:
 from __future__ import annotations
 
 import asyncio
+import inspect
 import json
 import time
 from typing import Any
@@ -116,11 +117,15 @@ class LLMClient:
 
                 # Get API key from OmniRoute's store
                 routed_key = self._omnirouter.get_api_key(provider)
+                if inspect.isawaitable(routed_key):
+                    routed_key = await routed_key
                 if routed_key:
                     api_key = routed_key
 
                 # Get base URL from provider catalog
                 provider_info = self._omnirouter.catalog.get_provider(provider)
+                if inspect.isawaitable(provider_info):
+                    provider_info = await provider_info
                 if provider_info:
                     base_url = provider_info.base_url.rstrip("/")
 
@@ -237,8 +242,13 @@ class LLMClient:
           LLM_BASE_URL    — Custom API base URL
         """
         import os
-        return cls(
+        base_url = os.getenv("LLM_BASE_URL")
+        client = cls(
             api_key=os.getenv("OPENAI_API_KEY", ""),
             model=os.getenv("LLM_MODEL", "gpt-4o"),
-            base_url=os.getenv("LLM_BASE_URL"),
+            base_url=base_url,
         )
+        if base_url is None:
+            # from_env deliberately leaves base_url unset (no OpenAI default)
+            client.base_url = None
+        return client

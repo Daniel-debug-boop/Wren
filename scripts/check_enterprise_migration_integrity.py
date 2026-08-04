@@ -48,7 +48,7 @@ def _format_paths(paths: list[Path]) -> str:
 def _down_revisions(value: Any, path: Path, errors: list[str]) -> list[str]:
     """Parse down_revision value into list of revisions."""
     if value is MISSING:
-        errors.append(f'{path.name}: missing down_revision')
+        errors.append(f'{path.name}: missing down_revision assignment')
         return []
     if value is None:
         return []

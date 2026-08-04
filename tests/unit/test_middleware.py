@@ -70,7 +70,7 @@ class TestInMemoryRateLimiter:
         request = MagicMock()
         request.client.host = '127.0.0.1'
 
-        result = asyncio.get_event_loop().run_until_complete(limiter(request))
+        result = asyncio.run(limiter(request))
         assert result is True
 
     def test_history_tracks_requests(self):
@@ -79,7 +79,7 @@ class TestInMemoryRateLimiter:
         request.client.host = '10.0.0.1'
 
         for _ in range(3):
-            asyncio.get_event_loop().run_until_complete(limiter(request))
+            asyncio.run(limiter(request))
 
         assert len(limiter.history['10.0.0.1']) == 3
 
@@ -90,8 +90,8 @@ class TestInMemoryRateLimiter:
         req2 = MagicMock()
         req2.client.host = '2.2.2.2'
 
-        asyncio.get_event_loop().run_until_complete(limiter(req1))
-        asyncio.get_event_loop().run_until_complete(limiter(req2))
+        asyncio.run(limiter(req1))
+        asyncio.run(limiter(req2))
 
         assert len(limiter.history['1.1.1.1']) == 1
         assert len(limiter.history['2.2.2.2']) == 1
@@ -115,10 +115,10 @@ class TestInMemoryRateLimiter:
 
         # Fill to the limit
         for _ in range(2):
-            asyncio.get_event_loop().run_until_complete(limiter(request))
+            asyncio.run(limiter(request))
 
         # Third request should be rejected
-        result = asyncio.get_event_loop().run_until_complete(limiter(request))
+        result = asyncio.run(limiter(request))
         assert result is False
 
     def test_get_retry_after(self):
@@ -130,7 +130,7 @@ class TestInMemoryRateLimiter:
         assert limiter.get_retry_after(request) == 0
 
         # After one request
-        asyncio.get_event_loop().run_until_complete(limiter(request))
+        asyncio.run(limiter(request))
         retry = limiter.get_retry_after(request)
         assert 59 <= retry <= 60
 

@@ -669,7 +669,7 @@ Every function body must be fully implemented. Output code ONLY inside a fenced 
                 response = await self._llm.send(system_prompt, user_prompt)
                 blocks = _extract_code_blocks(response)
 
-                if not blocks:
+                if not response.strip() or "```" not in response:
                     raise ValueError("No code blocks found in LLM response")
 
                 # Write the first (and typically only) code block to disk
@@ -1017,7 +1017,7 @@ needs fixing, output a fenced code block with a special comment header:
 
     def _save_state(self) -> None:
         """Persist current state for crash recovery."""
-        if self._state and self._output_dir:
+        if self._state and self._output_dir and hasattr(self._state, 'save'):
             state_path = Path(self._output_dir) / "project_state.json"
             self._state.save(state_path)
 

@@ -128,7 +128,7 @@ class OpenAIProvider:
         self.base_url = (base_url or "https://api.openai.com/v1").rstrip("/")
         self.max_tokens = 16384
         self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0),
+            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0, pool=60.0),
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         )
 
@@ -161,7 +161,7 @@ class AnthropicProvider:
         self.base_url = (base_url or "https://api.anthropic.com/v1").rstrip("/")
         self.max_tokens = 8192
         self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0),
+            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0, pool=60.0),
             headers={
                 "x-api-key": api_key,
                 "anthropic-version": "2023-06-01",
@@ -199,7 +199,7 @@ class GoogleProvider:
         self.base_url = (base_url or "https://generativelanguage.googleapis.com/v1beta").rstrip("/")
         self.api_key = api_key
         self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0),
+            timeout=httpx.Timeout(connect=15.0, read=120.0, write=60.0, pool=60.0),
         )
 
     async def send(self, system_prompt: str, user_prompt: str, temperature: float = 0.3) -> str:
@@ -237,7 +237,7 @@ class LocalProvider:
         self.model = model
         self.base_url = (base_url or os.getenv("LOCAL_LLM_BASE_URL", "http://localhost:1234/v1")).rstrip("/")
         self._client = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=30.0, read=300.0, write=120.0),
+            timeout=httpx.Timeout(connect=30.0, read=300.0, write=120.0, pool=120.0),
             headers={
                 "Authorization": f"Bearer {api_key}" if api_key else "",
                 "Content-Type": "application/json",

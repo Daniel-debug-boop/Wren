@@ -1,4 +1,4 @@
-"""Wren Backend — Production FastAPI Server.
+"""Wren Backend - Production FastAPI Server.
 
 Serves all API endpoints that the frontend needs.
 Start with: uvicorn backend.main:app --host 0.0.0.0 --port 3000
@@ -24,11 +24,15 @@ from backend.routers import (
     secrets,
     settings,
     skills,
+    terminal,
+    terminal_ws,
+    git,
     users,
     workspace,
 )
 from backend.services.llm_service import LLMService
 from backend.services.storage import Storage
+from backend.services.terminal_service import exec_command
 
 # ── Logging ──────────────────────────────────────────────────────────────────
 logging.basicConfig(
@@ -40,29 +44,40 @@ _logger = logging.getLogger('wren-backend')
 # ── App ──────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title='Wren AI Backend',
-    description='Production backend for Wren AI — code generation, conversations, and LLM management',
+    description='Production backend for Wren AI - code generation, conversations, and LLM management',
     version='1.0.0',
-    docs_url='/docs',
-    redoc_url='/redoc',
+    docs_url='/docs' if os.getenv('ENABLE_DOCS', 'false').lower() in ('true', '1') else None,
+    redoc_url='/redoc' if os.getenv('ENABLE_DOCS', 'false').lower() in ('true', '1') else None,
 )
 
-# ── CORS ─────────────────────────────────────────────────────────────────────
+# -- CORS --
+# In production, restrict CORS to your frontend domain via WREN_CORS_ORIGINS
+_cors_origins_raw = os.getenv('WREN_CORS_ORIGINS', '')
+if _cors_origins_raw:
+    _cors_origins = [o.strip() for o in _cors_origins_raw.split(',') if o.strip()]
+else:
+    _cors_origins = ['*']  # Default open for development
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],  # In production, restrict to your frontend domain
+    allow_origins=_cors_origins,
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
 )
 
 
-# ── Global Error Handler ─────────────────────────────────────────────────────
+# -- Global Error Handler --
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    _logger.exception(f'Unhandled exception: {exc}')
+    _logger.exception('Unhandled exception: %s', exc)
+    # Never expose internal error details to the client
+    status_code = getattr(exc, 'status_code', 500)
+    if status_code < 400 or status_code >= 600:
+        status_code = 500
     return JSONResponse(
-        status_code=500,
-        content={'detail': 'Internal server error', 'error': str(exc)},
+        status_code=status_code,
+        content={'detail': 'Internal server error'},
     )
 
 
@@ -75,6 +90,9 @@ app.include_router(generation.router)
 app.include_router(auth.router)
 app.include_router(api_keys.router)
 app.include_router(skills.router)
+app.include_router(terminal.router)
+app.include_router(terminal_ws.router)
+app.include_router(git.router)
 app.include_router(users.router)
 app.include_router(workspace.router)
 
@@ -98,9 +116,17 @@ SYSTEM_PROMPT = (
 
 @app.websocket('/ws')
 async def websocket_endpoint(websocket: WebSocket):
-    """Stream real LLM token deltas to the workspace chat."""
+    """Stream real LLM token deltas to the workspace chat.
+
+    Supports commands:
+      auth        - authenticate with API key
+      message     - send a chat message
+      exec        - execute a terminal command
+      run         - run a code snippet
+    """
     await websocket.accept()
-    storage = Storage.get_instance()
+    storage_ws = Storage.get_instance()
+    ws_workspace_root = os.getenv('WORKSPACE_BASE', './workspace')
     try:
         while True:
             data = await websocket.receive_text()
@@ -109,7 +135,7 @@ async def websocket_endpoint(websocket: WebSocket):
             if msg.get('type') == 'auth':
                 api_key = msg.get('payload', {}).get('apiKey', '')
                 if api_key:
-                    storage.set_secret('api_key', api_key)
+                    storage_ws.set_secret('api_key', api_key)
                 await websocket.send_json(
                     {
                         'type': 'status',
@@ -135,11 +161,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
                 # Ensure a conversation exists
                 if not conv_id:
-                    conv_id = storage.create_conversation(
+                    conv_id = storage_ws.create_conversation(
                         content[:48] + ('…' if len(content) > 48 else '')
                     )['conversation_id']
 
-                storage.add_message(conv_id, 'user', content)
+                storage_ws.add_message(conv_id, 'user', content)
 
                 await websocket.send_json(
                     {
@@ -152,9 +178,9 @@ async def websocket_endpoint(websocket: WebSocket):
                 )
 
                 # Build history from storage
-                history = storage.get_messages(conv_id)[-20:]
-                settings_data = storage.get_settings()
-                secrets_data = storage.get_secrets()
+                history = storage_ws.get_messages(conv_id)[-20:]
+                settings_data = storage_ws.get_settings()
+                secrets_data = storage_ws.get_secrets()
                 llm_config = settings_data.get('llm_config', {})
                 api_key = secrets_data.get('api_key', '') or secrets_data.get(
                     'OPENROUTER_API_KEY', ''
@@ -254,7 +280,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 if not full.strip():
                     full = 'I received your message but produced no output. Try rephrasing or check the model settings.'
 
-                storage.add_message(conv_id, 'assistant', full)
+                storage_ws.add_message(conv_id, 'assistant', full)
                 await websocket.send_json(
                     {
                         'type': 'message',
@@ -273,6 +299,121 @@ async def websocket_endpoint(websocket: WebSocket):
                 )
                 await websocket.send_json(
                     {'type': 'status', 'payload': {'state': 'complete'}}
+                )
+
+            elif msg.get('type') == 'exec':
+                # Terminal command execution via WebSocket
+                exec_payload = msg.get('payload', {})
+                command = exec_payload.get('command', '')
+                if not command.strip():
+                    continue
+
+                await websocket.send_json(
+                    {
+                        'type': 'action',
+                        'payload': {
+                            'type': 'running',
+                            'thought': f'Running: {command[:60]}',
+                        },
+                    }
+                )
+
+                from backend.services.terminal_service import exec_command
+
+                result = await exec_command(
+                    command=command,
+                    working_dir=ws_workspace_root,
+                    workspace_root=ws_workspace_root,
+                    timeout=exec_payload.get('timeout', 30),
+                )
+
+                if result.get('stdout'):
+                    await websocket.send_json(
+                        {
+                            'type': 'terminal',
+                            'payload': {'line': result['stdout']},
+                        }
+                    )
+                if result.get('stderr'):
+                    await websocket.send_json(
+                        {
+                            'type': 'terminal',
+                            'payload': {'line': result['stderr']},
+                        }
+                    )
+
+                exit_code = result.get('exit_code', -1)
+                await websocket.send_json(
+                    {
+                        'type': 'status',
+                        'payload': {
+                            'state': 'idle' if exit_code == 0 else 'error',
+                            'thought': f'Exit code: {exit_code}',
+                        },
+                    }
+                )
+
+            elif msg.get('type') == 'run':
+                # Code execution via WebSocket
+                run_payload = msg.get('payload', {})
+                language = run_payload.get('language', 'python')
+                code = run_payload.get('code', '')
+                if not code.strip():
+                    continue
+
+                await websocket.send_json(
+                    {
+                        'type': 'action',
+                        'payload': {
+                            'type': 'running',
+                            'thought': f'Running {language} code...',
+                        },
+                    }
+                )
+
+                from backend.services.terminal_service import run_script
+
+                result = await run_script(
+                    language=language,
+                    code=code,
+                    working_dir=ws_workspace_root,
+                    workspace_root=ws_workspace_root,
+                )
+
+                if result.get('stdout'):
+                    await websocket.send_json(
+                        {
+                            'type': 'terminal',
+                            'payload': {'line': result['stdout']},
+                        }
+                    )
+                if result.get('stderr'):
+                    await websocket.send_json(
+                        {
+                            'type': 'terminal',
+                            'payload': {'line': result['stderr']},
+                        }
+                    )
+
+                exit_code = result.get('exit_code', -1)
+                await websocket.send_json(
+                    {
+                        'type': 'status',
+                        'payload': {
+                            'state': 'idle' if exit_code == 0 else 'error',
+                            'thought': f'Exit code: {exit_code}',
+                        },
+                    }
+                )
+
+            else:
+                await websocket.send_json(
+                    {
+                        'type': 'error',
+                        'payload': {
+                            'message': f'Unknown message type: {msg.get("type")}'
+                        },
+                    }
                 )
 
     except WebSocketDisconnect:

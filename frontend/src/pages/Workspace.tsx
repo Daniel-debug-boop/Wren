@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
+import { TerminalComponent } from "../components/Terminal";
 import {
   PanelLeftClose,
   PanelLeftOpen,
@@ -710,23 +711,16 @@ export function Workspace() {
 
               {/* Terminal Panel */}
               {rightPanelTab === "terminal" && (
-                <div className="flex-1 p-3 font-mono text-xs overflow-y-auto bg-black/30">
-                  {terminalHistory.map((line, i) => (
-                    <div
-                      key={i}
-                      className={`py-0.5 ${
-                        line.startsWith("$")
-                          ? "text-text-primary"
-                          : "text-text-secondary"
-                      }`}
-                    >
-                      {line}
-                    </div>
-                  ))}
-                  <div className="flex items-center mt-1">
-                    <span className="text-accent mr-2">$</span>
-                    <span className="w-2 h-4 bg-accent/80 animate-pulse" />
-                  </div>
+                <div className="flex-1 overflow-hidden">
+                  <TerminalComponent
+                    wsUrl={`${window.location.protocol === "https:" ? "wss:" : "ws:"}//${import.meta.env.VITE_BACKEND_HOST || "127.0.0.1:3000"}/ws/terminal`}
+                    onExit={(code) => {
+                      addTerminalLine(`$ [process exited with code ${code}]`);
+                    }}
+                    onError={(msg) => {
+                      addTerminalLine(`$ [terminal error: ${msg}]`);
+                    }}
+                  />
                 </div>
               )}
 

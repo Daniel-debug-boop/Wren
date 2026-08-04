@@ -1,13 +1,16 @@
 """AI Generation Pipeline API.
 
-Implements the Architect → Planner → Writer → Reviewer pipeline
+Implements the Architect -> Planner -> Writer -> Reviewer pipeline
 using OpenRouter API for LLM-powered code generation.
+
+Now writes extracted files to the workspace directory.
 """
 
 from __future__ import annotations
 
 import asyncio
 import logging
+import os
 from datetime import datetime, timezone
 from typing import Any
 from uuid import uuid4
@@ -16,6 +19,7 @@ from fastapi import APIRouter, HTTPException
 
 from backend.services.storage import Storage
 from backend.services.llm_service import LLMService
+from backend.services.code_extractor import extract_and_write_files
 
 _logger = logging.getLogger(__name__)
 
@@ -34,6 +38,27 @@ def _get_llm_service() -> LLMService:
     llm_config = settings.get("llm_config", {})
     base_url = llm_config.get("base_url") or "https://openrouter.ai/api/v1"
     return LLMService(api_key=api_key, base_url=base_url)
+
+
+def _workspace_root() -> str:
+    """Get the workspace root directory."""
+    settings = storage.get_settings()
+    return settings.get('workspace_root', os.getenv('WORKSPACE_BASE', './workspace'))
+
+
+@router.get("/auto-generations")
+async def list_generations() -> list[dict[str, Any]]:
+    """List all generation tasks."""
+    return [
+        {
+            'task_id': t['task_id'],
+            'status': t['status'],
+            'prompt': t.get('prompt', ''),
+            'created_at': t.get('created_at', ''),
+            'model': t.get('model', ''),
+        }
+        for t in _tasks.values()
+    ]
 
 
 @router.post("/auto-generations")
@@ -115,6 +140,20 @@ async def _run_pipeline(
         else:
             _update_task(task_id, "reviewer", "Skipped (validation off)", 100)
 
+        # Stage 5: Write files to workspace
+        code_content = code_result.get("content", "")
+        _update_task(task_id, "writer", "Writing files to workspace...")
+        write_result = extract_and_write_files(
+            text=code_content,
+            workspace_root=_workspace_root(),
+            project_subdir=f"generated/{task_id}",
+        )
+        _logger.info(
+            'Pipeline wrote %d files (%d lines) for task %s',
+            write_result['total_files'],
+            write_result['total_lines'], task_id,
+        )
+
         # Finalize
         _tasks[task_id]["status"] = "completed"
         _tasks[task_id]["result"] = {
@@ -124,6 +163,11 @@ async def _run_pipeline(
             "code": code_result.get("content", ""),
             "review": review_result.get("content") if review_result else None,
             "model": model,
+            "files": write_result.get("files", []),
+            "total_files": write_result.get("total_files", 0),
+            "total_lines": write_result.get("total_lines", 0),
+            "project_path": f"generated/{task_id}",
+            "write_errors": write_result.get("errors", []),
         }
 
     except Exception as e:
@@ -186,9 +230,12 @@ async def get_generation_result(task_id: str):
     result = task.get("result", {})
     return {
         "success": result.get("success", False),
-        "files": [],  # Files would be written to disk in a real implementation
-        "project_path": None,
+        "files": result.get("files", []),
+        "total_files": result.get("total_files", 0),
+        "total_lines": result.get("total_lines", 0),
+        "project_path": result.get("project_path"),
         "error": result.get("error"),
+        "write_errors": result.get("write_errors", []),
         "architecture": result.get("architecture", ""),
         "plan": result.get("plan", ""),
         "code": result.get("code", ""),

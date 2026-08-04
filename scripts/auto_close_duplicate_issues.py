@@ -412,7 +412,7 @@ def _handle_thumbs_down(
     }
 
 
-def _handle_newer_comments(
+def keep_open_due_to_newer_comments(
     repository: str,
     issue: dict[str, Any],
     issue_number: int,
@@ -498,7 +498,7 @@ def _decide_action(
         return result
 
     if _find_newer_comments(comments, comment_created_at, issue_number):
-        return _handle_newer_comments(
+        return keep_open_due_to_newer_comments(
             repository, issue, issue_number, dry_run=dry_run,
         )
 

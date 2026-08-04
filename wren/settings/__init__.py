@@ -373,7 +373,35 @@ class ACPProviderInfo:
             setattr(self, k, v)
 
 
-ACP_PROVIDERS: dict[str, dict[str, Any]] = {}
+ACP_PROVIDERS: dict[str, dict[str, Any]] = {
+    'claude-code': {
+        'display_name': 'Claude Code',
+        'command_patterns': ['@anthropic-ai/claude-code', 'claude-code'],
+        'default_command': ['npx', '-y', '@anthropic-ai/claude-code'],
+        'default_model': None,
+        'available_models': [],
+        'api_key_env_var': 'ANTHROPIC_API_KEY',
+        'base_url_env_var': 'ANTHROPIC_BASE_URL',
+    },
+    'codex': {
+        'display_name': 'OpenAI Codex',
+        'command_patterns': ['@openai/codex-acp', 'codex'],
+        'default_command': ['npx', '-y', '@openai/codex-acp'],
+        'default_model': 'gpt-5.5',
+        'available_models': [],
+        'api_key_env_var': 'OPENAI_API_KEY',
+        'base_url_env_var': 'OPENAI_BASE_URL',
+    },
+    'gemini-cli': {
+        'display_name': 'Gemini CLI',
+        'command_patterns': ['@google/gemini-cli', 'gemini-cli'],
+        'default_command': ['npx', '-y', '@google/gemini-cli'],
+        'default_model': None,
+        'available_models': [],
+        'api_key_env_var': 'GEMINI_API_KEY',
+        'base_url_env_var': 'GOOGLE_GENAI_API_KEY',
+    },
+}
 
 
 def detect_acp_provider_by_command(command: str | list[str]) -> ACPProviderInfo | None:

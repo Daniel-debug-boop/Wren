@@ -54,6 +54,7 @@ class AgentBase(BaseModel):
 class Agent(AgentBase):
     """OpenHands-style LLM agent (``agent_kind == 'wren'``)."""
 
+    kind: Literal['Agent'] = 'Agent'
     agent_kind: Literal['wren'] = 'wren'
     tools: list[Any] = Field(default_factory=list)
     include_default_tools: list[str] = Field(default_factory=list)
@@ -65,6 +66,7 @@ class Agent(AgentBase):
 class ACPAgent(AgentBase):
     """Agent Protocol (ACP) agent (``agent_kind == 'acp'``)."""
 
+    kind: Literal['ACPAgent'] = 'ACPAgent'
     agent_kind: Literal['acp'] = 'acp'
     acp_command: list[str] = Field(default_factory=list)
     acp_args: list[str] = Field(default_factory=list)

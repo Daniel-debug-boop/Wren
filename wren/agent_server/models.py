@@ -12,6 +12,10 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from wren.agent import ACPAgent, Agent, AgentUnion
+from wren.agent_server.utils import utc_now  # noqa: F401  (re-export)
+from wren.conversation import ConversationStats
+
 
 class ImageContent(BaseModel):
     """Image content within a message."""
@@ -54,7 +58,8 @@ class ConversationInfo(BaseModel):
     id: UUID
     title: str | None = None
     execution_status: Any = None  # ConversationExecutionStatus
-    agent: Any = None  # Agent or ACPAgent discriminated union
+    agent: AgentUnion | None = None  # Agent or ACPAgent discriminated union
+    stats: ConversationStats = Field(default_factory=ConversationStats)
     tags: dict[str, str] | None = None
     current_model_id: str | None = None
     created_at: float | None = None

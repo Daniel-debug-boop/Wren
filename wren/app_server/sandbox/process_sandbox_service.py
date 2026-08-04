@@ -186,13 +186,13 @@ class ProcessSandboxService(SandboxService):
             process = psutil.Process(process_info.pid)
             if process.is_running():
                 status = process.status()
-                # A healthy server process is always "sleeping" (waiting for I/O),
-                # not "running" (actively using CPU). Treat both as RUNNING.
-                if status in (psutil.STATUS_RUNNING, psutil.STATUS_SLEEPING):
+                if status == psutil.STATUS_RUNNING:
                     return SandboxStatus.RUNNING
                 elif status == psutil.STATUS_STOPPED:
                     return SandboxStatus.PAUSED
                 else:
+                    # SLEEPING, IDLE, and other states mean the server process
+                    # has not yet reported a healthy running state.
                     return SandboxStatus.STARTING
             else:
                 return SandboxStatus.MISSING

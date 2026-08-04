@@ -106,14 +106,31 @@ class Event(WrenModel):
 
 
 class MessageEvent(Event):
-    """A text message event."""
+    """A text message event.
+
+    Supports both the OpenHands-style payload (``source`` + ``llm_message``)
+    used by the agent server webhook and the flat SDK style (``role`` +
+    ``content``). At least one style must be populated.
+    """
 
     event_type: EventType = EventType.MESSAGE
-    role: str  # "user", "assistant", "system"
-    content: str
+    source: str | None = None  # "user", "assistant", "system" (OpenHands style)
+    llm_message: Any | None = None  # LLM Message with role/content
+    role: str | None = None  # "user", "assistant", "system" (flat style)
+    content: str | None = None
 
     def to_prompt(self) -> str:
-        return f"[{self.role}]: {self.content}"
+        role = self.role or (self.source if self.source else 'user')
+        content = self.content
+        if content is None and self.llm_message is not None:
+            content = getattr(self.llm_message, 'content', None)
+        if isinstance(content, (list, tuple)):
+            content = ' '.join(
+                str(getattr(block, 'text', block))
+                for block in content
+                if block is not None
+            )
+        return f"[{role}]: {content or ''}"
 
 
 class ToolCallEvent(Event):

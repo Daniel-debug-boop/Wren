@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 import os
 from abc import ABC, abstractmethod
@@ -169,12 +170,18 @@ def get_agent_server_env() -> dict[str, str]:
         if any(key.startswith(prefix) for prefix in AUTO_FORWARD_PREFIXES):
             result[key] = value
 
-    # Step 2: Apply explicit overrides from OH_AGENT_SERVER_ENV_{KEY}
-    # These take precedence over auto-forwarded variables
-    env_prefix = 'OH_AGENT_SERVER_ENV_'
-    for key, value in os.environ.items():
-        if key.startswith(env_prefix):
-            env_var_name = key[len(env_prefix):]
-            result[env_var_name] = value
+    # Step 2: Apply explicit overrides from OH_AGENT_SERVER_ENV (JSON string).
+    # These take precedence over auto-forwarded variables.
+    env_json = os.environ.get('OH_AGENT_SERVER_ENV')
+    if env_json:
+        overrides = json.loads(env_json)
+        for key, value in overrides.items():
+            # Convert non-string JSON values (numbers, booleans, nested
+            # structures) to strings, matching how environment variables work.
+            if isinstance(value, (dict, list)):
+                value = json.dumps(value)
+            else:
+                value = str(value)
+            result[key] = value
 
     return result

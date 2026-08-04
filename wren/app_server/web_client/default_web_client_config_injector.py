@@ -231,18 +231,18 @@ class DefaultWebClientConfigInjector(WebClientConfigInjector):
     acp_providers: list[ACPProviderConfig] = Field(
         default_factory=lambda: [
             ACPProviderConfig(
-                key=provider.key,
-                display_name=provider.display_name,
-                default_command=list(provider.default_command),
-                default_model=provider.default_model or None,
+                key=key,
+                display_name=provider.get('display_name', key),
+                default_command=list(provider.get('default_command', [])),
+                default_model=provider.get('default_model') or None,
                 available_models=[
-                    ACPModelOption(id=m.id, label=m.label)
-                    for m in (provider.available_models or [])
+                    ACPModelOption(id=m['id'], label=m['label'])
+                    for m in (provider.get('available_models') or [])
                 ],
-                api_key_env_var=provider.api_key_env_var,
-                base_url_env_var=provider.base_url_env_var,
+                api_key_env_var=provider.get('api_key_env_var'),
+                base_url_env_var=provider.get('base_url_env_var'),
             )
-            for provider in ACP_PROVIDERS.values()
+            for key, provider in ACP_PROVIDERS.items()
         ]
     )
 

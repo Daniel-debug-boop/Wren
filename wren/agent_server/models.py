@@ -24,6 +24,7 @@ class TextContent(BaseModel):
     """Text content within a message."""
 
     text: str
+    cache_prompt: bool = False
 
 
 class EventSortOrder(str, Enum):
@@ -88,10 +89,10 @@ class StartConversationRequest(BaseModel):
 
     agent: Any
     user_id: str | None = None
-    secrets: dict[str, Any] | None = None
-    observability_metadata: dict[str, Any] | None = None
+    secrets: dict[str, Any] = Field(default_factory=dict)
+    observability_metadata: dict[str, Any] = Field(default_factory=dict)
     workspace: Any = None
-    conversation_id: str | None = None
+    conversation_id: Any = None
     initial_message: SendMessageRequest | None = None
     plugins: list[Any] | None = None
     trigger: Any = None
@@ -103,7 +104,8 @@ class StartConversationRequest(BaseModel):
     mode: str = 'code'
     max_iterations: int = 50
     confirmation_mode: bool = False
-    security_analyzer: str = 'none'
+    security_analyzer: str | None = 'none'
+    agent_definitions: list[Any] = Field(default_factory=list)
 
 
 class Success(BaseModel):

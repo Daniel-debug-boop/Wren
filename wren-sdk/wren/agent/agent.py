@@ -59,6 +59,7 @@ class Agent(AgentBase):
     include_default_tools: list[str] = Field(default_factory=list)
     condenser: LLMSummarizingCondenser | None = None
     mcp_config: Any = None
+    agent_context: Any = None
 
 
 class ACPAgent(AgentBase):
@@ -70,6 +71,7 @@ class ACPAgent(AgentBase):
     acp_server: str | None = None
     acp_model: str | None = None
     agent_context: Any = None
+    acp_isolate_data_dir: bool = False
 
 
 # Discriminated union used by the unified /api/conversations payload.

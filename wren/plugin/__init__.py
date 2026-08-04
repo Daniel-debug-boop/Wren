@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import os
 import urllib.parse
 
-from pydantic import BaseModel, Field, field_serializer
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
 
 def redact_source_credentials(source: str) -> str:
@@ -54,6 +55,19 @@ class PluginSource(BaseModel):
         default=None,
         description='Optional local path to the plugin repository.',
     )
+
+    @field_validator('repo_path')
+    @classmethod
+    def _validate_repo_path(cls, value: str | None) -> str | None:
+        """Reject absolute paths and parent traversal in repo_path."""
+        if value is None:
+            return value
+        if os.path.isabs(value):
+            raise ValueError('repo_path must be relative to the sandbox workspace')
+        normalized = value.replace('\\', '/')
+        if '..' in normalized.split('/'):
+            raise ValueError("repo_path cannot contain '..'")
+        return value
 
     @field_serializer('source')
     def _serialize_source(self, source: str) -> str:

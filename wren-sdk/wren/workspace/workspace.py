@@ -81,6 +81,7 @@ class LocalWorkspace(Workspace):
             raise ValueError("LocalWorkspace requires either root or working_dir")
         self._root = Path(root).resolve()
         self._root.mkdir(parents=True, exist_ok=True)
+        self.working_dir = str(self._root)
 
     def get_root(self) -> Path:
         return self._root

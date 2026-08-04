@@ -533,7 +533,8 @@ class LiveStatusAppConversationService(AppConversationServiceBase):
             # archive captures the right directory without re-deriving the path
             # from settings (e.g. grouping) that may change before delete.
             tags[ARCHIVE_WORKSPACE_PATH_TAG_KEY] = working_dir
-            if request_agent.agent_kind == 'acp':
+            agent_kind_value = getattr(request_agent, 'agent_kind', 'wren')
+            if agent_kind_value == 'acp':
                 llm_model = request_agent.acp_model
                 agent_kind = 'acp'
                 # Persist the active ACP provider key so the conversation UI

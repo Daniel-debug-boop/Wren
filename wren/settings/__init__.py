@@ -162,21 +162,23 @@ class ConversationSettings(BaseModel):
 
     max_iterations: int = 50
     confirmation_mode: bool = False
-    security_analyzer: str = 'none'
+    security_analyzer: str | None = 'none'
     # Conversation-start fields (mirrors the software-agent-sdk layout).
     workspace: Any = None
     conversation_id: str | None = None
     initial_message: Any = None
     plugins: list[Any] | None = None
     secrets: dict[str, Any] | None = None
+    agent_settings: Any = None
+    agent_definitions: list[Any] = Field(default_factory=list)
+    hook_config: Any = None
 
     @classmethod
     def from_persisted(cls, data: dict[str, Any]) -> ConversationSettings:
         """Load from persisted data."""
         return cls.model_validate(data)
 
-    @classmethod
-    def create_request(cls, model_class: type[Any], **kwargs: Any) -> Any:
+    def create_request(self, model_class: type[Any], **kwargs: Any) -> Any:
         """Build a conversation start request from these settings.
 
         Conversation-level settings (``max_iterations``, ``confirmation_mode``,
@@ -185,9 +187,9 @@ class ConversationSettings(BaseModel):
         caller-provided kwargs (``agent``, ``user_id``, ...) take precedence.
         """
         payload: dict[str, Any] = {
-            'max_iterations': cls.max_iterations,
-            'confirmation_mode': cls.confirmation_mode,
-            'security_analyzer': cls.security_analyzer,
+            'max_iterations': self.max_iterations,
+            'confirmation_mode': self.confirmation_mode,
+            'security_analyzer': self.security_analyzer,
         }
         for field in (
             'workspace',
@@ -195,8 +197,11 @@ class ConversationSettings(BaseModel):
             'initial_message',
             'plugins',
             'secrets',
+            'agent_settings',
+            'agent_definitions',
+            'hook_config',
         ):
-            value = getattr(cls, field, None)
+            value = getattr(self, field, None)
             if value is not None:
                 payload[field] = value
         payload.update(kwargs)
@@ -251,6 +256,7 @@ class OpenHandsAgentSettings(BaseModel):
             include_default_tools=list(self.include_default_tools or []),
             condenser=condenser,
             mcp_config=self.mcp_config,
+            agent_context=self.agent_context,
         )
 
 
@@ -264,7 +270,23 @@ class ACPAgentSettings(BaseModel):
     acp_command: list[str] = Field(default_factory=list)
     acp_args: list[str] = Field(default_factory=list)
     agent_context: Any = None
+    acp_isolate_data_dir: bool = False
     llm: LLM = Field(default_factory=LLM)
+
+    def create_agent(self) -> Any:
+        """Build the SDK :class:`~wren.agent.ACPAgent` for this configuration."""
+        from wren.agent import ACPAgent
+
+        return ACPAgent(
+            name=self.acp_server or 'acp',
+            llm=self.llm,
+            acp_command=list(self.acp_command or []),
+            acp_args=list(self.acp_args or []),
+            acp_server=self.acp_server,
+            acp_model=self.acp_model,
+            agent_context=self.agent_context,
+            acp_isolate_data_dir=getattr(self, 'acp_isolate_data_dir', False),
+        )
 
 
 AgentSettingsConfigDict = AgentKind

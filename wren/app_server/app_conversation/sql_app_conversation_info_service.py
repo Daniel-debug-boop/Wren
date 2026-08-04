@@ -57,7 +57,7 @@ from wren.app_server.utils.sql_utils import (
 )
 from wren import ConversationStats
 from wren.event import ConversationStateUpdateEvent
-from wren.llm import MetricsSnapshot, TokenUsage
+from wren.llm import Metrics, MetricsSnapshot, TokenUsage
 
 logger = logging.getLogger(__name__)
 
@@ -410,6 +410,11 @@ class SQLAppConversationInfoService(AppConversationInfoService):
                 'No agent metrics found in stats for conversation %s', conversation_id
             )
             return
+
+        # Normalize to a Metrics object (usage_to_metrics values may arrive as
+        # plain dicts after JSON round-trips).
+        if isinstance(agent_metrics, dict):
+            agent_metrics = Metrics.model_validate(agent_metrics)
 
         # Query existing record using secure select (filters for V1 and user if available)
         query = await self._secure_select()

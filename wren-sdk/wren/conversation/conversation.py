@@ -9,6 +9,8 @@ import logging
 from enum import Enum
 from typing import Any, AsyncIterator, Callable
 
+from pydantic import Field
+
 from wren.context.context import AgentContext
 from wren.event.base import (
     Event,
@@ -48,6 +50,39 @@ class ConversationStats(WrenModel):
     total_tool_calls: int = 0
     total_tokens: int = 0
     total_duration_ms: float = 0
+    # Role -> Metrics accumulated usage (``agent``, ``condenser``, ...).
+    usage_to_metrics: dict[str, Any] = Field(default_factory=dict)
+
+    def get_combined_metrics(self) -> Any:
+        """Aggregate per-role metrics into a single snapshot for persistence."""
+        from wren.llm import MetricsSnapshot
+
+        total_tokens = 0
+        total_cost = 0.0
+        request_count = 0
+        for metrics in self.usage_to_metrics.values():
+            if isinstance(metrics, dict):
+                usage = metrics.get('accumulated_token_usage') or {}
+                if isinstance(usage, dict):
+                    total_tokens += usage.get('total_tokens', 0) or (
+                        usage.get('prompt_tokens', 0) + usage.get('completion_tokens', 0)
+                    )
+                total_cost += metrics.get('accumulated_cost') or 0.0
+            else:
+                usage = getattr(metrics, 'accumulated_token_usage', None)
+                if usage is not None and getattr(usage, 'total_tokens', 0):
+                    total_tokens += usage.total_tokens
+                elif usage is not None:
+                    total_tokens += getattr(usage, 'prompt_tokens', 0) + getattr(
+                        usage, 'completion_tokens', 0
+                    )
+                total_cost += getattr(metrics, 'accumulated_cost', 0.0) or 0.0
+            request_count += 1
+        return MetricsSnapshot(
+            total_tokens=total_tokens,
+            total_cost=total_cost,
+            request_count=request_count,
+        )
 
 
 class Conversation:

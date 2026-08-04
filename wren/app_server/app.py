@@ -102,7 +102,10 @@ app.add_middleware(LocalhostCORSMiddleware)
 app.add_middleware(CacheControlMiddleware)
 app.add_middleware(
     RateLimitMiddleware,
-    rate_limiter=InMemoryRateLimiter(requests=30, seconds=60),
+    rate_limiter=InMemoryRateLimiter(
+        requests=int(os.getenv('RATE_LIMIT_REQUESTS', '30')),
+        seconds=int(os.getenv('RATE_LIMIT_SECONDS', '60')),
+    ),
 )
 
 

@@ -1,14 +1,22 @@
 import sys
-import types
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import pytest
-from starlette.datastructures import State
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'enterprise'))
 
-from enterprise.server.services.org_conversation_service import (
+# The enterprise server package is proprietary and lives in a separate
+# repository. Skip these tests when it is not present so that the open
+# source unit suite (`pytest tests/unit`) can always be collected.
+pytest.importorskip(
+    'enterprise.server.services.org_conversation_service',
+    reason='enterprise package not available',
+)
+
+from starlette.datastructures import State  # noqa: E402
+
+from enterprise.server.services.org_conversation_service import (  # noqa: E402
     OrgConversationServiceInjector,
 )
 

@@ -12,6 +12,8 @@ from wren.agent_server.models import (  # noqa: F401
     EventPage,
     EventSortOrder,
     ImageContent,
+    SendMessageRequest,
+    StartConversationRequest,
     Success,
     TextContent,
 )

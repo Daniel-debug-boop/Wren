@@ -36,6 +36,7 @@ class TextContent(WrenModel):
 
     type: ContentType = ContentType.TEXT
     text: str
+    cache_prompt: bool = False
 
 
 class ImageSource(WrenModel):

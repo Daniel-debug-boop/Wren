@@ -18,6 +18,7 @@ from wren.app_server.conversation_paths import V1_CONVERSATIONS_DIR
 from wren.app_server.event.event_service import EventService
 from wren.app_server.event_callback.event_callback_models import EventKind
 from wren import Event
+from wren.utils.models import ensure_utc
 from wren.utils.paging import page_iterator
 
 
@@ -107,10 +108,11 @@ class EventServiceBase(EventService, ABC):
         paths = await loop.run_in_executor(None, self._search_paths, prefix)
 
         events = await self._load_events_from_paths(paths)
-        # Convert datetime filters to ISO strings so they can be compared
-        # against event.timestamp (which is stored as an ISO 8601 string).
-        timestamp_gte_str = timestamp__gte.isoformat() if timestamp__gte else None
-        timestamp_lt_str = timestamp__lt.isoformat() if timestamp__lt else None
+        # ``event.timestamp`` is a timezone-aware datetime after pydantic
+        # rehydration; normalize the filters to UTC-aware datetimes (handles
+        # callers passing naive ``datetime.now()``) and compare directly.
+        timestamp_gte_dt = ensure_utc(timestamp__gte) if timestamp__gte else None
+        timestamp_lt_dt = ensure_utc(timestamp__lt) if timestamp__lt else None
 
         items = []
         for event in events:
@@ -118,9 +120,9 @@ class EventServiceBase(EventService, ABC):
                 continue
             if kind__eq and event.kind != kind__eq:
                 continue
-            if timestamp_gte_str and event.timestamp < timestamp_gte_str:
+            if timestamp_gte_dt and event.timestamp < timestamp_gte_dt:
                 continue
-            if timestamp_lt_str and event.timestamp >= timestamp_lt_str:
+            if timestamp_lt_dt and event.timestamp >= timestamp_lt_dt:
                 continue
             items.append(event)
 

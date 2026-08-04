@@ -74,7 +74,11 @@ class Workspace(ABC):
 class LocalWorkspace(Workspace):
     """Local file system workspace."""
 
-    def __init__(self, root: str | Path):
+    def __init__(self, root: str | Path | None = None, working_dir: str | Path | None = None):
+        if root is None:
+            root = working_dir
+        if root is None:
+            raise ValueError("LocalWorkspace requires either root or working_dir")
         self._root = Path(root).resolve()
         self._root.mkdir(parents=True, exist_ok=True)
 

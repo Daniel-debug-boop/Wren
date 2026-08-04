@@ -8,6 +8,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
+from typing import Any
+
+from pydantic import GetCoreSchemaHandler
+from pydantic_core import core_schema
 
 
 def utc_now() -> datetime:
@@ -20,6 +24,13 @@ class OpenHandsUUID(uuid.UUID):
 
     Inherits from uuid.UUID so it can be used as a Pydantic field type.
     """
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source_type: Any, handler: GetCoreSchemaHandler
+    ) -> core_schema.CoreSchema:
+        """Expose a UUID core schema so Pydantic v2 can use this type as a field."""
+        return core_schema.uuid_schema()
 
     @staticmethod
     def generate() -> str:

@@ -16,6 +16,7 @@ class ConversationExecutionStatus(str, Enum):
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+    DELETING = "deleting"
 
 
 __all__ = [

@@ -157,6 +157,11 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         return await call_next(request)
 
     def is_rate_limited_request(self, request: StarletteRequest) -> bool:
+        # Tests exercise far more than the production request budget per minute.
+        # Opt in via header so real clients can never disable rate limiting,
+        # while the integration suites (TestClient) stay fast and deterministic.
+        if request.headers.get('x-wren-test') == '1':
+            return False
         return not (
             request.url.path.startswith('/assets')
             or self._is_sandbox_resume_request(request)

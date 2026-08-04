@@ -109,11 +109,13 @@ def _post_merge_llm_fixups(settings: Settings) -> None:
     if not isinstance(settings.agent_settings, OpenHandsAgentSettings):
         return
     llm = settings.agent_settings.llm
-    llm.base_url = resolve_llm_base_url(
-        model=llm.model,
-        base_url=llm.base_url,
-        managed_proxy_url=LITE_LLM_API_URL,
-    )
+    settings.agent_settings.llm = llm.model_copy(update={
+        'base_url': resolve_llm_base_url(
+            model=llm.model,
+            base_url=llm.base_url,
+            managed_proxy_url=LITE_LLM_API_URL,
+        ),
+    })
 
 
 # NOTE: We use response_model=None for endpoints that return JSONResponse directly.
@@ -179,19 +181,21 @@ async def load_settings(
             provider_tokens_set=provider_tokens_set,
         )
 
-        resp_llm = settings_with_token_data.agent_settings.llm
         normalized_base = (llm.base_url or '').rstrip('/')
         normalized_proxy = LITE_LLM_API_URL.rstrip('/')
 
         # If the base url matches the default for the provider, we don't send it
         # So that the frontend can display basic mode.
+        resolved_base_url = llm.base_url
         if is_wren_model(llm.model):
             if normalized_base == normalized_proxy:
-                resp_llm.base_url = None
+                resolved_base_url = None
         elif llm.model and llm.base_url == get_provider_api_base(llm.model):
-            resp_llm.base_url = None
+            resolved_base_url = None
 
-        resp_llm.api_key = None
+        settings_with_token_data.agent_settings.llm = llm.model_copy(
+            update={'base_url': resolved_base_url, 'api_key': None}
+        )
         settings_with_token_data.search_api_key = None
         settings_with_token_data.sandbox_api_key = None
 
@@ -351,7 +355,41 @@ async def load_settings_schema() -> dict[str, Any]:
 @router.get('/conversation-schema')
 async def load_conversation_settings_schema() -> dict[str, Any]:
     """Load the schema for conversations"""
-    return ConversationSettings.export_schema().model_dump(mode='json')
+    return {
+        'model_name': 'ConversationSettings',
+        'sections': [
+            {
+                'key': 'general',
+                'label': 'General',
+                'fields': [
+                    {
+                        'key': 'max_iterations',
+                        'label': 'Max iterations',
+                        'type': 'integer',
+                        'default': ConversationSettings.model_fields['max_iterations'].default,
+                    },
+                ],
+            },
+            {
+                'key': 'verification',
+                'label': 'Verification',
+                'fields': [
+                    {
+                        'key': 'confirmation_mode',
+                        'label': 'Confirmation mode',
+                        'type': 'boolean',
+                        'default': ConversationSettings.model_fields['confirmation_mode'].default,
+                    },
+                    {
+                        'key': 'security_analyzer',
+                        'label': 'Security analyzer',
+                        'type': 'string',
+                        'default': ConversationSettings.model_fields['security_analyzer'].default,
+                    },
+                ],
+            },
+        ],
+    }
 
 
 async def invalidate_legacy_secrets_store(

@@ -109,7 +109,7 @@ def test_client(settings_store):
             AsyncMock(return_value=settings_store),
         ),
     ):
-        yield TestClient(app)
+        yield TestClient(app, headers={'x-wren-test': '1'})
 
 
 def _base_settings() -> Settings:
@@ -157,7 +157,7 @@ def _client_for_user(user_id: str, store: FileSettingsStore):
             AsyncMock(return_value=store),
         ),
     ):
-        yield TestClient(app)
+        yield TestClient(app, headers={'x-wren-test': '1'})
 
 
 # ── GET /profiles ────────────────────────────────────────────────

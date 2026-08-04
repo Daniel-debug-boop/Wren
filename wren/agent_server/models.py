@@ -31,12 +31,15 @@ class EventSortOrder(str, Enum):
 
     ASC = 'asc'
     DESC = 'desc'
+    TIMESTAMP = 'timestamp'
+    TIMESTAMP_DESC = 'timestamp_desc'
 
 
 class EventPage(BaseModel):
     """A page of events returned by the agent server."""
 
-    events: list[dict[str, Any]] = Field(default_factory=list)
+    items: list[Any] = Field(default_factory=list)
+    next_page_id: str | None = None
     total: int = 0
     page: int = 1
     page_size: int = 50
@@ -69,6 +72,40 @@ class SendMessageRequest(BaseModel):
     run: bool = True
 
 
+class StartConversationRequest(BaseModel):
+    """Request to start an agent conversation.
+
+    Carries the fully-built ``Agent`` (or ACP agent) plus the
+    conversation-level configuration resolved by the app server
+    (workspace, plugins, secrets, observability metadata, ...).
+
+    Field types for cross-package objects (``Agent``, workspace, plugins,
+    secrets) are intentionally ``Any`` to avoid import cycles between
+    ``wren.agent_server.models`` and the app-conversation layer.
+    """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    agent: Any
+    user_id: str | None = None
+    secrets: dict[str, Any] | None = None
+    observability_metadata: dict[str, Any] | None = None
+    workspace: Any = None
+    conversation_id: str | None = None
+    initial_message: SendMessageRequest | None = None
+    plugins: list[Any] | None = None
+    trigger: Any = None
+    git_provider: Any = None
+    working_dir: str | None = None
+    selected_repository: str | None = None
+    selected_branch: str | None = None
+    remote_workspace: Any = None
+    mode: str = 'code'
+    max_iterations: int = 50
+    confirmation_mode: bool = False
+    security_analyzer: str = 'none'
+
+
 class Success(BaseModel):
     """Success response."""
 
@@ -83,6 +120,7 @@ __all__ = [
     'ImageContent',
     'OpenHandsModel',
     'SendMessageRequest',
+    'StartConversationRequest',
     'Success',
     'TextContent',
 ]

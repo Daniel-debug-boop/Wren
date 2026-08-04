@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Any, Optional
 from uuid import uuid4
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from wren.utils.models import WrenModel, utc_now
 
@@ -42,6 +42,10 @@ class EventType(str, Enum):
     CONVERSATION_END = "conversation_end"
     CONVERSATION_ERROR = "conversation_error"
 
+    # Token / pause events
+    TOKEN = "token"
+    PAUSE = "pause"
+
     # Agent events
     AGENT_START = "agent_start"
     AGENT_END = "agent_end"
@@ -61,14 +65,40 @@ class Event(WrenModel):
     """
 
     event_id: str = Field(default_factory=lambda: uuid4().hex)
+    kind: str = Field(
+        default='',
+        description=(
+            'Concrete event class name. Set automatically from the class name '
+            'on construction and persisted so stored events can be filtered '
+            '(e.g. ``TokenEvent``) after a JSON round-trip.'
+        ),
+    )
     event_type: EventType
     timestamp: datetime = Field(default_factory=utc_now)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
-    @abstractmethod
+    @model_validator(mode='after')
+    def _default_kind_from_class_name(self) -> Event:
+        """Default ``kind`` to the concrete class name unless already set."""
+        if not self.kind:
+            # ``WrenModel`` is frozen; bypass the frozen-instance guard.
+            object.__setattr__(self, 'kind', self.__class__.__name__)
+        return self
+
+    @property
+    def id(self) -> str:
+        """Alias for ``event_id`` used by the event services."""
+        return self.event_id
+
     def to_prompt(self) -> str:
-        """Convert event to prompt string for LLM context."""
-        ...
+        """Convert event to prompt string for LLM context.
+
+        Subclasses override this with a richer representation. The default
+        keeps the base ``Event`` instantiable so stored events can be
+        rehydrated with ``Event.model_validate_json`` (the event services
+        round-trip JSON through the base class).
+        """
+        return f"[{self.kind or self.__class__.__name__}]"
 
     def with_metadata(self, **kwargs: Any) -> Event:
         """Create copy with additional metadata."""
@@ -134,6 +164,9 @@ class ConversationStartEvent(Event):
     task: str
     agent_name: str | None = None
 
+    def to_prompt(self) -> str:
+        return f"[conversation_start]: {self.task}"
+
 
 class ConversationEndEvent(Event):
     """Conversation ended event."""
@@ -143,3 +176,6 @@ class ConversationEndEvent(Event):
     summary: str | None = None
     total_tokens: int | None = None
     total_tool_calls: int | None = None
+
+    def to_prompt(self) -> str:
+        return f"[conversation_end]: {self.summary or ''} tokens={self.total_tokens}"

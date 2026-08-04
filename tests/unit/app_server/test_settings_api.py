@@ -107,7 +107,7 @@ def test_client():
             AsyncMock(return_value=FileSettingsStore(InMemoryFileStore())),
         ),
     ):
-        client = TestClient(app)
+        client = TestClient(app, headers={'x-wren-test': '1'})
         yield client
 
 

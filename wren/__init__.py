@@ -80,6 +80,33 @@ def __getattr__(name):
             return _hk
         except ImportError:
             raise ImportError("wren.hooks module not available")
+    if name in ('Agent', 'AgentConfig'):
+        try:
+            from wren.agent import Agent as _agent, AgentConfig as _agent_cfg
+            return _agent if name == 'Agent' else _agent_cfg
+        except ImportError:
+            raise ImportError("wren.agent module not available")
+    if name == 'AgentContext':
+        try:
+            from wren.context import AgentContext as _actx
+            return _actx
+        except ImportError:
+            raise ImportError("wren.context module not available")
+    if name == 'LLMSummarizingCondenser':
+        try:
+            from wren.context.condenser import LLMSummarizingCondenser as _cond
+            return _cond
+        except ImportError:
+            raise ImportError("wren.context.condenser module not available")
+    if name in ('ConversationStats', 'ConversationExecutionStatus'):
+        try:
+            from wren.conversation import (
+                ConversationExecutionStatus as _cstatus,
+                ConversationStats as _cstats,
+            )
+            return _cstats if name == 'ConversationStats' else _cstatus
+        except ImportError:
+            raise ImportError("wren.conversation module not available")
     raise AttributeError(f"module 'wren' has no attribute '{name}'")
 
 
@@ -95,4 +122,10 @@ __all__ = [
     'MessageEvent',
     'LocalWorkspace',
     'HookConfig',
+    'Agent',
+    'AgentConfig',
+    'AgentContext',
+    'LLMSummarizingCondenser',
+    'ConversationStats',
+    'ConversationExecutionStatus',
 ]

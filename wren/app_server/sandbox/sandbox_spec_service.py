@@ -169,9 +169,12 @@ def get_agent_server_env() -> dict[str, str]:
         if any(key.startswith(prefix) for prefix in AUTO_FORWARD_PREFIXES):
             result[key] = value
 
-    # Step 2: Apply explicit overrides from OH_AGENT_SERVER_ENV
+    # Step 2: Apply explicit overrides from OH_AGENT_SERVER_ENV_{KEY}
     # These take precedence over auto-forwarded variables
-    explicit_env = env_parser.from_env(dict[str, str], 'OH_AGENT_SERVER_ENV')
-    result.update(explicit_env)
+    env_prefix = 'OH_AGENT_SERVER_ENV_'
+    for key, value in os.environ.items():
+        if key.startswith(env_prefix):
+            env_var_name = key[len(env_prefix):]
+            result[env_var_name] = value
 
     return result

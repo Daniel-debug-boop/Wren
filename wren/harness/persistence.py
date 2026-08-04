@@ -28,6 +28,7 @@ import json
 import logging
 import os
 import time
+from dataclasses import dataclass
 from typing import Any
 
 _logger = logging.getLogger(__name__)
@@ -58,6 +59,11 @@ class CheckpointManager:
     """
 
     def __init__(self, persistence_dir: str) -> None:
+        # The caller may pass the SQLite db file path (e.g. ``/tmp/wren/harness.db``)
+        # as the persistence location. If it's an existing file, derive the
+        # directory from it so the ``checkpoints/`` subdir can be created.
+        if os.path.isfile(persistence_dir):
+            persistence_dir = os.path.dirname(persistence_dir)
         self._base_dir = persistence_dir
         self._checkpoint_dir = os.path.join(persistence_dir, 'checkpoints')
         os.makedirs(self._checkpoint_dir, exist_ok=True)

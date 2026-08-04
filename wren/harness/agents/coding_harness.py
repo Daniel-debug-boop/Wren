@@ -93,7 +93,7 @@ class CodingHarness(ChildAgent):
             )
 
         _logger.info(
-            'CodingHarness: done success=%s score=%.2',
+            'CodingHarness: done success=%s score=%.2f',
             result['success'],
             critique.score,
         )

@@ -164,7 +164,7 @@ class ContextBudget:
         )
 
         _logger.debug(
-            'ContextBudget: turn %d role=%s in=%d out=%d total=%d cost=$%.4',
+            'ContextBudget: turn %d role=%s in=%d out=%d total=%d cost=$%.4f',
             turn.turn_index,
             role,
             input_tokens,

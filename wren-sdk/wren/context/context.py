@@ -36,6 +36,8 @@ class AgentContext:
         event_log: EventLog | None = None,
         max_turns: int = 50,
         metadata: dict[str, Any] | None = None,
+        system_message_suffix: str = "",
+        secrets: dict[str, Any] | None = None,
     ):
         self.system_prompt = system_prompt
         self.tool_registry = tool_registry or ToolRegistry()
@@ -43,6 +45,8 @@ class AgentContext:
         self.event_log = event_log or EventLog()
         self.max_turns = max_turns
         self.metadata = metadata or {}
+        self.system_message_suffix = system_message_suffix
+        self.secrets = secrets or {}
 
         # Message history
         self._messages: list[Message] = []

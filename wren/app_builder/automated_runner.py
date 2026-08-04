@@ -740,6 +740,10 @@ Every function body must be fully implemented. Output code ONLY inside a fenced 
                 if len(lines) > 50:
                     snippet += f"\n// ... ({len(lines) - 50} more lines)"
                 snippets.append(f"--- {prev_path} ---\n{snippet}")
+            else:
+                # File was generated this run but not yet flushed to disk;
+                # still surface its path so downstream stages see the layout.
+                snippets.append(f"--- {prev_path} ---\n(not yet written to disk)")
 
         if not snippets:
             return "(no prior files generated yet)"

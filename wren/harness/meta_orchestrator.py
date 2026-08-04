@@ -18,33 +18,46 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from wren.harness.circuit_breaker import CircuitBreaker
-from wren.harness.context_budget import ContextBudget, ContextBudgetConfig
-from wren.harness.storage.store import Store
-from wren.harness.task_graph import PrioritizedTask, TaskGraph, TaskStatus
+from wren.harness.agents.base import AgentHandle, AgentStatus, ChildAgent
+from wren.harness.agents.coding_harness import CodingHarness
+from wren.harness.agents.dark_factory import DarkFactory
+from wren.harness.agents.hitl_console import HITLConsole
+from wren.harness.agents.planner_agent import PlannerAgent
+from wren.harness.agents.research_agent import ResearchAgent
+from wren.harness.agents.reviewer_agent import ReviewerAgent
+from wren.harness.agents.writer_agent import WriterAgent
+from wren.harness.auth import BusAuth
+from wren.harness.circuit_breaker import (  # noqa: F401  (re-exported for tests)
+    CircuitBreaker,
+    CircuitState,
+)
 from wren.harness.config import HarnessConfig
-from wren.harness.resource_budget import ResourceBudget
+from wren.harness.context_budget import ContextBudget, ContextBudgetConfig
+from wren.harness.health import HealthChecker
+from wren.harness.knowledge.skill_library import SkillLibrary
+from wren.harness.knowledge.vector_store import VectorStore
+from wren.harness.knowledge.working_memory_rag import WorkingMemoryRAG
 from wren.harness.message_bus import (
     AgentMessage,
     MessageBus,
     MessagePriority,
     MessageType,
 )
-from wren.harness.knowledge.vector_store import VectorStore
-from wren.harness.knowledge.working_memory_rag import WorkingMemoryRAG
-from wren.harness.knowledge.skill_library import SkillLibrary
-from wren.harness.reflection.self_critique import SelfCritiqueAgent
-from wren.harness.agents.base import AgentHandle, AgentStatus, ChildAgent
-from wren.harness.agents.coding_harness import CodingHarness
-from wren.harness.agents.research_agent import ResearchAgent
-from wren.harness.agents.planner_agent import PlannerAgent
-from wren.harness.agents.writer_agent import WriterAgent
-from wren.harness.agents.reviewer_agent import ReviewerAgent
-from wren.harness.agents.dark_factory import DarkFactory
-from wren.harness.agents.hitl_console import HITLConsole
-from wren.harness.persistence import CheckpointManager, serialize_orchestrator_state, restore_orchestrator_state
+from wren.harness.model_router import ModelRouter
+from wren.harness.persistence import (
+    CheckpointManager,
+    restore_orchestrator_state,
+    serialize_orchestrator_state,
+)
 from wren.harness.project_context import ProjectContext, ProjectContextLoader
+from wren.harness.reflection.fact_checker import FactChecker
+from wren.harness.reflection.quality_gates import QualityGates
+from wren.harness.reflection.self_critique import SelfCritiqueAgent
+from wren.harness.resource_budget import ResourceBudget
 from wren.harness.sandbox.execution_sandbox import ExecutionSandbox
+from wren.harness.storage.store import Store
+from wren.harness.task_graph import PrioritizedTask, TaskGraph, TaskStatus
+from wren.harness.telemetry import T
 
 _logger = logging.getLogger(__name__)
 

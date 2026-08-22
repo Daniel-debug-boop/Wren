@@ -46,29 +46,55 @@ const SKILLS = [
 
 export default function SkillsPage() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12">
+    <div className="mx-auto max-w-5xl animate-fade-up px-4 py-8 md:px-6 md:py-12">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
-          Skills & Capabilities
+        <h1
+          className="font-display text-xl font-semibold tracking-tight md:text-2xl"
+          style={{ color: "var(--text-primary)" }}
+        >
+          Skills &amp; Capabilities
         </h1>
-        <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
+        <p
+          className="mt-1.5 text-sm leading-relaxed"
+          style={{ color: "var(--text-tertiary)" }}
+        >
           Domain-specific generators and tools that power Wren's AI pipeline.
         </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SKILLS.map((skill) => (
-          <div key={skill.name} className="card p-5 hover:border-[var(--border-strong)] transition-all">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-xl">{skill.icon}</span>
-              <span className="rounded-full px-2 py-0.5 text-[10px] font-medium" style={{ background: "var(--accent-subtle)", color: "var(--accent)" }}>
+          <div key={skill.name} className="bento-card">
+            <div className="mb-4 flex items-start justify-between">
+              <span
+                className="flex h-10 w-10 items-center justify-center rounded-xl text-xl"
+                style={{ background: "var(--accent-subtle)" }}
+                aria-hidden="true"
+              >
+                {skill.icon}
+              </span>
+              <span
+                className="rounded-full border px-2 py-0.5 text-[9px] font-medium"
+                style={{
+                  background: "var(--bg-elevated)",
+                  color: "var(--text-tertiary)",
+                  borderColor: "var(--border)",
+                }}
+              >
                 {skill.count}
               </span>
             </div>
-            <h3 className="text-sm font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+            <h3
+              className="font-display mb-1.5 text-[15px] font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
               {skill.name}
             </h3>
-            <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+            <p
+              className="text-[13px] leading-relaxed"
+              style={{ color: "var(--text-secondary)" }}
+            >
               {skill.desc}
             </p>
           </div>

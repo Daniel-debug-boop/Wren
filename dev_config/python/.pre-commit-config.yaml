@@ -57,8 +57,6 @@ repos:
             types-Markdown,
             pydantic,
             lxml,
-            "wren-sdk==1.30.0",
-            "wren-tools==1.30.0",
             "sqlalchemy>=2.0",
           ]
         # To see gaps add `--html-report mypy-report/`

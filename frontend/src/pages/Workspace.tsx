@@ -337,13 +337,9 @@ export function Workspace() {
 
   const editorOnMount: OnMount = (editor, monaco) => {
     editorRef.current = editor;
-    editor.addCommand(
-      // eslint-disable-next-line no-bitwise -- monaco keybinding API
-      monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-      () => {
-        handleSave();
-      },
-    );
+    editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+      handleSave();
+    });
     editor.focus();
   };
 

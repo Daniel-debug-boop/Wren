@@ -33,19 +33,26 @@ export default function ApiKeysPage() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="mx-auto max-w-4xl animate-fade-up px-4 py-8 md:px-6 md:py-12">
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>
+          <h1
+            className="font-display text-xl font-semibold tracking-tight md:text-2xl"
+            style={{ color: "var(--text-primary)" }}
+          >
             API Keys
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
+          <p
+            className="mt-1.5 text-sm leading-relaxed"
+            style={{ color: "var(--text-tertiary)" }}
+          >
             Manage API keys for accessing Wren's API programmatically.
           </p>
         </div>
         <button
           onClick={() => setShowNew(!showNew)}
-          className="accent-button text-xs"
+          className="accent-button shrink-0 text-xs"
         >
           {showNew ? "Cancel" : "+ New Key"}
         </button>
@@ -53,11 +60,14 @@ export default function ApiKeysPage() {
 
       {/* Create new key */}
       {showNew && (
-        <div className="card p-6 mb-6">
-          <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
+        <div className="card animate-fade-in mb-6 p-5 md:p-6">
+          <h2
+            className="font-display mb-4 text-sm font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
             Create New API Key
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               className="input flex-1"
               value={keyName}
@@ -72,7 +82,7 @@ export default function ApiKeysPage() {
             <button
               onClick={() => createMutation.mutate(keyName)}
               disabled={!keyName.trim() || createMutation.isPending}
-              className="accent-button text-xs"
+              className="accent-button shrink-0 text-xs"
             >
               {createMutation.isPending ? "Creating..." : "Create"}
             </button>
@@ -81,14 +91,39 @@ export default function ApiKeysPage() {
       )}
 
       {/* Keys list */}
-      <div className="card">
+      <div className="card overflow-hidden">
         {keys.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="mb-3 text-2xl">🔑</div>
-            <p className="text-sm font-medium mb-1" style={{ color: "var(--text-secondary)" }}>
+          <div className="animate-fade-up p-12 text-center">
+            <div
+              className="mx-auto mb-4 flex h-11 w-11 items-center justify-center rounded-2xl"
+              style={{
+                background: "var(--accent-subtle)",
+                color: "var(--accent-strong)",
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" />
+              </svg>
+            </div>
+            <p
+              className="mb-1 font-display text-[15px] font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
               No API keys yet
             </p>
-            <p className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+            <p
+              className="text-xs leading-relaxed"
+              style={{ color: "var(--text-tertiary)" }}
+            >
               Create your first key to start using the Wren API.
             </p>
           </div>
@@ -97,24 +132,46 @@ export default function ApiKeysPage() {
             {keys.map((key: any) => (
               <div
                 key={key.id}
-                className="flex items-center justify-between px-6 py-4"
+                className="flex flex-col gap-3 px-5 py-4 transition-colors duration-150 hover:bg-black/[0.02] sm:flex-row sm:items-center sm:justify-between md:px-6"
               >
-                <div>
-                  <p className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
+                <div className="min-w-0">
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {key.name}
                   </p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <code className="rounded bg-white/5 px-2 py-0.5 text-xs font-mono" style={{ color: "var(--text-tertiary)" }}>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <code
+                      className="rounded-md px-2 py-0.5 font-mono text-xs"
+                      style={{
+                        background: "var(--bg-surface)",
+                        color: "var(--accent-strong)",
+                      }}
+                    >
                       {key.key_preview}...
                     </code>
-                    <span className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
-                      Created {key.created_at ? new Date(key.created_at).toLocaleDateString() : ""}
+                    <span
+                      className="text-[10px]"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      Created{" "}
+                      {key.created_at
+                        ? new Date(key.created_at).toLocaleDateString()
+                        : ""}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={() => deleteMutation.mutate(key.id)}
-                  className="rounded-lg px-3 py-1.5 text-xs text-red-400 transition-colors hover:bg-red-500/10"
+                  className="shrink-0 self-start rounded-lg border border-transparent px-3 py-1.5 text-xs font-medium transition-all duration-150 hover:border-[rgba(191,66,64,0.25)]"
+                  style={{ color: "var(--status-error)" }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(191,66,64,0.07)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
                 >
                   Delete
                 </button>

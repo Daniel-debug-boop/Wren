@@ -7,6 +7,8 @@ import {
   isRouteErrorResponse,
   useRouteError,
 } from "react-router";
+import { useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import "./index.css";
@@ -22,7 +24,7 @@ export const meta = () => [
   { title: "Wren — AI Engineering Platform" },
   { charSet: "utf-8" },
   { name: "viewport", content: "width=device-width, initial-scale=1" },
-  { name: "theme-color", content: "#000000" },
+  { name: "theme-color", content: "#FAF9F5" },
   {
     name: "description",
     content:
@@ -39,8 +41,16 @@ export const meta = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: { retry: 1, refetchOnWindowFocus: false },
+        },
+      }),
+  );
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <Meta />
         <Links />
@@ -49,7 +59,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <a href="#main" className="skip-link">
           {t("COMMON$SKIP_TO_CONTENT")}
         </a>
-        {children}
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

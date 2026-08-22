@@ -105,40 +105,47 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl px-6 py-12">
-        <div className="animate-pulse space-y-4">
-          <div className="h-6 w-32 rounded bg-white/5" />
-          <div className="h-64 rounded-xl bg-white/5" />
+      <div className="mx-auto max-w-4xl px-4 py-8 md:px-6 md:py-12">
+        <div className="space-y-4">
+          <div className="skeleton-shimmer h-6 w-32 rounded-lg" />
+          <div className="skeleton-shimmer h-64 rounded-2xl" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="mx-auto max-w-4xl animate-fade-up px-4 py-8 md:px-6 md:py-12">
+      {/* Header */}
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1
-            className="text-lg font-semibold"
+            className="font-display text-xl font-semibold tracking-tight md:text-2xl"
             style={{ color: "var(--text-primary)" }}
           >
             {t("SETTINGS$TITLE")}
           </h1>
-          <p className="mt-1 text-sm" style={{ color: "var(--text-tertiary)" }}>
+          <p
+            className="mt-1.5 text-sm leading-relaxed"
+            style={{ color: "var(--text-tertiary)" }}
+          >
             {t("SETTINGS$SUBTITLE")}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <span
-            className="flex items-center gap-1.5 text-xs"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium"
             style={{
+              background: backendOnline
+                ? "rgba(74,124,89,0.08)"
+                : "var(--bg-surface)",
               color: backendOnline
                 ? "var(--status-success)"
                 : "var(--text-muted)",
             }}
           >
             <span
-              className={`h-1.5 w-1.5 rounded-full ${backendOnline ? "bg-status-success" : "bg-text-muted"}`}
+              className={`h-1.5 w-1.5 rounded-full ${backendOnline ? "bg-status-success animate-pulse-dot" : "bg-text-muted"}`}
             />
             {backendOnline
               ? t("SETTINGS$BACKEND_CONNECTED")
@@ -156,14 +163,45 @@ export default function SettingsPage() {
       </div>
 
       {/* LLM Configuration */}
-      <div className="card p-6 mb-6">
-        <h2
-          className="text-sm font-semibold mb-4"
-          style={{ color: "var(--text-primary)" }}
-        >
-          {t("SETTINGS$LLM_CONFIGURATION")}
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="card p-5 md:p-7" style={{ marginBottom: 24 }}>
+        <div className="mb-5 flex items-center gap-2.5">
+          <span
+            className="flex h-8 w-8 items-center justify-center rounded-lg"
+            style={{
+              background: "var(--accent-subtle)",
+              color: "var(--accent-strong)",
+            }}
+          >
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <rect x="9" y="9" width="6" height="6" />
+              <line x1="9" y1="1" x2="9" y2="4" />
+              <line x1="15" y1="1" x2="15" y2="4" />
+              <line x1="9" y1="20" x2="9" y2="23" />
+              <line x1="15" y1="20" x2="15" y2="23" />
+              <line x1="20" y1="9" x2="23" y2="9" />
+              <line x1="20" y1="14" x2="23" y2="14" />
+              <line x1="1" y1="9" x2="4" y2="9" />
+              <line x1="1" y1="14" x2="4" y2="14" />
+            </svg>
+          </span>
+          <h2
+            className="font-display text-[15px] font-semibold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            {t("SETTINGS$LLM_CONFIGURATION")}
+          </h2>
+        </div>
+        <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
           <div>
             <label
               htmlFor="provider"
@@ -279,15 +317,38 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-        <p className="mt-4 text-xs" style={{ color: "var(--text-tertiary)" }}>
+
+        {/* Tips */}
+        <div
+          className="mt-6 rounded-xl p-4 text-xs leading-relaxed"
+          style={{
+            background: "var(--bg-surface)",
+            color: "var(--text-secondary)",
+          }}
+        >
           {t("SETTINGS$TIPS_PREFIX")}{" "}
-          <code className="text-accent">{ANTHROPIC_BASE_URL}</code>
+          <code
+            className="rounded px-1.5 py-0.5 font-mono text-accent-strong"
+            style={{ background: "var(--bg-elevated)" }}
+          >
+            {ANTHROPIC_BASE_URL}
+          </code>
           {t("SETTINGS$TIPS_MIDDLE")}{" "}
-          <code className="text-accent">{OPENROUTER_BASE_URL}</code>
+          <code
+            className="rounded px-1.5 py-0.5 font-mono text-accent-strong"
+            style={{ background: "var(--bg-elevated)" }}
+          >
+            {OPENROUTER_BASE_URL}
+          </code>
           {t("SETTINGS$TIPS_MODEL")}{" "}
-          <code className="text-accent">{EXAMPLE_MODEL}</code>
+          <code
+            className="rounded px-1.5 py-0.5 font-mono text-accent-strong"
+            style={{ background: "var(--bg-elevated)" }}
+          >
+            {EXAMPLE_MODEL}
+          </code>
           {t("SETTINGS$TIPS_SUFFIX")}
-        </p>
+        </div>
       </div>
     </div>
   );

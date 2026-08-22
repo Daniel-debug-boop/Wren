@@ -1,7 +1,10 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { Terminal } from "@xterm/xterm";
+import * as xtermModule from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
+
+const Terminal = xtermModule.Terminal;
+type XtermTerminal = InstanceType<typeof Terminal>;
 
 interface TerminalComponentProps {
   wsUrl: string;
@@ -17,7 +20,7 @@ export function TerminalComponent({
   className = "",
 }: TerminalComponentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const termRef = useRef<Terminal | null>(null);
+  const termRef = useRef<XtermTerminal | null>(null);
   const fitAddonRef = useRef<FitAddon | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const [connected, setConnected] = useState(false);
@@ -31,8 +34,7 @@ export function TerminalComponent({
       cursorBlink: true,
       cursorStyle: "bar",
       fontSize: 13,
-      fontFamily:
-        "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
+      fontFamily: "'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace",
       theme: {
         background: "#0a0a0c",
         foreground: "#f4f4f5",
@@ -139,9 +141,7 @@ export function TerminalComponent({
             onExit?.(msg.code);
             break;
           case "error":
-            term.write(
-              `\r\n\x1b[31m[Error: ${msg.message}]\x1b[0m\r\n`,
-            );
+            term.write(`\r\n\x1b[31m[Error: ${msg.message}]\x1b[0m\r\n`);
             onError?.(msg.message);
             break;
           case "pong":
@@ -175,7 +175,7 @@ export function TerminalComponent({
     const term = termRef.current;
     if (!term) return;
 
-    const disposable = term.onData((data) => {
+    const disposable = term.onData((data: string) => {
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ type: "input", data }));
       }

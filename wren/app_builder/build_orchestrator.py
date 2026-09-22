@@ -232,6 +232,9 @@ def _build_project_context(design: ArchitectureDesign, files_so_far: list[BuildA
     if design.warnings:
         parts.append(f"\nWarnings: {design.warnings}")
 
+    # Visual design system — every generated file must follow it
+    parts.append(f"\n{design.design_system.to_context()}")
+
     # Previously generated files
     if files_so_far:
         parts.append(f"\n=== GENERATED FILES ({len(files_so_far)}) ===")
@@ -469,6 +472,8 @@ class BuildOrchestrator:
                     f"File: {file_path}\n"
                     f"Project: {design.project_name}\n"
                     f"Stack: {json.dumps(design.tech_stack)}\n"
+                    "\nDESIGN RULE: Any UI code in this file MUST follow the VISUAL DESIGN SYSTEM above — "
+                    "use its exact palette, fonts, spacing, radius, and motion. Never invent new styles.\n"
                 )
 
                 if component:

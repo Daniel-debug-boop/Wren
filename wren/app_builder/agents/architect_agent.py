@@ -55,6 +55,47 @@ class DataModelSpec:
 
 
 @dataclass
+class DesignSystemSpec:
+    """Visual design system for the generated app.
+
+    Produced once by the Architect (or a dedicated design pass) and injected
+    into every file-generation call so the whole UI is visually consistent.
+    Without this, each LLM file call improvises its own styles and the
+    result looks generic and incoherent.
+    """
+
+    theme_name: str = "clean-modern"
+    color_palette: dict[str, str] = field(default_factory=dict)  # name -> hex
+    typography: dict[str, str] = field(default_factory=dict)  # role -> font stack/size
+    spacing_scale: list[str] = field(default_factory=list)  # Tailwind-ish scale hints
+    border_radius: str = "10px"
+    shadow_style: str = "soft layered shadows"
+    motion: str = "subtle 150-250ms ease-out transitions"
+    layout_style: str = "responsive, mobile-first, generous whitespace"
+    iconography: str = "inline SVG, 1.5px stroke, rounded caps"
+    accessibility: str = "WCAG 2.1 AA contrast, focus rings, aria labels"
+    notes: str = ""  # free-form design directives from the LLM
+
+    def to_context(self) -> str:
+        """Render as a compact context block for LLM prompts."""
+        palette = ", ".join(f"{k}: {v}" for k, v in self.color_palette.items())
+        type_ = ", ".join(f"{k}: {v}" for k, v in self.typography.items())
+        lines = [
+            "## VISUAL DESIGN SYSTEM (MANDATORY — apply to all UI code)",
+            f"Theme: {self.theme_name}",
+            f"Colors: {palette or 'see notes'}",
+            f"Typography: {type_ or 'see notes'}",
+            f"Spacing: {', '.join(self.spacing_scale) or 'standard 4px scale'}",
+            f"Radius: {self.border_radius} | Shadows: {self.shadow_style}",
+            f"Motion: {self.motion} | Layout: {self.layout_style}",
+            f"Icons: {self.iconography} | A11y: {self.accessibility}",
+        ]
+        if self.notes:
+            lines.append(f"Design directives: {self.notes}")
+        return "\n".join(lines)
+
+
+@dataclass
 class RouteSpec:
     """Specification for an API route or page route."""
 
@@ -82,6 +123,7 @@ class ArchitectureDesign:
     warnings: list[str] = field(default_factory=list)
     has_3d: bool = False
     has_game: bool = False
+    design_system: DesignSystemSpec = field(default_factory=DesignSystemSpec)
     additional_context: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -99,6 +141,7 @@ class ArchitectureDesign:
             "warnings": self.warnings,
             "has_3d": self.has_3d,
             "has_game": self.has_game,
+            "design_system": asdict(self.design_system),
             "additional_context": self.additional_context,
         }
 
@@ -135,6 +178,32 @@ For EVERY project directive, analyze ALL of these dimensions:
 {
   "projectName": "kebab-case-project-name",
   "projectType": "web|3d-web|game-2d|game-3d|mobile|api|desktop|cli",
+  "designSystem": {
+    "themeName": "short memorable theme name reflecting the product's purpose",
+    "colorPalette": {
+      "bg": "#hex background",
+      "surface": "#hex surface/cards",
+      "border": "#hex hairline",
+      "textPrimary": "#hex primary ink",
+      "textSecondary": "#hex secondary ink",
+      "accent": "#hex primary accent",
+      "accentHover": "#hex accent hover",
+      "success": "#hex",
+      "error": "#hex"
+    },
+    "typography": {
+      "display": "font stack for headings",
+      "body": "font stack for body text",
+      "mono": "mono stack for code"
+    },
+    "spacingScale": ["4px base scale tokens"],
+    "borderRadius": "e.g. 10px",
+    "shadowStyle": "one-line shadow language",
+    "motion": "one-line motion language",
+    "layoutStyle": "one-line layout language",
+    "iconography": "one-line icon language",
+    "notes": "3-5 sentences of concrete design directives: mood, personality, what makes this UI distinctive and beautiful, what to avoid"
+  },
   "summary": "One-paragraph architecture summary explaining the full system design",
   "techStack": {
     "frontend": "React 19 + Vite + Tailwind",
@@ -251,6 +320,11 @@ For EVERY project directive, analyze ALL of these dimensions:
 - DATABASE: Include ALL models with complete field definitions and relationships.
 - AUTH: Include ALL endpoints, middleware, token strategy, and password hashing.
 - TESTING: Include test file paths in the dependency order.
+- DESIGN SYSTEM: For ANY project with a visual surface (web, 3d-web, game,
+  mobile, desktop), craft a distinctive, opinionated design system — specific
+  hex colors chosen for the product's mood (NOT default blue/purple), real font
+  stacks, and concrete directives. The palette must feel intentional and
+  cohesive, like a designer made it. CLI/API-only projects may omit designSystem.
 - INFRASTRUCTURE: Dockerfile, docker-compose.yml, .env.example, CI/CD config.
 - NEVER skip: package.json, tsconfig, vite.config, README, .gitignore, env files.
 """
@@ -363,6 +437,25 @@ class ArchitectAgent:
             for r in data.get("routes", [])
         ]
 
+        # Parse design system (optional; safe defaults keep pipeline resilient)
+        ds_data = data.get("designSystem") or {}
+        design_system = DesignSystemSpec(
+            theme_name=ds_data.get("themeName", "clean-modern"),
+            color_palette=ds_data.get("colorPalette", {}) or {},
+            typography=ds_data.get("typography", {}) or {},
+            spacing_scale=ds_data.get("spacingScale", []) or [],
+            border_radius=ds_data.get("borderRadius", "10px"),
+            shadow_style=ds_data.get("shadowStyle", "soft layered shadows"),
+            motion=ds_data.get("motion", "subtle 150-250ms ease-out transitions"),
+            layout_style=ds_data.get(
+                "layoutStyle", "responsive, mobile-first, generous whitespace"
+            ),
+            iconography=ds_data.get(
+                "iconography", "inline SVG, 1.5px stroke, rounded caps"
+            ),
+            notes=ds_data.get("notes", ""),
+        )
+
         return ArchitectureDesign(
             project_name=data.get("projectName", "project"),
             project_type=data.get("projectType", "web"),
@@ -377,6 +470,7 @@ class ArchitectAgent:
             warnings=data.get("warnings", []),
             has_3d=data.get("has3d", False),
             has_game=data.get("isGame", False),
+            design_system=design_system,
             additional_context=data.get("additionalContext", {}),
         )
 

@@ -114,14 +114,77 @@ const NAV_ITEMS = [
       </svg>
     ),
   },
+  {
+    to: "/orchestration",
+    label: "Orchestration",
+    icon: (
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="5" r="2.5" />
+        <circle cx="5" cy="19" r="2.5" />
+        <circle cx="19" cy="19" r="2.5" />
+        <path d="M12 7.5v4M12 11.5 6.5 17M12 11.5l5.5 5.5" />
+      </svg>
+    ),
+  },
+  {
+    to: "/workspace",
+    label: "Workspace",
+    icon: (
+      <svg
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect x="2" y="4" width="20" height="16" rx="2" />
+        <path d="M2 9h20M8 9v11" />
+      </svg>
+    ),
+  },
 ];
 
 /* ── Layout ── */
+
+/* ── Theme (dark mode) ────────────────────────────────────────────────────── */
+
+const THEME_KEY = "wren-theme";
+
+function useTheme() {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    const saved = window.localStorage.getItem(THEME_KEY);
+    return saved === "dark" ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+    window.localStorage.setItem(THEME_KEY, theme);
+  }, [theme]);
+
+  return {
+    theme,
+    toggle: () => setTheme((t) => (t === "dark" ? "light" : "dark")),
+  };
+}
 
 export default function RootLayout() {
   const location = useLocation();
   const isHome = location.pathname === "/";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const { theme, toggle: toggleTheme } = useTheme();
 
   /* Close the drawer whenever the route changes */
   useEffect(() => {
@@ -341,6 +404,47 @@ export default function RootLayout() {
                 >
                   v1.0.0 — Self-hosted
                 </span>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  aria-label={
+                    theme === "dark"
+                      ? "Switch to light mode"
+                      : "Switch to dark mode"
+                  }
+                  title={theme === "dark" ? "Light mode" : "Dark mode"}
+                  className="ml-auto flex h-6 w-6 items-center justify-center rounded-md transition-colors duration-200 ease-out hover:bg-black/5 dark:hover:bg-white/10"
+                  style={{ color: "var(--text-tertiary)" }}
+                >
+                  {theme === "dark" ? (
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <circle cx="12" cy="12" r="4" />
+                      <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                  )}
+                </button>
               </div>
             </div>
           </aside>

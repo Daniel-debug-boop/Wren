@@ -18,11 +18,10 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-    "@/*": ["./src/*"],
-    "#/*": ["./src/*"]
-  }
+      "@/*": ["./src/*"],
+      "#/*": ["./src/*"]
+    }
   },
   "include": ["src", "vite-env.d.ts"],
-  "rootDir": ".",
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "rootDir": "."
 }

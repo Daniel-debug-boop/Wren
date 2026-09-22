@@ -15,6 +15,8 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import re
+import subprocess
 import sys
 import time
 from dataclasses import dataclass, field, asdict
@@ -347,6 +349,12 @@ class BuildOrchestrator:
             # STAGE 3: ERROR RECOVERY (retry failed files)
             # ════════════════════════════════════════════════════════
             success_count = await self._retry_failed_files(design)
+
+            # ════════════════════════════════════════════════════════
+            # STAGE 3.5: SELF-HEALING TEST LOOP
+            # ════════════════════════════════════════════════════════
+            if self._validate:
+                await self._run_test_heal_loop()
 
             # ════════════════════════════════════════════════════════
             # STAGE 4: VALIDATE
@@ -752,6 +760,179 @@ class BuildOrchestrator:
         self._display.agent_done(
             "Validation", issues == 0, f"{issues} issues found" if issues else "All checks passed", elapsed
         )
+
+    # ── Self-healing test loop ─────────────────────────────────
+
+    def _find_test_files(self) -> list[Path]:
+        """Locate generated test files in the output directory."""
+        if not self._output_dir:
+            return []
+        return [
+            p
+            for p in self._output_dir.rglob("*")
+            if p.is_file()
+            and (
+                p.name.startswith("test_") or p.name.endswith("_test.py")
+            )
+            and p.suffix == ".py"
+        ]
+
+    def _run_generated_tests(self, test_files: list[Path]) -> tuple[bool, str]:
+        """Run pytest against generated tests. Returns (all_passed, output)."""
+        if not test_files or not self._output_dir:
+            return True, ""
+        try:
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    "-m",
+                    "pytest",
+                    *[str(p) for p in test_files],
+                    "--no-header",
+                    "-q",
+                    "--tb=short",
+                    f"--rootdir={self._output_dir}",
+                    "-p",
+                    "no:cacheprovider",
+                ],
+                cwd=str(self._output_dir),
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            output = (proc.stdout + "\n" + proc.stderr)[-4000:]
+            return proc.returncode == 0, output
+        except (subprocess.TimeoutExpired, OSError) as e:
+            return False, f"test runner error: {e}"
+
+    def _discover_test_framework(self) -> str | None:
+        """Detect pytest availability for generated Python projects."""
+        try:
+            subprocess.run(
+                [sys.executable, "-m", "pytest", "--version"],
+                capture_output=True,
+                timeout=15,
+                check=True,
+            )
+            return "pytest"
+        except (subprocess.TimeoutExpired, OSError, subprocess.CalledProcessError):
+            return None
+
+    async def _run_test_heal_loop(self) -> None:
+        """Run generated tests and feed failures back to the LLM for repair.
+
+        This is the self-healing loop: generated tests are actually EXECUTED
+        (not just linted), and failing output is sent to the LLM to fix the
+        broken source/test files, up to max_corrections rounds.
+        """
+        self._display.agent_start(
+            "Self-Healing Tests", "Executing generated tests and repairing failures..."
+        )
+        start = time.time()
+
+        framework = self._discover_test_framework()
+        test_files = self._find_test_files()
+
+        if not framework or not test_files:
+            elapsed = time.time() - start
+            detail = "no pytest" if not framework else "no test files generated"
+            self._agent_results.append(AgentResult("Self-Healing Tests", True, elapsed, detail))
+            self._display.agent_done("Self-Healing Tests", True, detail, elapsed)
+            return
+
+        self._display.log(f"Running {len(test_files)} test file(s) with {framework}...")
+
+        all_passed = False
+        last_output = ""
+        repairs = 0
+
+        for round_num in range(1, self._max_corrections + 1):
+            all_passed, last_output = self._run_generated_tests(test_files)
+            if all_passed:
+                break
+
+            if round_num == self._max_corrections:
+                break
+
+            # Feed the failure output back to the LLM for repair
+            self._display.log(f"  Round {round_num}: tests failing, asking LLM to repair...")
+            failing_files = self._extract_failing_files(last_output)
+            context = _build_project_context(self._design, self._files) if self._design else ""
+
+            system_prompt = (
+                "You are a software engineer repairing a generated project. "
+                "The project's test suite FAILS with the output below.\n"
+                "Fix the ROOT CAUSE: regenerate the COMPLETE corrected file(s).\n"
+                "If a test itself is wrong (wrong function name, wrong expectation), "
+                "fix the test. If the source is wrong, fix the source.\n"
+                "Keep the public API consistent across files.\n\n"
+                f"Project context:\n{context[:3000]}\n\n"
+                f"TEST OUTPUT (failures):\n{last_output[:3000]}\n\n"
+                "For EACH file that needs changes, output the complete corrected "
+                "file in a fenced code block preceded by a line 'FILE: <path>'."
+            )
+
+            try:
+                response = await self._llm.send(
+                    system_prompt,
+                    f"Repair the failing tests. Round {round_num}.",
+                )
+                applied = self._apply_file_repairs(response)
+                repairs += applied
+                if applied:
+                    self._display.log(f"  Applied {applied} repair file(s)")
+                else:
+                    self._display.log("  No valid repairs returned; stopping")
+                    break
+            except Exception as e:
+                self._display.log(f"  Repair attempt failed: {e}")
+                break
+
+        elapsed = time.time() - start
+        success = all_passed
+        detail = (
+            f"tests passed"
+            if all_passed
+            else f"tests still failing after {repairs} repair(s)"
+        )
+        self._agent_results.append(AgentResult("Self-Healing Tests", success, elapsed, detail))
+        self._display.agent_done("Self-Healing Tests", success, detail, elapsed)
+
+    def _extract_failing_files(self, pytest_output: str) -> list[str]:
+        """Extract failing file paths from pytest short traceback output."""
+        paths = set()
+        for m in re.finditer(r"^(\S+\.py):\d+", pytest_output, re.MULTILINE):
+            paths.add(m.group(1))
+        for m in re.finditer(r"^(FAILED|ERROR) (\S+\.py)", pytest_output, re.MULTILINE):
+            paths.add(m.group(2))
+        return sorted(paths)[:5]
+
+    def _apply_file_repairs(self, response: str) -> int:
+        """Parse 'FILE: <path>' + fenced blocks from the LLM and write them."""
+        if not self._output_dir:
+            return 0
+        pattern = re.compile(
+            r"FILE:\s*(\S+\.py)\s*\n+```[a-zA-Z]*\n(.*?)```", re.DOTALL
+        )
+        applied = 0
+        for m in pattern.finditer(response):
+            rel_path, content = m.group(1), m.group(2)
+            # Only allow paths inside the project output dir
+            if ".." in rel_path:
+                continue
+            target = self._output_dir / rel_path
+            try:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(content)
+                applied += 1
+                # Keep the in-memory artifact in sync if tracked
+                for f in self._files:
+                    if f.path == rel_path:
+                        f.content = content
+                        break
+            except OSError:
+                continue
+        return applied
 
     # ── Progress callback ─────────────────────────────────────────
 

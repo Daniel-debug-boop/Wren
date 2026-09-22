@@ -5,6 +5,7 @@ import json
 import logging
 import os
 import zipfile
+from pathlib import Path
 from collections import defaultdict
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -184,11 +185,35 @@ class _StreamingZipBuffer(io.RawIOBase):
 
 
 def _expected_sdk_version() -> str | None:
-    """App's pinned wren-sdk version, or None if its metadata is unresolvable."""
+    """App's pinned wren-sdk version, or None if its metadata is unresolvable.
+
+    Resolution order:
+    1. Installed distribution metadata (pip-installed wren-sdk).
+    2. The in-repo checkout at ``<repo>/wren-sdk/pyproject.toml`` — the
+       namespace-package path magic in ``wren/__init__.py`` serves the SDK
+       from the repository without installing it as a distribution.
+    """
     try:
         return importlib.metadata.version('wren-sdk')
     except importlib.metadata.PackageNotFoundError:
-        return None
+        pass
+    # Fall back to the in-repo SDK checkout (path served via wren/__init__)
+    repo_root = Path(__file__).resolve().parents[3]
+    sdk_pyproject = repo_root / 'wren-sdk' / 'pyproject.toml'
+    try:
+        in_project = False
+        for raw in sdk_pyproject.read_text(encoding='utf-8').splitlines():
+            line = raw.strip()
+            if line.startswith('['):
+                if in_project:
+                    break  # left [project] without finding version
+                in_project = line == '[project]'
+                continue
+            if in_project and line.startswith('version = '):
+                return line.split('=', 1)[1].strip().strip('"').strip("'")
+    except OSError:
+        pass
+    return None
 
 
 # Planning agent instruction to prevent "Ready to proceed?" behavior

@@ -1,3 +1,4 @@
+import re
 import warnings
 
 from pydantic import BaseModel
@@ -237,6 +238,10 @@ def _assign_provider(model: str) -> str:
     try:
         _, provider, _, _ = get_llm_provider(model)
     except Exception:
+        # Bedrock-style dotted IDs (e.g. cohere.command-r-v1:0) are not in
+        # LiteLLM's model_cost under that bare form; route them to bedrock.
+        if re.match(r'^[a-z0-9]+\.[a-z0-9][a-z0-9.\-]*:\d+$', model):
+            return f'bedrock/{model}'
         return model
     return f'{provider}/{model}' if provider else model
 

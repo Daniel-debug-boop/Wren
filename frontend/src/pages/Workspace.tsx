@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import Editor, { type OnMount, type BeforeMount } from "@monaco-editor/react";
+import "../lib/monaco-setup";
 import { TerminalComponent } from "../components/Terminal";
 import {
   PanelLeftClose,

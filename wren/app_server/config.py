@@ -172,7 +172,7 @@ def resolve_provider_llm_base_url(
     return base_url
 
 
-def _get_default_lifespan():
+def _get_default_lifespan() -> Any:
     # Check legacy parameters for saas mode. If we are in SAAS mode use
     # SaasAppLifespanService to initialize PostHog analytics
     if 'saas' in (os.getenv('WREN_CONFIG_CLS') or '').lower():
@@ -570,74 +570,74 @@ def get_app_lifespan_service() -> AppLifespanService | None:
     return config.lifespan
 
 
-def depends_event_service():
+def depends_event_service() -> Any:
     injector = get_global_config().event
     if injector is None:
         raise RuntimeError('Event service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_event_callback_service():
+def depends_event_callback_service() -> Any:
     injector = get_global_config().event_callback
     if injector is None:
         raise RuntimeError('Event callback service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_sandbox_service():
+def depends_sandbox_service() -> Any:
     injector = get_global_config().sandbox
     if injector is None:
         raise RuntimeError('Sandbox service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_sandbox_spec_service():
+def depends_sandbox_spec_service() -> Any:
     injector = get_global_config().sandbox_spec
     if injector is None:
         raise RuntimeError('Sandbox spec service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_app_conversation_info_service():
+def depends_app_conversation_info_service() -> Any:
     injector = get_global_config().app_conversation_info
     if injector is None:
         raise RuntimeError('App conversation info service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_app_conversation_start_task_service():
+def depends_app_conversation_start_task_service() -> Any:
     injector = get_global_config().app_conversation_start_task
     if injector is None:
         raise RuntimeError('App conversation start task service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_app_conversation_service():
+def depends_app_conversation_service() -> Any:
     injector = get_global_config().app_conversation
     if injector is None:
         raise RuntimeError('App conversation service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_pending_message_service():
+def depends_pending_message_service() -> Any:
     injector = get_global_config().pending_message
     if injector is None:
         raise RuntimeError('Pending message service injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_user_context():
+def depends_user_context() -> Any:
     injector = get_global_config().user
     if injector is None:
         raise RuntimeError('User context injector is not configured')
     return Depends(injector.depends)
 
 
-def depends_httpx_client():
+def depends_httpx_client() -> Any:
     return Depends(get_global_config().httpx.depends)
 
 
-def depends_jwt_service():
+def depends_jwt_service() -> Any:
     injector = get_global_config().jwt
     assert injector is not None
     return Depends(injector.depends)
@@ -652,7 +652,7 @@ def get_llm_model_service(
     return injector.context(state, request)
 
 
-def depends_llm_model_service():
+def depends_llm_model_service() -> Any:
     injector = get_global_config().llm_model
     if injector is None:
         raise RuntimeError('LLM model service injector is not configured')

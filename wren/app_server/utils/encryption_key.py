@@ -20,7 +20,7 @@ class EncryptionKey(BaseModel):
     created_at: datetime.datetime = Field(default_factory=utc_now)
 
     @field_serializer('key')
-    def serialize_key(self, key: SecretStr, info: Any):
+    def serialize_key(self, key: SecretStr, info: Any) -> Any:
         """Conditionally serialize the key based on context."""
         if info.context and info.context.get('expose_secrets'):
             return key.get_secret_value()

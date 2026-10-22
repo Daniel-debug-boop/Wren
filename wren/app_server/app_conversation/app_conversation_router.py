@@ -97,7 +97,7 @@ if sys.version_info >= (3, 10):
     from builtins import anext
 else:
 
-    async def anext(async_iterator):
+    async def anext(async_iterator) -> Any:
         """Compatibility function for anext in Python < 3.10"""
         return await async_iterator.__anext__()
 

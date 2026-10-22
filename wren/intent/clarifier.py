@@ -8,9 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
-
-from wren.intent.analyzer import ExtractedIntent, IntentConfidence
+from typing import, from wren.intent.analyzer import ExtractedIntent, IntentConfidence
 from wren.intent.psychology import (
     ProjectType,
 )
@@ -22,10 +20,7 @@ class QuestionPriority(Enum):
     CRITICAL = 'critical'  # Must answer to proceed
     HIGH = 'high'  # Should answer for good results
     MEDIUM = 'medium'  # Nice to have
-    LOW = 'low'  # Optional
-
-
-class QuestionCategory(Enum):
+    LOW = 'low'  #, class QuestionCategory(Enum):
     """Category of clarification question."""
 
     PURPOSE = 'purpose'
@@ -344,7 +339,7 @@ class ClarificationEngine:
 
     def process_answer(
         self, question: ClarificationQuestion, answer: str
-    ) -> Optional[str]:
+    ) -> str | None:
         """Process an answer and return follow-up if needed."""
         if question.follow_up:
             return question.follow_up.replace(

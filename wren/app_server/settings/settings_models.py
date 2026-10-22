@@ -560,7 +560,7 @@ class Settings(BaseModel):
     # ── Serialization ───────────────────────────────────────────────
 
     @field_serializer('search_api_key')
-    def api_key_serializer(self, api_key: SecretStr | None, info: SerializationInfo):
+    def api_key_serializer(self, api_key: SecretStr | None, info: SerializationInfo) -> Any:
         if api_key is None:
             return None
         secret_value = api_key.get_secret_value()
@@ -678,7 +678,7 @@ class Settings(BaseModel):
         return data
 
     @field_serializer('secrets_store')
-    def secrets_store_serializer(self, secrets: Any, info: SerializationInfo):
+    def secrets_store_serializer(self, secrets: Any, info: SerializationInfo) -> Any:
         return {'provider_tokens': {}}
 
     def to_agent_settings(self) -> OpenHandsAgentSettings | ACPAgentSettings:

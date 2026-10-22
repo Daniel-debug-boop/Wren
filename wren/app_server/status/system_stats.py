@@ -26,7 +26,7 @@ def get_system_info() -> dict[str, object]:
     }
 
 
-def update_last_execution_time():
+def update_last_execution_time() -> None:
     global _last_execution_time
     _last_execution_time = time.time()
 

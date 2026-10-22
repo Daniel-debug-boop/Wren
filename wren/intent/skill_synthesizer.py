@@ -17,10 +17,7 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Optional
-
-
-class GapSeverity(Enum):
+from typing import, class GapSeverity(Enum):
     """How critical the knowledge gap is."""
 
     CRITICAL = 'critical'  # Can't proceed without this knowledge
@@ -61,14 +58,14 @@ class SynthesizedSkill:
     triggers: list[str]
     complexity: SkillComplexity
     source_gap: KnowledgeGap
-    file_path: Optional[str] = None
+    file_path: str | None = None
     verified: bool = False
 
 
 class SkillSynthesizer:
     """Detects knowledge gaps and generates skills to fill them."""
 
-    def __init__(self, skills_dir: Optional[str] = None) -> None:
+    def __init__(self, skills_dir: str | None = None) -> None:
         if skills_dir is None:
             # Default to the skills directory in the repo
             skills_dir = str(Path(__file__).parent.parent.parent / 'skills')
@@ -85,9 +82,9 @@ class SkillSynthesizer:
     def detect_gap(
         self,
         task_description: str,
-        error_output: Optional[str] = None,
-        context: Optional[str] = None,
-    ) -> Optional[KnowledgeGap]:
+        error_output: str | None = None,
+        context: str | None = None,
+    ) -> KnowledgeGap | None:
         """Detect if a knowledge gap exists for the given task.
 
         Analyzes the task description and any error output to determine

@@ -578,7 +578,7 @@ async def _run_callbacks_in_bg_and_close(
             await event_callback_service.execute_callbacks(conversation_id, event)
 
 
-def _import_all_tools():
+def _import_all_tools() -> None:
     """We need to import all tools so that they are available for deserialization in webhooks."""
     for _, name, is_pkg in pkgutil.walk_packages(tools.__path__, tools.__name__ + '.'):
         if is_pkg:  # Check if it's a subpackage

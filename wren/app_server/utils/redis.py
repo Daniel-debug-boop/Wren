@@ -17,7 +17,7 @@ _redis_client_async: aioredis.Redis | None = None
 _redis_lock = threading.Lock()
 
 
-def _get_redis_kwargs():
+def _get_redis_kwargs() -> Any:
     """Return common kwargs for Redis client creation."""
     return {
         'host': REDIS_HOST,
@@ -62,7 +62,7 @@ def get_redis_client_async() -> aioredis.Redis:
     return _redis_client_async
 
 
-def get_redis_authed_url():
+def get_redis_authed_url() -> Any:
     return f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
 
 

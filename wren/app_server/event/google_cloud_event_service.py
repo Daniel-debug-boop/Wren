@@ -54,7 +54,7 @@ class GoogleCloudEventService(EventServiceBase):
             _logger.exception(f'Error reading event from {path}')
             return None
 
-    def _store_event(self, path: Path, event: Event):
+    def _store_event(self, path: Path, event: Event) -> None:
         """Store the event given at the path given."""
         blob: Blob = self.bucket.blob(str(path))
         data = event.model_dump(mode='json')

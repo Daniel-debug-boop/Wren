@@ -171,7 +171,7 @@ class AppConversationServiceBase(AppConversationService, ABC):
             # Return empty list on failure - skills will be loaded again later if needed
             return []
 
-    def _create_agent_with_skills(self, agent, skills: list[Skill]):
+    def _create_agent_with_skills(self, agent, skills: list[Skill]) -> Any:
         """Create or update agent with skills in its context.
 
         Args:
@@ -262,7 +262,7 @@ class AppConversationServiceBase(AppConversationService, ABC):
         # Lightweight background check for missing common capabilities
         # Runs as an async task so it never blocks startup.
         # Installed tools are available on subsequent conversations.
-        async def _background_tool_check():
+        async def _background_tool_check() -> None:
             try:
                 orchestrator = ToolOrchestrator()
                 report = await orchestrator.ensure_capabilities(

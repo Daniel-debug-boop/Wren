@@ -91,7 +91,7 @@ class AuthUserContext(UserContext):
                         results[env_key] = token_value
         return results
 
-    async def get_provider_handler(self):
+    async def get_provider_handler(self) -> Any:
         provider_handler = self._provider_handler
         if not provider_handler:
             provider_tokens = await self.user_auth.get_provider_tokens()

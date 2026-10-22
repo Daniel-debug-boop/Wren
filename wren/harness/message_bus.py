@@ -77,7 +77,7 @@ class MessageBus:
         self._max_history = 500
         self._running = False
         self._lock = asyncio.Lock()
-        self._auth = auth  # Optional[BusAuth]
+        self._auth = auth  # BusAuth | None
         self._in_dispatch = False  # True while dispatching to subscribers
 
         # Dead-letter queue — messages that failed dispatch or expired

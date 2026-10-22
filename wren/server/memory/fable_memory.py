@@ -9,7 +9,7 @@ import uuid
 from abc import ABC, abstractmethod
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable
+from typing import Any, Dict, List, Protocol, runtime_checkable
 
 try:
     import structlog
@@ -53,13 +53,13 @@ class MemoryItem(BaseModel):
     id: str = Field(default_factory=lambda: f'mem_{uuid.uuid4().hex[:12]}')
     type: MemoryType
     content: str
-    key: Optional[str] = None  # For preferences/rules
+    key: str | None = None  # For preferences/rules
     created_at: float = Field(default_factory=time.time)
     last_accessed: float = Field(default_factory=time.time)
     access_count: int = 0
     tags: List[str] = Field(default_factory=list)
     metadata: Dict[str, Any] = Field(default_factory=dict)
-    embedding: Optional[List[float]] = None  # For vector search
+    embedding: List[float] | None = None  # For vector search
 
 
 # ---------------------------------------------------------------------------
@@ -126,7 +126,7 @@ class LocalJSONStore(MemoryStore):
         self.storage_path = Path(storage_path).expanduser()
         self.storage_path.parent.mkdir(parents=True, exist_ok=True)
         self._lock = asyncio.Lock()
-        self._cache: Optional[List[MemoryItem]] = None
+        self._cache: List[MemoryItem] | None = None
 
     async def load_all(self) -> List[MemoryItem]:
         if self._cache is not None:
@@ -138,7 +138,7 @@ class LocalJSONStore(MemoryStore):
                 return []
 
             # Run blocking file read in executor
-            def _read():
+            def _read() -> Any:
                 with open(self.storage_path, 'r') as f:
                     raw = json.load(f)
                 return [MemoryItem(**item) for item in raw.get('memories', [])]
@@ -179,7 +179,7 @@ class LocalJSONStore(MemoryStore):
     async def _atomic_flush(self, memories: List[MemoryItem]) -> None:
         """Writes to a temp file, then atomically replaces the target file."""
 
-        def _write():
+        def _write() -> None:
             data = {'memories': [m.model_dump() for m in memories]}
             tmp_path = self.storage_path.with_suffix('.tmp')
             with open(tmp_path, 'w') as f:
@@ -205,9 +205,9 @@ class FableMemoryManager:
 
     def __init__(
         self,
-        store: Optional[MemoryStore] = None,
+        store: MemoryStore | None = None,
         storage_path: str = '~/.wren/fable_memory.json',
-        embedder: Optional[Embedder] = None,
+        embedder: Embedder | None = None,
         max_items: int = 1000,
         token_budget: int = 2000,
     ):
@@ -223,7 +223,7 @@ class FableMemoryManager:
         logger.info(f'fable_memory.loaded, count={len(self._cache)}')
 
     async def update_lesson(
-        self, short_summary: str, tags: Optional[List[str]] = None
+        self, short_summary: str, tags: List[str] | None = None
     ) -> str:
         """Allows the agent loop to self-update its knowledge database."""
         # Prevent exact duplicate lessons

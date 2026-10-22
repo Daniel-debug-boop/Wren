@@ -183,7 +183,7 @@ class AppConversationService(ABC):
         """
         content = await self.export_conversation(conversation_id)
 
-        async def stream():
+        async def stream() -> None:
             yield content
 
         return stream()

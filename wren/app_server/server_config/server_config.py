@@ -24,11 +24,11 @@ class ServerConfig(ServerConfigInterface):
     analytics_user_provider_class: str | None = None
     enable_v1: bool = os.getenv('ENABLE_V1') != '0'
 
-    def verify_config(self):
+    def verify_config(self) -> None:
         if self.config_cls:
             raise ValueError('Unexpected config path provided')
 
-    def get_config(self):
+    def get_config(self) -> Any:
         config = {
             'APP_MODE': self.app_mode,
             'GITHUB_CLIENT_ID': self.github_client_id,

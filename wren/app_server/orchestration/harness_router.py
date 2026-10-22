@@ -110,7 +110,7 @@ def _get_orch(session_id: str) -> MetaOrchestrator:
 
 
 @router.post('/process-goal')
-async def harness_process_goal(session_id: str, goal: str):
+async def harness_process_goal(session_id: str, goal: str) -> Any:
     """Process a goal through the MetaOrchestrator: decompose, spawn, execute.
 
     This is the main entry point. Returns task IDs as they are created.
@@ -168,7 +168,7 @@ async def harness_assign_task(
 
 
 @router.post('/kill-agent')
-async def harness_kill_agent(session_id: str, handle: str):
+async def harness_kill_agent(session_id: str, handle: str) -> Any:
     """Kill a child agent by handle."""
     orch = _get_orch(session_id)
     await orch.kill_agent(handle)
@@ -181,7 +181,7 @@ async def harness_kill_agent(session_id: str, handle: str):
 
 
 @router.get('/status')
-async def harness_status(session_id: str):
+async def harness_status(session_id: str) -> Any:
     """Get full orchestrator status: children, tasks, health, budget."""
     orch = _get_orch(session_id)
     status_data = orch.status()
@@ -196,7 +196,7 @@ async def harness_status(session_id: str):
 
 
 @router.get('/health')
-async def harness_health(session_id: str):
+async def harness_health(session_id: str) -> Any:
     """Run health checks on all harness subsystems."""
     orch = _get_orch(session_id)
     report = await orch.health_check()
@@ -208,7 +208,7 @@ async def harness_health(session_id: str):
 
 
 @router.get('/children')
-async def harness_children(session_id: str):
+async def harness_children(session_id: str) -> Any:
     """List all active child agents with their status."""
     orch = _get_orch(session_id)
     children = []
@@ -229,7 +229,7 @@ async def harness_children(session_id: str):
 
 
 @router.post('/think')
-async def harness_think(session_id: str, task: str):
+async def harness_think(session_id: str, task: str) -> Any:
     """Run ThinkPipeline risk assessment on a task before execution."""
     orch = _get_orch(session_id)
     pipeline = getattr(orch, '_think_pipeline', None)
@@ -250,7 +250,7 @@ async def harness_think(session_id: str, task: str):
 
 
 @router.post('/session/close')
-async def harness_close_session(session_id: str):
+async def harness_close_session(session_id: str) -> Any:
     """Close a harness session and clean up resources."""
     orch = _get_orch(session_id)
     if hasattr(orch, 'close') and callable(orch.close):

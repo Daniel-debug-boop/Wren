@@ -47,7 +47,7 @@ class EventServiceBase(EventService, ABC):
         """Get the event at the path given."""
 
     @abstractmethod
-    def _store_event(self, path: Path, event: Event):
+    def _store_event(self, path: Path, event: Event) -> None:
         """Store the event given at the path given."""
 
     @abstractmethod
@@ -189,7 +189,7 @@ class EventServiceBase(EventService, ABC):
         paths = await loop.run_in_executor(None, self._search_paths, conversation_path)
         return len(paths)
 
-    async def save_event(self, conversation_id: UUID, event: Event):
+    async def save_event(self, conversation_id: UUID, event: Event) -> None:
         if isinstance(event.id, str):
             id_hex = event.id.replace('-', '')
         else:

@@ -47,7 +47,7 @@ def auto_retry(
     if asyncio.iscoroutinefunction(fn):
 
         @wraps(fn)
-        async def async_wrapper(*args: Any, **kwargs: Any):
+        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
             return await _run_with_retry(
                 lambda: fn(*args, **kwargs),
                 op_name,
@@ -58,7 +58,7 @@ def auto_retry(
     else:
 
         @wraps(fn)
-        def sync_wrapper(*args: Any, **kwargs: Any):
+        def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
             return asyncio.run(
                 _run_with_retry(
                     lambda: _maybe_async(fn(*args, **kwargs)),

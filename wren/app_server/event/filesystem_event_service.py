@@ -30,7 +30,7 @@ class FilesystemEventService(EventServiceBase):
                 _logger.exception('Error reading event', stack_info=True)
             return None
 
-    def _store_event(self, path: Path, event: Event):
+    def _store_event(self, path: Path, event: Event) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         content = event.model_dump_json(indent=2)
         path.write_text(content)

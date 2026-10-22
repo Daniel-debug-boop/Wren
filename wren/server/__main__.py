@@ -10,7 +10,7 @@ import uvicorn
 from wren.app_server.utils.logger import LOG_JSON, get_uvicorn_log_config
 
 
-def main():
+def main() -> None:
     log_config = get_uvicorn_log_config()
 
     uvicorn.run(

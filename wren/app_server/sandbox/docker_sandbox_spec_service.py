@@ -32,7 +32,7 @@ def get_docker_client() -> docker.DockerClient:
     return _global_docker_client
 
 
-def get_default_sandbox_specs():
+def get_default_sandbox_specs() -> Any:
     return [
         SandboxSpecInfo(
             id=get_agent_server_image(),
@@ -75,10 +75,10 @@ class DockerSandboxSpecServiceInjector(SandboxSpecServiceInjector):
             self.pull_if_missing = False
         yield PresetSandboxSpecService(specs=self.specs)
 
-    async def pull_missing_specs(self):
+    async def pull_missing_specs(self) -> None:
         await asyncio.gather(*[self.pull_spec_if_missing(spec) for spec in self.specs])
 
-    async def pull_spec_if_missing(self, spec: SandboxSpecInfo):
+    async def pull_spec_if_missing(self, spec: SandboxSpecInfo) -> None:
         _logger.debug(f'Checking Docker Image: {spec.id}')
         try:
             docker_client = get_docker_client()
@@ -98,7 +98,7 @@ class DockerSandboxSpecServiceInjector(SandboxSpecServiceInjector):
         # Event to signal when pull is complete
         pull_complete = asyncio.Event()
 
-        async def periodic_logger():
+        async def periodic_logger() -> None:
             """Log progress message every 5 seconds until pull is complete."""
             while not pull_complete.is_set():
                 try:
@@ -108,7 +108,7 @@ class DockerSandboxSpecServiceInjector(SandboxSpecServiceInjector):
                     # 5 seconds elapsed, log progress message
                     _logger.info(f'🔄 Downloading Docker Image: {image_id}...')
 
-        async def pull_image():
+        async def pull_image() -> None:
             """Perform the actual Docker image pull."""
             try:
                 loop = asyncio.get_running_loop()

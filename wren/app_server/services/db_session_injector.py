@@ -49,7 +49,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
     _gcp_connector: Any = PrivateAttr(default=None)
 
     @model_validator(mode='after')
-    def fill_empty_fields(self):
+    def fill_empty_fields(self) -> Any:
         """Override any defaults with values from legacy environment variables"""
         if self.host is None:
             self.host = os.getenv('DB_HOST')
@@ -71,7 +71,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
             self.ssl_mode = os.getenv('DB_SSL_MODE') or os.getenv('PGSSLMODE')
         return self
 
-    def _create_gcp_db_connection(self):
+    def _create_gcp_db_connection(self) -> Any:
         gcp_connector = self._gcp_connector
         if gcp_connector is None:
             # Lazy import because lib does not import if user does not have posgres installed
@@ -91,7 +91,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
             db=self.name,
         )
 
-    async def _create_async_gcp_db_connection(self):
+    async def _create_async_gcp_db_connection(self) -> Any:
         # Lazy import because lib does not import if user does not have postgres installed
         from google.cloud.sql.connector import Connector
 
@@ -117,7 +117,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
         )
         return conn
 
-    def _create_gcp_engine(self):
+    def _create_gcp_engine(self) -> Any:
         engine = create_engine(
             'postgresql+pg8000://',
             creator=self._create_gcp_db_connection,
@@ -127,7 +127,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
         )
         return engine
 
-    async def _create_async_gcp_creator(self):
+    async def _create_async_gcp_creator(self) -> Any:
         from sqlalchemy.dialects.postgresql.asyncpg import (
             AsyncAdapt_asyncpg_connection,
             AsyncAdapt_asyncpg_dbapi,
@@ -139,7 +139,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
             prepared_statement_cache_size=100,
         )
 
-    async def _create_async_gcp_engine(self):
+    async def _create_async_gcp_engine(self) -> Any:
         from sqlalchemy.dialects.postgresql.asyncpg import (
             AsyncAdapt_asyncpg_connection,
             AsyncAdapt_asyncpg_dbapi,
@@ -147,7 +147,7 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
 
         dbapi = AsyncAdapt_asyncpg_dbapi(asyncpg)
 
-        def adapted_creator():
+        def adapted_creator() -> Any:
             return AsyncAdapt_asyncpg_connection(
                 dbapi,
                 await_only(self._create_async_gcp_db_connection()),
@@ -323,6 +323,6 @@ class DbSessionInjector(BaseModel, Injector[AsyncSession]):
                     await db_session.close()
 
 
-def set_db_session_keep_open(state: InjectorState, keep_open: bool):
+def set_db_session_keep_open(state: InjectorState, keep_open: bool) -> None:
     """Set whether the connection should be kept open after the request terminates."""
     setattr(state, DB_SESSION_KEEP_OPEN_ATTR, keep_open)

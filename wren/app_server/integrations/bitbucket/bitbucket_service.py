@@ -69,7 +69,7 @@ bitbucket_service_cls = os.environ.get(
 _bitbucket_service_impl = None
 
 
-def get_bitbucket_service_impl():
+def get_bitbucket_service_impl() -> Any:
     """Get the BitBucket service implementation with lazy loading."""
     global _bitbucket_service_impl
     if _bitbucket_service_impl is None:
@@ -81,11 +81,11 @@ def get_bitbucket_service_impl():
 class _BitBucketServiceImplProxy:
     """Proxy class to provide lazy loading for BitBucketServiceImpl."""
 
-    def __getattr__(self, name):
+    def __getattr__(self, name) -> Any:
         impl = get_bitbucket_service_impl()
         return getattr(impl, name)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Any:
         impl = get_bitbucket_service_impl()
         return impl(*args, **kwargs)
 

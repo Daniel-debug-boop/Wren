@@ -7,7 +7,7 @@ GENERAL_TIMEOUT: int = 15
 EXECUTOR = ThreadPoolExecutor()
 
 
-async def call_sync_from_async(fn: Callable, *args, **kwargs):
+async def call_sync_from_async(fn: Callable, *args, **kwargs) -> Any:
     """Shorthand for running a function in the default background thread pool executor
     and awaiting the result. The nature of synchronous code is that the future
     returned by this function is not cancellable
@@ -29,12 +29,12 @@ def call_async_from_sync(
     if not asyncio.iscoroutinefunction(corofn):
         raise ValueError('corofn is not a coroutine function')
 
-    async def arun():
+    async def arun() -> Any:
         coro = corofn(*args, **kwargs)
         result = await coro
         return result
 
-    def run():
+    def run() -> Any:
         loop_for_thread = asyncio.new_event_loop()
         try:
             asyncio.set_event_loop(loop_for_thread)
@@ -93,7 +93,7 @@ class AsyncException(Exception):
     def __init__(self, exceptions):
         self.exceptions = exceptions
 
-    def __str__(self):
+    def __str__(self) -> Any:
         return '\n'.join(str(e) for e in self.exceptions)
 
 
@@ -112,7 +112,7 @@ async def run_in_loop(
     return result
 
 
-def _run_in_loop(coro: Coroutine, loop: asyncio.AbstractEventLoop, timeout: float):
+def _run_in_loop(coro: Coroutine, loop: asyncio.AbstractEventLoop, timeout: float) -> Any:
     future = asyncio.run_coroutine_threadsafe(coro, loop)
     result = future.result(timeout=timeout)
     return result

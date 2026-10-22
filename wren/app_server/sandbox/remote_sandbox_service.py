@@ -214,7 +214,7 @@ class RemoteSandboxService(SandboxService):
 
         return SandboxStatus.MISSING
 
-    async def _secure_select(self):
+    async def _secure_select(self) -> Any:
         query = select(StoredRemoteSandbox)
         user_id = await self.user_context.get_user_id()
         if user_id:
@@ -859,7 +859,7 @@ def _build_service_url(url: str, service_name: str, runtime_id: str) -> str:
         return f'{scheme}://{service_name}-{netloc}{path}'
 
 
-async def poll_agent_servers(api_url: str, api_key: str, sleep_interval: int):
+async def poll_agent_servers(api_url: str, api_key: str, sleep_interval: int) -> None:
     """When the app server does not have a public facing url, we poll the agent
     servers for the most recent data.
 

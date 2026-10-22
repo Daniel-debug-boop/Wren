@@ -174,7 +174,7 @@ async def _broadcast_state(conversation_id: str) -> None:
 
 
 @router.websocket('/ws/{conversation_id}')
-async def orchestration_ws(websocket: WebSocket, conversation_id: str = 'default'):
+async def orchestration_ws(websocket: WebSocket, conversation_id: str = 'default') -> None:
     """WebSocket endpoint for live orchestration state updates.
 
     On connect the client receives the current full state, then
@@ -282,14 +282,14 @@ async def add_reflection(
 
 
 @router.get('/memory/summary')
-async def memory_summary(conversation_id: str | None = None):
+async def memory_summary(conversation_id: str | None = None) -> Any:
     """Get a plain-text summary of working memory."""
     wm = _store.get_wm(_conv_id(conversation_id))
     return {'summary': wm.summary()}
 
 
 @router.delete('/memory')
-async def clear_memory(conversation_id: str | None = None):
+async def clear_memory(conversation_id: str | None = None) -> Any:
     """Clear all working memory entries for a conversation."""
     wm = _store.get_wm(_conv_id(conversation_id))
     wm.clear_session()
@@ -327,7 +327,7 @@ async def manager_decompose(
 
 
 @router.get('/manager/plan')
-async def manager_plan(conversation_id: str | None = None):
+async def manager_plan(conversation_id: str | None = None) -> Any:
     """Get the current sub-task plan."""
     mgr = _store.get_manager(_conv_id(conversation_id))
     return {
@@ -337,14 +337,14 @@ async def manager_plan(conversation_id: str | None = None):
 
 
 @router.get('/manager/status')
-async def manager_status(conversation_id: str | None = None):
+async def manager_status(conversation_id: str | None = None) -> Any:
     """Get full manager status with counts."""
     mgr = _store.get_manager(_conv_id(conversation_id))
     return mgr.status()
 
 
 @router.get('/manager/summary')
-async def manager_summary(conversation_id: str | None = None):
+async def manager_summary(conversation_id: str | None = None) -> Any:
     """Get a plain-text manager summary."""
     mgr = _store.get_manager(_conv_id(conversation_id))
     return {'summary': mgr.summary()}
@@ -583,7 +583,7 @@ async def sub_agent_execute(
 
 
 @router.post('/error/classify')
-async def error_classify(error_text: str = Body(...)):
+async def error_classify(error_text: str = Body(...) -> Any):
     sig = ErrorSignature(error_text)
     registry = SolutionRegistry()
     known = registry.lookup(error_text)
@@ -612,7 +612,7 @@ async def error_record_success(
 
 
 @router.get('/error/solutions')
-async def error_solutions():
+async def error_solutions() -> Any:
     registry = SolutionRegistry()
     solutions = registry.all_solutions()
     return {'solutions': solutions, 'count': len(solutions)}
@@ -638,14 +638,14 @@ async def error_retry(
 
 
 @router.delete('/session/{conversation_id}')
-async def close_session(conversation_id: str):
+async def close_session(conversation_id: str) -> Any:
     """Close a conversation session and clean up resources."""
     _store.remove(conversation_id)
     return {'conversation_id': conversation_id, 'closed': True}
 
 
 @router.get('/sessions')
-async def list_sessions():
+async def list_sessions() -> Any:
     """List all active conversation sessions."""
     return {
         'sessions': list(_store._states.keys()),

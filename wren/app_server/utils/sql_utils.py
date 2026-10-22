@@ -22,7 +22,7 @@ class Base(DeclarativeBase):
 T = TypeVar('T', bound=Enum)
 
 
-def create_json_type_decorator(object_type: type):
+def create_json_type_decorator(object_type: type) -> Any:
     """Create a decorator for a particular type. Introduced because SQLAlchemy could not process lists of enum values."""
     type_adapter: TypeAdapter = TypeAdapter(object_type)
 
@@ -30,12 +30,12 @@ def create_json_type_decorator(object_type: type):
         impl = JSON
         cache_ok = True
 
-        def process_bind_param(self, value, dialect):
+        def process_bind_param(self, value, dialect) -> Any:
             return type_adapter.dump_python(
                 value, mode='json', context={'expose_secrets': True}
             )
 
-        def process_result_param(self, value, dialect):
+        def process_result_param(self, value, dialect) -> Any:
             return type_adapter.validate_python(value)
 
     return JsonTypeDecorator
@@ -47,7 +47,7 @@ class StoredSecretStr(TypeDecorator):
     impl = String
     cache_ok = True
 
-    def process_bind_param(self, value, dialect):
+    def process_bind_param(self, value, dialect) -> Any:
         if value is not None:
             from wren.app_server.config import get_global_config
 
@@ -58,7 +58,7 @@ class StoredSecretStr(TypeDecorator):
             return token
         return None
 
-    def process_result_param(self, value, dialect):
+    def process_result_param(self, value, dialect) -> Any:
         if value is not None:
             from wren.app_server.config import get_global_config
 
@@ -77,12 +77,12 @@ class UtcDateTime(TypeDecorator):
     impl = DateTime(timezone=True)
     cache_ok = True
 
-    def process_bind_param(self, value, dialect):
+    def process_bind_param(self, value, dialect) -> Any:
         if isinstance(value, datetime) and value.tzinfo != UTC:
             value = value.astimezone(UTC)
         return value
 
-    def process_result_param(self, value, dialect):
+    def process_result_param(self, value, dialect) -> Any:
         if isinstance(value, datetime):
             if value.tzinfo is None:
                 value = value.replace(tzinfo=UTC)
@@ -91,24 +91,24 @@ class UtcDateTime(TypeDecorator):
         return value
 
 
-def create_enum_type_decorator(enum_type: type[T]):
+def create_enum_type_decorator(enum_type: type[T]) -> Any:
     class EnumTypeDecorator(TypeDecorator):
         impl = String
         cache_ok = True
 
-        def process_bind_param(self, value, dialect):
+        def process_bind_param(self, value, dialect) -> Any:
             if value is None:
                 return None
             return value.value
 
-        def process_result_param(self, value, dialect):
+        def process_result_param(self, value, dialect) -> Any:
             if value:
                 return enum_type[value]
 
     return EnumTypeDecorator
 
 
-def row2dict(row):
+def row2dict(row) -> Any:
     d = {}
     for column in row.__table__.columns:
         d[column.name] = getattr(row, column.name)

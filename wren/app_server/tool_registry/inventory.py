@@ -84,7 +84,7 @@ class ToolInventory:
         self._cache = entries
         return entries
 
-    def invalidate_cache(self):
+    def invalidate_cache(self) -> None:
         self._cache = None
 
     def find_by_name(self, name: str) -> CapabilityEntry | None:
